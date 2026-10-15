@@ -108,7 +108,7 @@ export default function Footer() {
             <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-5">
               Newsletter
             </h4>
-            <p className="text-[22px] font-bold leading-snug mb-5">
+            <p className="text-[27px] font-medium leading-[1.25] tracking-[-0.02em] mb-5">
               A little inspiration for your next journey.
             </p>
             <form
