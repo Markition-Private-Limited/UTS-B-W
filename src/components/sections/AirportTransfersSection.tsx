@@ -32,31 +32,36 @@ export default function AirportTransfersSection() {
 
         {/* Text — absolutely centred vertically on the left */}
         <div className="absolute inset-0 flex items-center">
-          <div className="px-10 md:px-16 lg:px-24" style={{ maxWidth: "560px" }}>
+          <div
+            className="flex flex-col justify-center pl-6 pr-10 md:pl-10 md:pr-16 lg:pl-12 lg:pr-20"
+            style={{ width: "740px", maxWidth: "740px", height: "288px", gap: "32px" }}
+          >
 
-            {/* Eyebrow */}
-            <p
-              className="text-gray-400 font-semibold uppercase mb-5"
-              style={{ fontSize: "0.68rem", letterSpacing: "0.3em" }}
-            >
-              Arrive with a sense of calm
-            </p>
+            <div>
+              {/* Eyebrow */}
+              <p
+                className="text-gray-400 font-semibold uppercase mb-5"
+                style={{ fontSize: "0.68rem", letterSpacing: "0.3em" }}
+              >
+                Arrive with a sense of calm
+              </p>
 
-            {/* Headline */}
-            <h2
-              className="text-white font-extrabold uppercase mb-5"
-              style={{
-                fontSize: "clamp(2.2rem, 3.8vw, 4rem)",
-                lineHeight: "1.0",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              Airport<br />Transfers
-            </h2>
+              {/* Headline */}
+              <h2
+                className="text-white font-bold uppercase whitespace-nowrap"
+                style={{
+                  fontSize: "clamp(1.75rem, 3.3333vw, 64px)",
+                  lineHeight: "1.06",
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                Airport Transfers
+              </h2>
+            </div>
 
             {/* Body copy */}
             <p
-              className="text-gray-300 mb-8 leading-relaxed"
+              className="text-gray-300 leading-relaxed"
               style={{ fontSize: "clamp(0.85rem, 0.95vw, 0.98rem)", maxWidth: "400px" }}
             >
               Enjoy a smoother airport journey with professional chauffeur service,
@@ -65,7 +70,7 @@ export default function AirportTransfersSection() {
 
             {/* CTA pill button */}
             <button
-              className="inline-flex items-center gap-3 bg-white text-black font-semibold uppercase rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200"
+              className="inline-flex items-center gap-3 bg-white text-black font-semibold uppercase rounded-full transition-colors hover:bg-gray-100 active:bg-gray-200 w-fit"
               style={{ fontSize: "0.68rem", letterSpacing: "0.2em", padding: "14px 28px" }}
             >
               Explore Airport Transfers
