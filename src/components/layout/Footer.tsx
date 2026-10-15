@@ -28,7 +28,7 @@ export default function Footer() {
   const [email, setEmail] = useState("");
 
   return (
-    <footer className="bg-[#0d0d0d] text-white overflow-hidden">
+    <footer className="bg-[#0d0d0d] text-white overflow-hidden font-sans font-normal leading-[1.7] tracking-normal">
 
       {/* ── Main Grid ── */}
       <div className="max-w-[1400px] mx-auto px-8 pt-16 pb-10">
