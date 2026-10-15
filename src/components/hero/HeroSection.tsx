@@ -12,7 +12,7 @@ export function HeroSection() {
   const { badge, headline, subheadline, description, cta, image } = heroContent;
 
   return (
-    <section className="relative overflow-hidden bg-white dark:bg-gray-950">
+    <section className="relative overflow-hidden bg-white">
       {/* Background decoration */}
       <div
         aria-hidden

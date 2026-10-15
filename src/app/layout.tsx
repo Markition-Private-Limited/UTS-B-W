@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter, Arimo } from "next/font/google";
 import "./globals.css";
+import { FooterSection } from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -9,6 +10,17 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const arimo = Arimo({
+  variable: "--font-arimo",
+  weight: ["400", "700"],
   subsets: ["latin"],
 });
 
@@ -21,9 +33,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${arimo.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <div className="flex-1">{children}</div>
+        <FooterSection />
+      </body>
     </html>
   );
 }
