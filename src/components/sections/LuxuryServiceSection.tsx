@@ -27,7 +27,7 @@ export default function LuxuryServiceSection() {
   return (
     <section
       ref={ref}
-      className={`w-full bg-white pt-[4.1667vw] pb-[4.1667vw] px-[4.1667vw] transition-all duration-700 ease-out ${
+      className={`w-full bg-white px-[4.1667vw] transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >

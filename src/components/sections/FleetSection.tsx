@@ -1,82 +1,215 @@
-﻿// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
 //  SECTION: Fleet  (Section 6)
 //
 //  Design notes (from Figma):
-//  • White background
-//  • Eyebrow label top-left
-//  • Headline: "LUXURY CHAUFFEUR CARS FOR EVERY JOURNEY."
-//  • Filter tabs row: All | First Class | Business | Luxury SUV
-//  • 3-column car card grid (or carousel):
-//      Each card has: car image (top), category badge, car name,
-//      short description, "Learn more →" link
-//  • Cards visible: First Class, Business, Luxury SUV
+//  • White background, fully centered header
+//  • Eyebrow: "OUR FLEET"
+//  • Headline: "LUXURY CHAUFFEUR CARS" / "FOR EVERY JOURNEY."
+//    Inter 700, 64px, line-height 106%, letter-spacing -4%, centered
+//  • Subtext centered
+//  • Filter pill row: All Vehicles | First Class | Business | Luxury SUV
+//    (active = black bg / white text, inactive = white bg / gray border)
+//  • 3-column car card grid: image (top) + light-gray content block
+//    (category + name, description, divider, "Book This Class" pill +
+//    "Make An Enquiry" text link)
+//  • Images: /public/images/fleet/*.png
+//
+//  All px values converted to vw against the 1920px Figma frame
+//  (vw = px / 1920 * 100) so the section scales proportionally at any
+//  window width instead of only matching the design at exactly 1920px.
 // ─────────────────────────────────────────────
 
-import { CarCard } from "@/types";
+"use client";
 
-const cars: CarCard[] = [
+import { useState } from "react";
+import { useInView } from "@/hooks/useInView";
+
+const cars = [
   {
-    id: "1",
-    category: "first-class",
+    id: "first-class",
+    category: "First Class",
     name: "First Class",
-    description: "TODO: fill description from Figma",
-    imageUrl: "/images/car-first-class.jpg",
+    description: "An elevated setting for special arrivals and unhurried private journeys.",
+    image: "/images/fleet/first class.png",
   },
   {
-    id: "2",
-    category: "business",
+    id: "business",
+    category: "Business",
     name: "Business",
-    description: "TODO: fill description from Figma",
-    imageUrl: "/images/car-business.jpg",
+    description: "Refined comfort for focused days, business travel and airport transfers.",
+    image: "/images/fleet/business.png",
   },
   {
-    id: "3",
-    category: "luxury-suv",
+    id: "luxury-suv",
+    category: "Luxury SUV",
     name: "Luxury SUV",
-    description: "TODO: fill description from Figma",
-    imageUrl: "/images/car-suv.jpg",
+    description: "A confident presence with a spacious feel for considered, comfortable travel.",
+    image: "/images/fleet/luxury SUV.png",
   },
 ];
 
+const tabs = ["All Vehicles", "First Class", "Business", "Luxury SUV"];
+
 export default function FleetSection() {
+  const { ref, isInView } = useInView<HTMLElement>();
+  const [activeTab, setActiveTab] = useState("All Vehicles");
+
+  const visibleCars = activeTab === "All Vehicles" ? cars : cars.filter((c) => c.category === activeTab);
+
   return (
-    <section id="fleet" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+    <section
+      id="fleet"
+      ref={ref}
+      className={`w-full bg-white py-[6.25vw] px-[4.1667vw] transition-all duration-700 ease-out ${
+        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+    >
+      <div className="max-w-[1920px] mx-auto">
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-gray-500 mb-3">Our Fleet</p>
-            <h2 className="text-4xl md:text-5xl font-bold uppercase max-w-xl leading-tight">
-              Luxury Chauffeur Cars For Every Journey.
-            </h2>
-          </div>
+        <div className="text-center max-w-[44vw] mx-auto mb-[2.0833vw]">
+          <p
+            className="uppercase text-gray-500 mb-[0.8333vw]"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 600,
+              fontSize: "0.6771vw",
+              lineHeight: "1",
+              letterSpacing: "0.18em",
+            }}
+          >
+            Our Fleet
+          </p>
+
+          <h2
+            className="uppercase text-black mb-[1.25vw]"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 700,
+              fontSize: "3.3333vw",
+              lineHeight: "1.06",
+              letterSpacing: "-0.04em",
+              textAlign: "center",
+            }}
+          >
+            Luxury Chauffeur Cars<br />For Every Journey.
+          </h2>
+
+          <p
+            className="text-gray-500"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 400,
+              fontSize: "0.9375vw",
+              lineHeight: "1.6",
+              letterSpacing: "0",
+            }}
+          >
+            Explore a refined fleet for executive travel, airport transfers, and private journeys.
+          </p>
         </div>
 
         {/* Filter Tabs */}
-        {/* TODO: Add active state and filtering logic */}
-        <div className="flex gap-3 mb-10 flex-wrap">
-          {["All", "First Class", "Business", "Luxury SUV"].map((tab) => (
-            <button
-              key={tab}
-              className="border border-gray-300 text-sm px-5 py-2 rounded-full hover:bg-black hover:text-white hover:border-black transition-colors"
-            >
-              {tab}
-            </button>
-          ))}
+        <div className="flex items-center justify-center gap-[0.5208vw] mb-[2.0833vw] flex-wrap">
+          {tabs.map((tab) => {
+            const active = tab === activeTab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-full px-[1.25vw] py-[0.5729vw] transition-colors ${
+                  active
+                    ? "bg-black text-white"
+                    : "bg-white text-black border border-gray-300 hover:border-black"
+                }`}
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 500,
+                  fontSize: "0.7292vw",
+                  lineHeight: "1",
+                }}
+              >
+                {tab}
+              </button>
+            );
+          })}
         </div>
 
         {/* Car Cards Grid */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {cars.map((car) => (
-            <div key={car.id} className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-              {/* TODO: Replace with actual Next.js Image component */}
-              <div className="h-56 bg-gray-200" />
-              <div className="p-6">
-                <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">{car.category}</p>
-                <h3 className="text-xl font-bold uppercase mb-2">{car.name}</h3>
-                <p className="text-gray-500 text-sm mb-4 leading-relaxed">{car.description}</p>
-                <a href="#" className="text-sm font-medium underline">Learn more →</a>
+        <div className="grid md:grid-cols-3 gap-[1.25vw]">
+          {visibleCars.map((car) => (
+            <div key={car.id} className="rounded-[1.25vw] overflow-hidden">
+              <div className="h-[16.25vw] overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={car.image}
+                  alt={car.name}
+                  className="w-full h-full object-cover select-none pointer-events-none"
+                  draggable={false}
+                />
+              </div>
+              <div className="bg-[#EFEFEF] p-[1.6667vw]">
+                <h3
+                  className="uppercase text-black mb-[0.8333vw]"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1.25vw",
+                    lineHeight: "1.2",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {car.name}
+                </h3>
+                <p
+                  className="text-gray-600 mb-[1.25vw]"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 400,
+                    fontSize: "0.8333vw",
+                    lineHeight: "1.5",
+                  }}
+                >
+                  {car.description}
+                </p>
+
+                <div className="border-t border-gray-300 mb-[1.0417vw]" />
+
+                <div className="flex items-center justify-between">
+                  <a
+                    href="#contact"
+                    className="inline-flex items-center gap-[0.3125vw] bg-black text-white uppercase px-[1.0417vw] py-[0.5729vw] rounded-full hover:bg-gray-800 transition-colors"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 700,
+                      fontSize: "0.5729vw",
+                      lineHeight: "1",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    Book This Class
+                    <svg width="8" height="8" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                      <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </a>
+
+                  <a
+                    href="#contact"
+                    className="inline-flex items-center gap-[0.2604vw] text-black uppercase hover:text-gray-600 transition-colors"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 600,
+                      fontSize: "0.5729vw",
+                      lineHeight: "1",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    Make An Enquiry
+                    <svg width="8" height="8" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                      <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           ))}

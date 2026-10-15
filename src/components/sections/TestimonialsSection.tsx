@@ -37,7 +37,7 @@ export default function TestimonialsSection() {
     <section
       id="testimonials"
       ref={ref}
-      className={`w-full bg-[#F8F8F8] py-[6.25vw] px-[4.1667vw] transition-all duration-700 ease-out ${
+      className={`w-full bg-[#FFFFFF] py-[6.25vw] px-[4.1667vw] transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
