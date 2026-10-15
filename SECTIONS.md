@@ -2,6 +2,31 @@
 
 > Figma: https://www.figma.com/design/d1RwdsudOXmqlsdQ93rOle/UTS?node-id=145-3892&t=AZNSDdCNjTmCYf6e-0
 
+## ⚠️ Scaling convention: use `vw`, not fixed `px`
+
+The Figma frame is 1920px wide. If you copy Figma px values straight into Tailwind
+(`text-[25px]`, `pt-[90px]`, etc.) the layout only looks right at exactly 1920px —
+on a smaller browser window it looks cramped/oversized compared to Figma.
+
+Instead, convert every Figma px value to `vw` against the 1920 baseline:
+
+```
+vw = px / 1920 * 100
+```
+
+Example: a 25px heading → `25 / 1920 * 100 = 1.3021vw` → `text-[1.3021vw]` (or
+`style={{ fontSize: "1.3021vw" }}` since Tailwind arbitrary values don't always
+play well with dynamic values).
+
+Apply this to font-size, padding, margin, and gap. Things that already scale
+naturally don't need conversion: `letter-spacing` in `em`, `line-height` as a
+unitless ratio (e.g. `1.4` not `20px`), border widths, and small fixed icon sizes.
+
+See `src/components/layout/Footer.tsx` and `src/components/sections/FinalCtaSection.tsx`
+for reference implementations.
+
+---
+
 ## ⚠️ One rule to avoid all merge conflicts
 
 **`src/app/page.tsx` is frozen — do not edit it.**
@@ -23,7 +48,7 @@ Two people can never conflict as long as they don't edit the same file at the sa
 | 6 | Fleet (tabs + car cards) | `src/components/sections/FleetSection.tsx` |
 | 7 | The Difference (image mosaic + checklist) | `src/components/sections/DifferenceSection.tsx` |
 | 8 | Testimonials (4 review cards) | `src/components/sections/TestimonialsSection.tsx` |
-| 9 | Promo CTA (dark banner + car image) | `src/components/sections/PromoSection.tsx` |
+| 9 | Luxury Chauffeur Service (dark card + Bentley photo) — built, placed above App Download | `src/components/sections/LuxuryServiceSection.tsx` |
 | 10 | App Download (phone mockup + badges) | `src/components/sections/AppSection.tsx` |
 | 11 | Final CTA ("Your Journey. Our Priority.") | `src/components/sections/FinalCtaSection.tsx` |
 | — | Footer (5-col links + watermark) | `src/components/layout/Footer.tsx` |

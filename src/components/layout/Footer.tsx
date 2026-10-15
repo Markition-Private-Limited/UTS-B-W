@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useInView } from "@/hooks/useInView";
+
+// All px values below are converted to vw against the 1920px Figma frame
+// (vw = px / 1920 * 100) so the footer scales proportionally at any window
+// width instead of only matching the design at exactly 1920px.
 
 const quickLinks = [
-  { label: "Home",         href: "#hero" },
-  { label: "About Us",    href: "#about" },
-  { label: "Our Services", href: "#features" },
-  { label: "Our Fleet",   href: "#fleet" },
-  { label: "Contact Us",  href: "#contact" },
+  { label: "Home",          href: "#hero" },
+  { label: "About Us",     href: "#about" },
+  { label: "Our Services",  href: "#features" },
+  { label: "Our Fleet",    href: "#fleet" },
+  { label: "Contact Us",   href: "#contact" },
 ];
 
 const chauffeurServices = [
@@ -26,20 +31,32 @@ const waysToTravel = [
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const { ref, isInView } = useInView<HTMLElement>();
 
   return (
-    <footer className="bg-[#0d0d0d] text-white overflow-hidden font-sans font-normal leading-[1.7] tracking-normal">
+    <footer
+      ref={ref}
+      className={`bg-[#0d0d0d] text-[#E3E3E3] overflow-hidden leading-[1.7] tracking-normal transition-all duration-700 ease-out ${
+        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+      style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}
+    >
 
       {/* ── Main Grid ── */}
-      <div className="max-w-[1400px] mx-auto px-8 pt-16 pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1.5fr_1.5fr_2fr] gap-10 pb-12">
+      <div className="w-full max-w-[1920px] mx-auto pt-[4.6875vw] pr-[4.1667vw] pb-[1.25vw] pl-[4.1667vw]">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1.5fr_1.5fr_2fr] gap-[3.3333vw] pb-[2.5vw]">
 
           {/* Col 1 — Brand */}
           <div>
-            <h2 className="text-2xl font-black uppercase leading-tight mb-5 tracking-tight">
+            {/* Brand name: slightly weighted */}
+            <h2
+              className="uppercase leading-[1] tracking-[-0.03em] mb-[1.0417vw]"
+              style={{ fontWeight: 500, fontSize: "1.4063vw" }}
+            >
               United Travel<br />Services
             </h2>
-            <p className="text-[13px] text-gray-400 leading-relaxed">
+            {/* Body: normal */}
+            <p className="leading-[1.7] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7813vw" }}>
               United Travel Services provides professional chauffeur and private transportation
               services for business and leisure travel. With a focus on comfort, punctuality and
               customer care, we make every journey a more comfortable experience.
@@ -48,15 +65,16 @@ export default function Footer() {
 
           {/* Col 2 — Quick Links */}
           <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-5">
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
               Quick Links
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-[0.8333vw]">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-[13px] text-gray-300 hover:text-white transition-colors duration-200"
+                    className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
+                    style={{ fontWeight: 400, fontSize: "0.7813vw" }}
                   >
                     {link.label}
                   </a>
@@ -67,15 +85,16 @@ export default function Footer() {
 
           {/* Col 3 — Chauffeur Services */}
           <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-5">
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
               Chauffeur Services
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-[0.8333vw]">
               {chauffeurServices.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-[13px] text-gray-300 hover:text-white transition-colors duration-200"
+                    className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
+                    style={{ fontWeight: 400, fontSize: "0.7813vw" }}
                   >
                     {link.label}
                   </a>
@@ -86,15 +105,16 @@ export default function Footer() {
 
           {/* Col 4 — Ways to Travel */}
           <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-5">
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
               Ways to Travel
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-[0.8333vw]">
               {waysToTravel.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-[13px] text-gray-300 hover:text-white transition-colors duration-200"
+                    className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
+                    style={{ fontWeight: 400, fontSize: "0.7813vw" }}
                   >
                     {link.label}
                   </a>
@@ -105,18 +125,19 @@ export default function Footer() {
 
           {/* Col 5 — Newsletter */}
           <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-5">
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
               Newsletter
             </h4>
-            <p className="text-[27px] font-medium leading-[1.25] tracking-[-0.02em] mb-5">
+            {/* Newsletter headline: slightly weighted */}
+            <p
+              className="leading-[1.25] tracking-[-0.02em] mb-[1.0417vw]"
+              style={{ fontWeight: 500, fontSize: "1.5104vw" }}
+            >
               A little inspiration for your next journey.
             </p>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setEmail("");
-              }}
-              className="flex items-center border border-white/30 rounded-full overflow-hidden mb-3"
+              onSubmit={(e) => { e.preventDefault(); setEmail(""); }}
+              className="flex items-center border border-white/30 rounded-full overflow-hidden mb-[0.625vw]"
             >
               <input
                 type="email"
@@ -124,11 +145,13 @@ export default function Footer() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 required
-                className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 px-5 py-3 outline-none min-w-0"
+                className="flex-1 bg-transparent placeholder-[#E3E3E3]/50 px-[1.0417vw] py-[0.625vw] outline-none min-w-0"
+                style={{ fontWeight: 400, fontSize: "0.8333vw" }}
               />
               <button
                 type="submit"
-                className="flex items-center gap-1.5 bg-white text-black text-[11px] font-bold uppercase tracking-widest px-5 py-3 rounded-full whitespace-nowrap hover:bg-gray-100 transition-colors shrink-0"
+                className="flex items-center gap-[0.3125vw] bg-white text-black uppercase tracking-widest px-[1.0417vw] py-[0.625vw] rounded-full whitespace-nowrap hover:bg-gray-100 transition-colors shrink-0"
+                style={{ fontWeight: 700, fontSize: "0.6771vw" }}
               >
                 Subscribe
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +159,8 @@ export default function Footer() {
                 </svg>
               </button>
             </form>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
+            {/* Subtext: normal */}
+            <p className="leading-[1.6] tracking-normal text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.8333vw" }}>
               Receive occasional travel inspiration and United Travel Services updates.
             </p>
           </div>
@@ -144,47 +168,56 @@ export default function Footer() {
         </div>
 
         {/* ── Divider ── */}
-        <div className="border-t border-white/10" />
+        <div className="border-t border-[#E3E3E3]/10" />
 
         {/* ── Contact + Social bar ── */}
-        <div className="py-6 flex flex-col md:flex-row justify-between gap-6">
-          <div className="flex flex-col gap-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+        <div className="py-[1.25vw] flex flex-col md:flex-row justify-between gap-[1.25vw]">
+          <div className="flex flex-col gap-[0.4167vw]">
+            <p className="uppercase tracking-[0.2em]" style={{ fontWeight: 500, fontSize: "0.625vw" }}>
               Contact · Editable Placeholders
             </p>
-            <div className="flex flex-wrap gap-6 text-[12px] text-gray-400">
+            <div className="flex flex-wrap gap-[1.25vw] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7292vw" }}>
               <span>Phone · To be confirmed</span>
               <span>Email · To be confirmed</span>
               <span>Address · To be confirmed</span>
             </div>
           </div>
-          <div className="flex flex-col gap-2 md:text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+          <div className="flex flex-col gap-[0.4167vw] md:text-right">
+            <p className="uppercase tracking-[0.2em]" style={{ fontWeight: 500, fontSize: "0.625vw" }}>
               Social
             </p>
-            <p className="text-[12px] text-gray-400">Company profiles pending confirmation</p>
+            <p className="text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7292vw" }}>Company profiles pending confirmation</p>
           </div>
         </div>
 
         {/* ── Divider ── */}
-        <div className="border-t border-white/10" />
+        <div className="border-t border-[#E3E3E3]/10" />
 
         {/* ── Copyright bar ── */}
-        <div className="pt-5 flex flex-col md:flex-row justify-between items-center gap-3 text-[12px] text-gray-500">
+        <div className="pt-[1.0417vw] flex flex-col md:flex-row justify-between items-center gap-[0.625vw] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7292vw" }}>
           <p>© 2026 United Travel Services. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-gray-300 transition-colors">Terms &amp; Conditions</a>
+          <div className="flex gap-[1.25vw]">
+            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms &amp; Conditions</a>
           </div>
         </div>
 
       </div>
 
       {/* ── Watermark ── */}
-      <div className="w-full overflow-hidden pointer-events-none select-none">
+      {/* Padding matches the main grid (4.1667vw each side); with vw padding the
+          content width stays a constant 91.667vw ratio at any viewport, so the
+          font can use a flat vw value (134/1920) instead of a calc() hack. */}
+      <div className="w-full px-[4.1667vw] pointer-events-none select-none" style={{ opacity: 0.14 }}>
         <p
-          className="text-center font-black uppercase whitespace-nowrap text-white/[0.04] leading-none"
-          style={{ fontSize: "clamp(60px, 12vw, 180px)" }}
+          className="text-center uppercase whitespace-nowrap text-white"
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 700,
+            fontSize: "6.9792vw",
+            lineHeight: "1",
+            letterSpacing: "-0.06em",
+          }}
         >
           United Travel Services
         </p>

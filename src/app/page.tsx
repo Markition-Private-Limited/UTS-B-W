@@ -15,7 +15,7 @@ import CityStatsSection    from "@/components/sections/CityStatsSection";
 import FleetSection        from "@/components/sections/FleetSection";
 import DifferenceSection   from "@/components/sections/DifferenceSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
-import PromoSection        from "@/components/sections/PromoSection";
+import LuxuryServiceSection from "@/components/sections/LuxuryServiceSection";
 import AppSection          from "@/components/sections/AppSection";
 import FinalCtaSection     from "@/components/sections/FinalCtaSection";
 import Footer              from "@/components/layout/Footer";
@@ -38,7 +38,7 @@ export default function HomePage() {
         <FleetSection />
         <DifferenceSection />
         <TestimonialsSection />
-        <PromoSection />
+        <LuxuryServiceSection />
         <AppSection />
         <FinalCtaSection />
       </main>
