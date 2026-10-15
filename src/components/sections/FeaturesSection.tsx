@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: Features / USP  (Section 4)
-//  DEV 1 — implement this component
 //
 //  Design notes (from Figma):
 //  • White background
@@ -20,22 +19,22 @@ const features: Feature[] = [
   {
     icon: "🚗",
     title: "24/7 Online Flat Car",
-    description: "TODO Dev 1: fill description from Figma",
+    description: "TODO: fill description from Figma",
   },
   {
     icon: "🕐",
     title: "24/7 Availability",
-    description: "TODO Dev 1: fill description from Figma",
+    description: "TODO: fill description from Figma",
   },
   {
     icon: "🚙",
     title: "3+ Comfort Vehicles",
-    description: "TODO Dev 1: fill description from Figma",
+    description: "TODO: fill description from Figma",
   },
   {
     icon: "⭐",
     title: "We Value the Client",
-    description: "TODO Dev 1: fill description from Figma",
+    description: "TODO: fill description from Figma",
   },
 ];
 
@@ -48,7 +47,7 @@ export default function FeaturesSection() {
           Luxury, Made Effortless.
         </h2>
         <p className="text-gray-500 text-sm max-w-xl mx-auto mb-16">
-          {/* TODO Dev 1: fill subtext from Figma */}
+          {/* TODO: fill subtext from Figma */}
           A seamless chauffeur experience built around you. Designed to be simple.
         </p>
 
@@ -63,7 +62,7 @@ export default function FeaturesSection() {
                   : "bg-gray-50"
               }`}
             >
-              {/* TODO Dev 1: Replace emoji with proper SVG icons from Figma */}
+              {/* TODO: Replace emoji with proper SVG icons from Figma */}
               <div className="text-3xl mb-4">{feature.icon}</div>
               <h3 className="font-semibold text-base mb-2">{feature.title}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>

@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: City Stats / Banner  (Section 5)
-//  DEV 1 — implement this component
 //
 //  Design notes (from Figma):
 //  • Full-width dark background with city/driving photo overlay (very dark)
@@ -27,7 +26,7 @@ export default function CityStatsSection() {
   return (
     <section id="city-stats" className="relative py-32 bg-gray-900 text-white overflow-hidden">
 
-      {/* TODO Dev 1: Add full-width background image with dark overlay */}
+      {/* TODO: Add full-width background image with dark overlay */}
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
 
@@ -43,7 +42,7 @@ export default function CityStatsSection() {
               key={i}
               className={`pr-8 ${i !== 0 ? "border-l border-white/20 pl-8" : ""}`}
             >
-              {/* TODO Dev 1: Replace "TODO" with actual numbers from Figma */}
+              {/* TODO: Replace "TODO" with actual numbers from Figma */}
               <p className="text-4xl font-bold mb-2">{stat.value}</p>
               <p className="text-sm text-gray-300 uppercase tracking-wide">{stat.label}</p>
             </div>

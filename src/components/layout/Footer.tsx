@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: Footer  (Section 12)
-//  DEV 2 — implement this component
 //
 //  Design notes (from Figma):
 //  • Dark background (near-black)
@@ -31,10 +30,10 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <p className="text-white font-bold text-lg mb-3">United Travel Services</p>
             <p className="text-sm leading-relaxed mb-6">
-              {/* TODO Dev 2: tagline from Figma */}
+              {/* TODO: tagline from Figma */}
               Placeholder tagline.
             </p>
-            {/* TODO Dev 2: Social icons */}
+            {/* TODO: Social icons */}
             <div className="flex gap-4 text-gray-500 text-sm">
               <a href="#">FB</a>
               <a href="#">IG</a>
@@ -46,7 +45,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white text-sm font-semibold uppercase tracking-wider mb-4">Services</h4>
             <ul className="space-y-3 text-sm">
-              {/* TODO Dev 2: fill links from Figma */}
+              {/* TODO: fill links from Figma */}
               <li><a href="#" className="hover:text-white transition-colors">Airport Transfers</a></li>
               <li><a href="#" className="hover:text-white transition-colors">City Rides</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Corporate Travel</a></li>
@@ -58,7 +57,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white text-sm font-semibold uppercase tracking-wider mb-4">Company</h4>
             <ul className="space-y-3 text-sm">
-              {/* TODO Dev 2: fill links from Figma */}
+              {/* TODO: fill links from Figma */}
               <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Our Fleet</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
@@ -70,7 +69,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white text-sm font-semibold uppercase tracking-wider mb-4">Quick Links</h4>
             <ul className="space-y-3 text-sm">
-              {/* TODO Dev 2: fill links from Figma */}
+              {/* TODO: fill links from Figma */}
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
               <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
@@ -82,7 +81,7 @@ export default function Footer() {
             <h4 className="text-white text-sm font-semibold uppercase tracking-wider mb-4">
               A trip. Inspiration for your next journey.
             </h4>
-            {/* TODO Dev 2: fill content from Figma — newsletter input or descriptive text */}
+            {/* TODO: fill content from Figma — newsletter input or descriptive text */}
             <p className="text-sm">Placeholder — add content from Figma.</p>
           </div>
 

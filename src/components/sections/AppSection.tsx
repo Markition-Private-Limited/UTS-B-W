@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: App Download  (Section 10)
-//  DEV 2 — implement this component
 //
 //  Design notes (from Figma):
 //  • White / light background
@@ -22,19 +21,19 @@ export default function AppSection() {
         {/* Left Content */}
         <div>
           <p className="text-xs uppercase tracking-widest text-gray-500 mb-4">
-            {/* TODO Dev 2: eyebrow label from Figma */}
+            {/* TODO: eyebrow label from Figma */}
             Mobile App
           </p>
           <h2 className="text-4xl md:text-5xl font-bold uppercase leading-tight mb-6">
             United Travel Services,<br />Now In Your Pocket.
           </h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-8 max-w-sm">
-            {/* TODO Dev 2: fill paragraph from Figma */}
+            {/* TODO: fill paragraph from Figma */}
             Placeholder paragraph — add exact copy from Figma design.
           </p>
 
           {/* App Store Badges */}
-          {/* TODO Dev 2: Replace placeholders with actual badge images / SVGs */}
+          {/* TODO: Replace placeholders with actual badge images / SVGs */}
           <div className="flex gap-4 flex-wrap">
             <a
               href="#"
@@ -56,7 +55,7 @@ export default function AppSection() {
         </div>
 
         {/* Right: Phone Mockup */}
-        {/* TODO Dev 2: Replace with actual phone mockup image */}
+        {/* TODO: Replace with actual phone mockup image */}
         <div className="flex justify-center">
           <div className="w-64 h-[520px] bg-gray-100 rounded-3xl border-4 border-gray-300 flex items-center justify-center text-gray-400 text-sm text-center px-4">
             [Phone mockup — replace with Next.js Image]

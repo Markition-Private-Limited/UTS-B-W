@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: Fleet  (Section 6)
-//  DEV 2 — implement this component
 //
 //  Design notes (from Figma):
 //  • White background
@@ -20,21 +19,21 @@ const cars: CarCard[] = [
     id: "1",
     category: "first-class",
     name: "First Class",
-    description: "TODO Dev 2: fill description from Figma",
+    description: "TODO: fill description from Figma",
     imageUrl: "/images/car-first-class.jpg",
   },
   {
     id: "2",
     category: "business",
     name: "Business",
-    description: "TODO Dev 2: fill description from Figma",
+    description: "TODO: fill description from Figma",
     imageUrl: "/images/car-business.jpg",
   },
   {
     id: "3",
     category: "luxury-suv",
     name: "Luxury SUV",
-    description: "TODO Dev 2: fill description from Figma",
+    description: "TODO: fill description from Figma",
     imageUrl: "/images/car-suv.jpg",
   },
 ];
@@ -55,7 +54,7 @@ export default function FleetSection() {
         </div>
 
         {/* Filter Tabs */}
-        {/* TODO Dev 2: Add active state and filtering logic */}
+        {/* TODO: Add active state and filtering logic */}
         <div className="flex gap-3 mb-10 flex-wrap">
           {["All", "First Class", "Business", "Luxury SUV"].map((tab) => (
             <button
@@ -71,7 +70,7 @@ export default function FleetSection() {
         <div className="grid md:grid-cols-3 gap-6">
           {cars.map((car) => (
             <div key={car.id} className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-              {/* TODO Dev 2: Replace with actual Next.js Image component */}
+              {/* TODO: Replace with actual Next.js Image component */}
               <div className="h-56 bg-gray-200" />
               <div className="p-6">
                 <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">{car.category}</p>

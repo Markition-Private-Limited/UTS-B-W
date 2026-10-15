@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: Promo / Dark CTA Banner  (Section 9)
-//  DEV 2 — implement this component
 //
 //  Design notes (from Figma):
 //  • Full-width dark background (near black)
@@ -22,14 +21,14 @@ export default function PromoSection() {
         {/* Left Content */}
         <div>
           <p className="text-xs uppercase tracking-widest text-gray-400 mb-4">
-            {/* TODO Dev 2: eyebrow label from Figma */}
+            {/* TODO: eyebrow label from Figma */}
             Premium Service
           </p>
           <h2 className="text-4xl md:text-6xl font-bold uppercase leading-tight mb-6">
             Luxury Chauffeur Service
           </h2>
           <p className="text-gray-300 text-sm leading-relaxed mb-8 max-w-sm">
-            {/* TODO Dev 2: fill paragraph from Figma */}
+            {/* TODO: fill paragraph from Figma */}
             Placeholder paragraph — add exact copy from Figma design.
           </p>
           <button className="border border-white text-white text-sm px-8 py-3 rounded hover:bg-white hover:text-black transition-colors">
@@ -38,7 +37,7 @@ export default function PromoSection() {
         </div>
 
         {/* Right: Car Image */}
-        {/* TODO Dev 2: Replace with actual car image from Figma / assets */}
+        {/* TODO: Replace with actual car image from Figma / assets */}
         <div className="h-72 md:h-96 bg-gray-800 rounded-xl flex items-center justify-center text-gray-600 text-sm">
           [Car image — replace with Next.js Image]
         </div>

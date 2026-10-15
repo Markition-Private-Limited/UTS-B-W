@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: The Difference  (Section 7)
-//  DEV 2 — implement this component
 //
 //  Design notes (from Figma):
 //  • White/light background
@@ -21,10 +20,10 @@
 import { DifferencePoint } from "@/types";
 
 const points: DifferencePoint[] = [
-  { title: "Professional from the first mile", description: "TODO Dev 2: fill from Figma" },
-  { title: "Punctual, every single time",       description: "TODO Dev 2: fill from Figma" },
-  { title: "Comfort is always the priority",    description: "TODO Dev 2: fill from Figma" },
-  // TODO Dev 2: Add remaining points from Figma
+  { title: "Professional from the first mile", description: "TODO: fill from Figma" },
+  { title: "Punctual, every single time",       description: "TODO: fill from Figma" },
+  { title: "Comfort is always the priority",    description: "TODO: fill from Figma" },
+  // TODO: Add remaining points from Figma
 ];
 
 export default function DifferenceSection() {
@@ -33,7 +32,7 @@ export default function DifferenceSection() {
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
 
         {/* LEFT: Image mosaic */}
-        {/* TODO Dev 2: Replace placeholders with actual images */}
+        {/* TODO: Replace placeholders with actual images */}
         <div className="grid grid-cols-2 gap-3 h-[520px]">
           <div className="row-span-2 bg-gray-300 rounded-xl" />
           <div className="bg-gray-200 rounded-xl" />
@@ -47,7 +46,7 @@ export default function DifferenceSection() {
             The Difference Is In Every Detail.
           </h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-8">
-            {/* TODO Dev 2: fill paragraph from Figma */}
+            {/* TODO: fill paragraph from Figma */}
             Placeholder paragraph — add exact copy from Figma.
           </p>
 

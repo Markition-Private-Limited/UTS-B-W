@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: Navbar
-//  DEV 1 — implement this component
 //
 //  Design notes (from Figma):
 //  • Logo: "United Travel Services" (top-left)
@@ -12,7 +11,7 @@
 export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-transparent">
-      {/* TODO Dev 1: Build Navbar */}
+      {/* TODO: Build Navbar */}
       <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="text-white font-bold text-xl">United Travel Services</div>
 

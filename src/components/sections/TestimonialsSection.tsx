@@ -1,6 +1,5 @@
-// ─────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────
 //  SECTION: Testimonials  (Section 8)
-//  DEV 2 — implement this component
 //
 //  Design notes (from Figma):
 //  • Light/off-white background
@@ -52,7 +51,7 @@ export default function TestimonialsSection() {
             Real Journeys.<br />Lasting Impressions.
           </h2>
           <p className="text-gray-500 text-sm">
-            {/* TODO Dev 2: fill subtext from Figma */}
+            {/* TODO: fill subtext from Figma */}
             The experiences you share matter. Here's what our clients say.
           </p>
         </div>
@@ -69,7 +68,7 @@ export default function TestimonialsSection() {
               </div>
               <p className="text-gray-600 text-sm leading-relaxed mb-6">&ldquo;{t.review}&rdquo;</p>
               <p className="text-sm font-semibold">{t.name}</p>
-              {/* TODO Dev 2: Add avatar image */}
+              {/* TODO: Add avatar image */}
             </div>
           ))}
         </div>
