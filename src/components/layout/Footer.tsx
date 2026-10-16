@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useInView } from "@/hooks/useInView";
+import PillButtonContent from "@/components/ui/PillButtonContent";
 
 // All px values below are converted to vw against the 1920px Figma frame
 // (vw = px / 1920 * 100) so the footer scales proportionally at any window
@@ -36,6 +38,7 @@ export default function Footer() {
   return (
     <footer
       ref={ref}
+      data-navbar-theme="dark"
       className={`bg-[#0d0d0d] text-[#E3E3E3] overflow-hidden leading-[1.7] tracking-normal transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
@@ -48,15 +51,15 @@ export default function Footer() {
 
           {/* Col 1 — Brand */}
           <div>
-            {/* Brand name: slightly weighted */}
-            <h2
-              className="uppercase leading-[1] tracking-[-0.03em] mb-[1.0417vw]"
-              style={{ fontWeight: 500, fontSize: "1.4063vw" }}
-            >
-              United Travel<br />Services
-            </h2>
+            <Image
+              src="/logo/UTS-logo.png"
+              alt="United Travel Services"
+              width={1072}
+              height={328}
+              className="h-[3.5vw] w-auto object-contain mb-[1.25vw]"
+            />
             {/* Body: normal */}
-            <p className="leading-[1.7] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7813vw" }}>
+            <p className="leading-[1.7] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
               United Travel Services provides professional chauffeur and private transportation
               services for business and leisure travel. With a focus on comfort, punctuality and
               customer care, we make every journey a more comfortable experience.
@@ -65,7 +68,7 @@ export default function Footer() {
 
           {/* Col 2 — Quick Links */}
           <div>
-            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.9896vw" }}>
               Quick Links
             </h4>
             <ul className="space-y-[0.8333vw]">
@@ -74,7 +77,7 @@ export default function Footer() {
                   <a
                     href={link.href}
                     className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
-                    style={{ fontWeight: 400, fontSize: "0.7813vw" }}
+                    style={{ fontWeight: 400, fontSize: "0.8854vw" }}
                   >
                     {link.label}
                   </a>
@@ -85,7 +88,7 @@ export default function Footer() {
 
           {/* Col 3 — Chauffeur Services */}
           <div>
-            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.9896vw" }}>
               Chauffeur Services
             </h4>
             <ul className="space-y-[0.8333vw]">
@@ -94,7 +97,7 @@ export default function Footer() {
                   <a
                     href={link.href}
                     className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
-                    style={{ fontWeight: 400, fontSize: "0.7813vw" }}
+                    style={{ fontWeight: 400, fontSize: "0.8854vw" }}
                   >
                     {link.label}
                   </a>
@@ -105,7 +108,7 @@ export default function Footer() {
 
           {/* Col 4 — Ways to Travel */}
           <div>
-            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.9896vw" }}>
               Ways to Travel
             </h4>
             <ul className="space-y-[0.8333vw]">
@@ -114,7 +117,7 @@ export default function Footer() {
                   <a
                     href={link.href}
                     className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
-                    style={{ fontWeight: 400, fontSize: "0.7813vw" }}
+                    style={{ fontWeight: 400, fontSize: "0.8854vw" }}
                   >
                     {link.label}
                   </a>
@@ -125,7 +128,7 @@ export default function Footer() {
 
           {/* Col 5 — Newsletter */}
           <div>
-            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.8854vw" }}>
+            <h4 className="leading-[1.4] mb-[1.25vw]" style={{ fontWeight: 400, fontSize: "0.9896vw" }}>
               Newsletter
             </h4>
             {/* Newsletter headline: slightly weighted */}
@@ -146,21 +149,18 @@ export default function Footer() {
                 placeholder="Your email address"
                 required
                 className="flex-1 bg-transparent placeholder-[#E3E3E3]/50 px-[1.0417vw] py-[0.625vw] outline-none min-w-0"
-                style={{ fontWeight: 400, fontSize: "0.8333vw" }}
+                style={{ fontWeight: 400, fontSize: "0.9375vw" }}
               />
               <button
                 type="submit"
-                className="flex items-center gap-[0.3125vw] bg-white text-black uppercase tracking-widest px-[1.0417vw] py-[0.625vw] rounded-full whitespace-nowrap hover:bg-gray-100 transition-colors shrink-0"
-                style={{ fontWeight: 700, fontSize: "0.6771vw" }}
+                className="group relative overflow-hidden flex items-center gap-[0.3125vw] bg-white text-black uppercase tracking-widest px-[1.0417vw] py-[0.625vw] rounded-full whitespace-nowrap border-[1.5px] border-transparent transition-all duration-500 hover:border-white/50 hover:shadow-[0_0_16px_rgba(255,255,255,0.25)] shrink-0"
+                style={{ fontWeight: 700, fontSize: "0.7813vw" }}
               >
-                Subscribe
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                <PillButtonContent fill="black">Subscribe</PillButtonContent>
               </button>
             </form>
             {/* Subtext: normal */}
-            <p className="leading-[1.6] tracking-normal text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.8333vw" }}>
+            <p className="leading-[1.6] tracking-normal text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.9375vw" }}>
               Receive occasional travel inspiration and United Travel Services updates.
             </p>
           </div>
@@ -173,20 +173,20 @@ export default function Footer() {
         {/* ── Contact + Social bar ── */}
         <div className="py-[1.25vw] flex flex-col md:flex-row justify-between gap-[1.25vw]">
           <div className="flex flex-col gap-[0.4167vw]">
-            <p className="uppercase tracking-[0.2em]" style={{ fontWeight: 500, fontSize: "0.625vw" }}>
+            <p className="uppercase tracking-[0.2em]" style={{ fontWeight: 500, fontSize: "0.7292vw" }}>
               Contact · Editable Placeholders
             </p>
-            <div className="flex flex-wrap gap-[1.25vw] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7292vw" }}>
+            <div className="flex flex-wrap gap-[1.25vw] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.8333vw" }}>
               <span>Phone · To be confirmed</span>
               <span>Email · To be confirmed</span>
               <span>Address · To be confirmed</span>
             </div>
           </div>
           <div className="flex flex-col gap-[0.4167vw] md:text-right">
-            <p className="uppercase tracking-[0.2em]" style={{ fontWeight: 500, fontSize: "0.625vw" }}>
+            <p className="uppercase tracking-[0.2em]" style={{ fontWeight: 500, fontSize: "0.7292vw" }}>
               Social
             </p>
-            <p className="text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7292vw" }}>Company profiles pending confirmation</p>
+            <p className="text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.8333vw" }}>Company profiles pending confirmation</p>
           </div>
         </div>
 
@@ -194,7 +194,7 @@ export default function Footer() {
         <div className="border-t border-[#E3E3E3]/10" />
 
         {/* ── Copyright bar ── */}
-        <div className="pt-[1.0417vw] flex flex-col md:flex-row justify-between items-center gap-[0.625vw] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.7292vw" }}>
+        <div className="pt-[1.0417vw] flex flex-col md:flex-row justify-between items-center gap-[0.625vw] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.8333vw" }}>
           <p>© 2026 United Travel Services. All rights reserved.</p>
           <div className="flex gap-[1.25vw]">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>

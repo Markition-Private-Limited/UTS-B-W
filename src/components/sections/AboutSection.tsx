@@ -10,6 +10,7 @@ import {
   useInView,
 } from "framer-motion";
 import type { PanInfo, MotionValue } from "framer-motion";
+import { useInView as useScrollReveal } from "@/hooks/useInView";
 
 // ── Images + per-image overlay text ──────────────────────────────────────────
 const IMAGES = [
@@ -40,6 +41,7 @@ type FlyCard = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function AboutSection() {
+  const { ref: headerRef, isInView: headerInView } = useScrollReveal<HTMLDivElement>();
   const [arrangement, setArrangement] = useState(INITIAL);
   const [inGallery, setInGallery]     = useState(false);
   const [flyCard,   setFlyCard]       = useState<FlyCard | null>(null);
@@ -51,6 +53,8 @@ export default function AboutSection() {
   const cursorRef  = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
   const centerRef  = useRef<HTMLDivElement>(null);
+  const gallerySectionRef = useRef<HTMLElement>(null);
+  const mousePos = useRef({ x: -1, y: -1 });
   const intervalId = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoIdxRef = useRef(1);
   const flyInProgress = useRef(false);
@@ -148,9 +152,31 @@ export default function AboutSection() {
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
-    const onMove = (e: MouseEvent) => { tx = e.clientX; ty = e.clientY; };
+    const onMove = (e: MouseEvent) => {
+      tx = e.clientX; ty = e.clientY;
+      mousePos.current = { x: e.clientX, y: e.clientY };
+    };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => { cancelAnimationFrame(rafId); window.removeEventListener("mousemove", onMove); };
+  }, []);
+
+  // ── Correct `inGallery` on scroll ───────────────────────────────────────────
+  // onMouseEnter/Leave only fire on actual pointer movement, so scrolling the
+  // page under a stationary cursor (mouse wheel) never fires them — the
+  // gallery section can scroll out from under the pointer while `inGallery`
+  // stays stuck true, leaving the circle cursor floating over an unrelated
+  // section. Re-validate against the real cursor position on every scroll.
+  useEffect(() => {
+    const onScroll = () => {
+      const el = gallerySectionRef.current;
+      if (!el) return;
+      const { x, y } = mousePos.current;
+      const rect = el.getBoundingClientRect();
+      const inside = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+      setInGallery(inside);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const centerImgIdx = arrangement[2];
@@ -161,7 +187,7 @@ export default function AboutSection() {
       <div ref={cursorRef} className="pointer-events-none fixed z-[9999]"
         style={{ transform: "translate(-50%, -50%)", opacity: inGallery ? 1 : 0, transition: "opacity 0.2s ease" }}>
         <svg width="72" height="72" viewBox="0 0 88 88">
-          <circle cx="44" cy="44" r="42" fill="#7C5C3E" />
+          <circle cx="44" cy="44" r="42" fill="#0d0d0d" />
           <defs><path id="ctp" d="M 44,44 m -28,0 a 28,28 0 1,1 56,0 a 28,28 0 1,1 -56,0" /></defs>
           <text fill="white" fontSize="7.5" letterSpacing="3.4" fontFamily="Inter, sans-serif" fontWeight="500">
             <textPath href="#ctp">SELECT · SELECT · SELECT · SELECT ·</textPath>
@@ -193,39 +219,65 @@ export default function AboutSection() {
         )}
       </AnimatePresence>
 
-      {/* ── Single viewport section: text header + gallery ─────────────────── */}
-      <section
-        id="about"
-        className="w-full bg-white flex flex-col px-6 md:px-14"
-        style={{ height: "100svh", cursor: inGallery ? "none" : "auto" }}
-        onMouseEnter={() => setInGallery(true)}
-        onMouseLeave={() => setInGallery(false)}
-      >
-        {/* Text header */}
-        <div className="w-full pt-16 pb-8 shrink-0">
-          <div className="mx-auto text-center" style={{ maxWidth: "1280px" }}>
-            <p className="text-[10px] font-semibold tracking-[0.32em] uppercase text-gray-400 mb-6">
+      {/* ── Text header section ──────────────────────────────────────────────── */}
+      <section id="about" data-navbar-theme="light" className="w-full bg-white px-6 md:px-14">
+        <div className="w-full pt-20 pb-14">
+          <div
+            ref={headerRef}
+            className={`mx-auto text-center transition-all duration-700 ease-out ${
+              headerInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
+            style={{ maxWidth: "1280px" }}
+          >
+            <p className="text-[10px] font-semibold tracking-[0.12em] uppercase text-black mb-3">
               The United Travel Services Experience
             </p>
             <h2
-              className="font-bold uppercase text-gray-900 mb-6 mx-auto"
+              className="uppercase text-gray-900 mb-3 mx-auto"
               style={{
-                fontSize: "clamp(2.4rem, 5.5vw, 80px)",
-                lineHeight: "1.06",
-                letterSpacing: "-0.03em",
-                maxWidth: "22ch",
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 700,
+                fontSize: "46px",
+                lineHeight: "106%",
+                letterSpacing: "-0.04em",
+                textAlign: "center",
               }}
             >
               More Than a Ride.<br />A Better Way to Travel.
             </h2>
-            <p className="text-gray-500 mx-auto" style={{ fontSize: "clamp(0.9rem, 1.05vw, 15px)", lineHeight: "1.8", maxWidth: "64ch" }}>
-              Discover a more refined way to travel with professional chauffeurs, premium vehicles,
-              and thoughtfully coordinated journeys.
+            <p className="text-black mx-auto" style={{ fontSize: "14px", lineHeight: "1.6", maxWidth: "780px" }}>
+              Discover a more refined way to travel with professional chauffeurs, premium vehicles, and thoughtfully
+              coordinated journeys.
+            </p>
+            <p
+              className="text-black mx-auto mt-3"
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 400,
+                fontSize: "14px",
+                lineHeight: "170%",
+                letterSpacing: "normal",
+                textAlign: "center",
+                maxWidth: "980px",
+              }}
+            >
+              Every journey should feel effortless. From everyday business travel to special occasions and airport transfers, United<br />
+              Travel Services brings together comfort, reliability and personal service to make every mile count.
             </p>
           </div>
         </div>
+      </section>
 
-        {/* Gallery — fills remaining height */}
+      {/* ── Gallery section ───────────────────────────────────────────────────── */}
+      <section
+        ref={gallerySectionRef}
+        id="about-gallery"
+        data-navbar-theme="light"
+        className="w-full bg-white flex flex-col px-6 md:px-14"
+        style={{ height: "58svh", cursor: inGallery ? "none" : "auto" }}
+        onMouseEnter={() => setInGallery(true)}
+        onMouseLeave={() => setInGallery(false)}
+      >
         <div className="flex-1 min-h-0 flex flex-col pb-8" style={{ maxWidth: "1280px", width: "100%", margin: "0 auto" }}>
           <div ref={galleryRef} className="flex gap-3 flex-1 min-h-0">
 
@@ -235,8 +287,8 @@ export default function AboutSection() {
               <GallerySlot slot={1} imgIdx={arrangement[1]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yLeft} outerRef={setSlotRef(1)} />
             </div>
 
-            {/* Center */}
-            <div ref={centerRef} className="relative flex-1">
+            {/* Center — taller than the stacked side columns, bleeding past the row's top/bottom edge */}
+            <div ref={centerRef} className="relative flex-1 z-10" style={{ marginTop: "-28px", marginBottom: "-36px" }}>
               <AnimatePresence mode="sync">
                 <motion.div key={centerImgIdx} className="absolute inset-0 rounded-2xl overflow-hidden"
                   initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }}
@@ -278,7 +330,7 @@ export default function AboutSection() {
 
           </div>
 
-          <div className="flex justify-between items-center mt-5 shrink-0">
+          <div className="flex justify-between items-center mt-10 shrink-0">
             <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-gray-400">
               A considered experience. From the first moment.
             </p>

@@ -1,10 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import PillButtonContent from "@/components/ui/PillButtonContent";
 
 export default function HeroSection() {
   const imgDivRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [panelTilt, setPanelTilt] = useState({ rx: 0, ry: 0, mx: 50, my: 50 });
+
+  const handlePanelMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = panelRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width; // 0 → 1
+    const py = (e.clientY - rect.top) / rect.height; // 0 → 1
+
+    // Subtle tilt — max ~4deg, inverted so the panel leans toward the cursor
+    const maxTilt = 4;
+    const ry = (px - 0.5) * 2 * maxTilt;
+    const rx = (0.5 - py) * 2 * maxTilt;
+
+    setPanelTilt({ rx, ry, mx: px * 100, my: py * 100 });
+  };
+
+  const handlePanelMouseLeave = () => {
+    setPanelTilt({ rx: 0, ry: 0, mx: 50, my: 50 });
+  };
 
   useEffect(() => {
     const applyClip = () => {
@@ -12,21 +34,13 @@ export default function HeroSection() {
       if (!el) return;
       const W = el.offsetWidth;
       const H = el.offsetHeight;
-      const R = 44;      // concave depth — lower = shallower tip
-      const cr = 40;     // bottom corner radius
-      const k = 0.5523;  // bezier constant for corner quarter-circles
 
-      // Two smooth cubics — no junction point, no dip below image edge, no visible corner.
+      // Straight-edged rectangle — no corner radius, no concave bottom dip.
       const d = [
         `M 0,0`,
         `L ${W},0`,
-        `L ${W},${H - cr}`,
-        `C ${W},${H - cr + cr * k} ${W - cr + cr * k},${H} ${W - cr},${H}`,
-        `L ${W / 2 + R * 2.5},${H}`,
-        `C ${W / 2 + R * 1.8},${H} ${W / 2 + R * 0.5},${H - R} ${W / 2},${H - R}`,
-        `C ${W / 2 - R * 0.5},${H - R} ${W / 2 - R * 1.8},${H} ${W / 2 - R * 2.5},${H}`,
-        `L ${cr},${H}`,
-        `C ${cr - cr * k},${H} 0,${H - cr + cr * k} 0,${H - cr}`,
+        `L ${W},${H}`,
+        `L 0,${H}`,
         `Z`,
       ].join(" ");
 
@@ -41,46 +55,34 @@ export default function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative w-full bg-white flex flex-col"
-      style={{ minHeight: "100svh" }}
+      data-navbar-theme="dark"
+      className="relative w-full bg-white flex flex-col overflow-hidden"
+      style={{ height: "100svh" }}
     >
-      {/* Hero photo — clip-path draws rounded corners + smooth concave at bottom center */}
+      {/* Hero photo — fills the whole section; cropped from the bottom (object-top) so it never overflows the screen */}
       <div
         ref={imgDivRef}
-        className="absolute inset-x-0 top-0 z-0"
-        style={{ bottom: "44px" }}
+        className="absolute inset-0 z-0"
       >
         <Image
-          src="/hero_img.jpg"
+          src="/hero_img.png"
           alt="Executive chauffeur service"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover object-top"
           sizes="100vw"
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.5) 100%)",
+              "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0.7) 100%)",
           }}
         />
       </div>
 
-      {/* Dark button: bottom:16px → bottom edge 16px from section, centre at 44px = image div bottom */}
-      <div className="absolute z-20" style={{ bottom: "16px", left: "50%", transform: "translateX(-50%)" }}>
-        <button
-          aria-label="Scroll down"
-          className="w-14 h-14 rounded-full bg-black flex items-center justify-center hover:opacity-80 transition-opacity duration-200"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-      </div>
-
       {/* ── Hero content ── */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center text-white px-6 pt-20">
+      <div className="relative z-10 flex flex-col items-center text-center text-white px-6 pt-32">
         {/* Eye-brow label */}
         <p
           className="text-[11px] font-medium tracking-[0.3em] uppercase text-white/70 mb-8"
@@ -92,10 +94,11 @@ export default function HeroSection() {
         <h1
           className="font-bold uppercase text-white mb-7"
           style={{
-            fontSize: "clamp(1.75rem, 4vw, 64px)",
+            fontSize: "clamp(1.75rem, 4.5833vw, 88px)",
             lineHeight: "1.04",
             letterSpacing: "-0.04em",
-            maxWidth: "18ch",
+            maxWidth: "83.3333vw",
+            textAlign: "center",
           }}
         >
           Your Journey Deserves More Than a Ride.
@@ -103,8 +106,8 @@ export default function HeroSection() {
 
         {/* Subtitle — Figma: 22px / 400 / line-height 150% / tracking 0% */}
         <p
-          className="text-white/75 mb-10"
-          style={{ fontSize: "clamp(0.875rem, 1.1vw, 17px)", lineHeight: "1.5", maxWidth: "52ch" }}
+          className="text-white/90 font-medium mb-10 whitespace-nowrap"
+          style={{ fontSize: "clamp(0.75rem, 1.1vw, 17px)", lineHeight: "1.5" }}
         >
           Premium Chauffeur Services for Business, Airport Transfers &amp; Luxury Travel.
         </p>
@@ -119,20 +122,52 @@ export default function HeroSection() {
       </div>
 
       {/* ── Booking bar — pb-24 keeps its bottom edge above the circle zone (circle: bottom 36–84px) ── */}
-      <div className="relative z-10 w-full px-4 md:px-10 pb-24">
+      <div className="relative z-10 w-full px-4 md:px-10 pb-8 mt-auto flex-shrink-0">
         {/* "PLAN YOUR NEXT JOURNEY" label above bar */}
-        <div className="mx-auto mb-3" style={{ maxWidth: "1280px" }}>
+        <div className="mx-auto mb-3" style={{ maxWidth: "91.6667vw", paddingLeft: "1.4583vw" }}>
           <span className="text-[10px] font-semibold tracking-[0.28em] uppercase text-white/60">
             Plan Your Next Journey
           </span>
         </div>
 
         <div
-          className="mx-auto bg-white rounded-3xl px-6 py-5 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-0"
-          style={{ maxWidth: "1280px", boxShadow: "0 8px 40px rgba(0,0,0,0.12)" }}
+          ref={panelRef}
+          onMouseMove={handlePanelMouseMove}
+          onMouseLeave={handlePanelMouseLeave}
+          className="relative mx-auto flex flex-col md:flex-row items-start md:items-center gap-[1.1458vw] overflow-hidden"
+          style={{
+            maxWidth: "91.6667vw",
+            minHeight: "5.2083vw",
+            borderRadius: "1.25vw",
+            padding: "0.9375vw 1.4583vw",
+            backgroundColor: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.4)",
+            backdropFilter: "blur(28px) saturate(180%)",
+            WebkitBackdropFilter: "blur(28px) saturate(180%)",
+            boxShadow:
+              "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 40px rgba(255,255,255,0.05)",
+            transform: `perspective(1000px) rotateX(${panelTilt.rx}deg) rotateY(${panelTilt.ry}deg)`,
+            transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
+            transformStyle: "preserve-3d",
+          }}
         >
-          {/* Fields row */}
-          <div className="w-full flex flex-col md:flex-row md:items-center md:divide-x divide-gray-200 gap-4 md:gap-0">
+          {/* Cursor-following glare — glass sheen */}
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              background: `radial-gradient(circle 280px at ${panelTilt.mx}% ${panelTilt.my}%, rgba(255,255,255,0.18), transparent 70%)`,
+              transition: "background 0.25s cubic-bezier(0.4,0,0.2,1)",
+            }}
+          />
+
+          {/* Fields row — shifts slightly opposite the tilt for a layered parallax feel */}
+          <div
+            className="relative z-10 w-full flex flex-col md:flex-row md:items-center md:divide-x divide-white/20 gap-4 md:gap-0"
+            style={{
+              transform: `translate3d(${panelTilt.ry * 0.8}px, ${-panelTilt.rx * 0.8}px, 0)`,
+              transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
+            }}
+          >
             {/* Pickup Location */}
             <BookingField
               icon={<PickupIcon />}
@@ -176,11 +211,10 @@ export default function HeroSection() {
             {/* Find Your Ride CTA */}
             <div className="md:pl-6 flex-shrink-0">
               <button
-                className="inline-flex items-center gap-2 text-white text-[11px] font-semibold tracking-[0.12em] uppercase px-6 py-4 rounded-full whitespace-nowrap hover:opacity-90 transition-opacity duration-200"
-                style={{ background: "#111111", minWidth: "168px" }}
+                className="group relative overflow-hidden inline-flex items-center gap-2 text-black text-[11px] font-semibold tracking-[0.12em] uppercase px-6 py-4 rounded-full whitespace-nowrap border-[1.5px] border-transparent transition-all duration-500 hover:border-white/50 hover:shadow-[0_0_16px_rgba(255,255,255,0.25)]"
+                style={{ background: "#ffffff", minWidth: "168px" }}
               >
-                Find Your Ride
-                <ArrowIcon />
+                <PillButtonContent fill="black">Find Your Ride</PillButtonContent>
               </button>
             </div>
           </div>
@@ -208,12 +242,12 @@ function BookingField({
 }) {
   return (
     <div className={`flex items-start gap-3 flex-1 min-w-0 ${className}`}>
-      <span className="mt-1 flex-shrink-0 text-gray-400">{icon}</span>
+      <span className="mt-1 flex-shrink-0 text-white/70">{icon}</span>
       <div className="flex flex-col min-w-0">
-        <span className="text-[10px] font-semibold text-gray-400 tracking-wide mb-0.5">
+        <span className="text-[10px] font-semibold text-white/60 tracking-wide mb-0.5">
           {label}
         </span>
-        <span className="text-[13px] font-medium text-gray-800 truncate">
+        <span className="text-[13px] font-medium text-white truncate">
           {placeholder}
         </span>
       </div>
@@ -263,15 +297,6 @@ function CarIcon() {
       <path d="M5 17H3v-5l2-5h14l2 5v5h-2" />
       <circle cx="7.5" cy="17.5" r="1.5" />
       <circle cx="16.5" cy="17.5" r="1.5" />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M7 17L17 7" />
-      <path d="M7 7h10v10" />
     </svg>
   );
 }

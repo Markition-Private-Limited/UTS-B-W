@@ -48,8 +48,6 @@ Two people can never conflict as long as they don't edit the same file at the sa
 | 6 | Fleet (tabs + car cards) | `src/components/sections/FleetSection.tsx` |
 | 7 | The Difference (image mosaic + checklist) | `src/components/sections/DifferenceSection.tsx` |
 | 8 | Testimonials (4 review cards) | `src/components/sections/TestimonialsSection.tsx` |
-| 9 | Luxury Chauffeur Service (dark card + Bentley photo) — built, placed above App Download | `src/components/sections/LuxuryServiceSection.tsx` |
-| 10 | App Download (phone mockup + badges) | `src/components/sections/AppSection.tsx` |
 | 11 | Final CTA ("Your Journey. Our Priority.") | `src/components/sections/FinalCtaSection.tsx` |
 | — | Footer (5-col links + watermark) | `src/components/layout/Footer.tsx` |
 

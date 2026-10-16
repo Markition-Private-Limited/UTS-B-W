@@ -21,7 +21,10 @@
 
 "use client";
 
+import { useRef } from "react";
+import { useScroll, useTransform } from "framer-motion";
 import ParallaxImage from "@/components/ui/ParallaxImage";
+import PillButtonContent from "@/components/ui/PillButtonContent";
 import { useInView } from "@/hooks/useInView";
 
 const points = [
@@ -63,29 +66,44 @@ const points = [
 export default function DifferenceSection() {
   const { ref, isInView } = useInView<HTMLElement>();
 
+  const mosaicRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: mosaicRef, offset: ["start end", "end start"] });
+  // Each tile drifts at a different rate/direction for a layered parallax feel
+  const yPortrait = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const yLuggage  = useTransform(scrollYProgress, [0, 1], ["10%", "-10%"]);
+  const yCabin    = useTransform(scrollYProgress, [0, 1], ["12%", "-12%"]);
+  const yInterior = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+
   return (
     <section
       id="difference"
       ref={ref}
-      className={`w-full bg-white py-[6.25vw] px-[4.1667vw] transition-all duration-700 ease-out ${
-        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+      data-navbar-theme="light"
+      className="w-full bg-white pt-[6.25vw] pb-[9.375vw] px-[4.1667vw]"
     >
       <div className="max-w-[1920px] mx-auto grid md:grid-cols-2 gap-[4.1667vw] items-center">
 
-        {/* LEFT: Image mosaic */}
-        <div className="grid grid-cols-2 gap-[1.25vw] h-[38.5417vw]">
+        {/* LEFT: Image mosaic — each tile rises/fades in with a stagger, and drifts with scroll */}
+        <div ref={mosaicRef} className="grid grid-cols-2 gap-[1.25vw] h-[38.5417vw]">
           {/* Left column: portrait (tall) + luggage (short) */}
           <div className="flex flex-col gap-[1.25vw] h-full">
             <ParallaxImage
               src="/images/why-choose-us/Chauffeur portrait.png"
               alt="Chauffeur standing beside the vehicle"
-              className="rounded-[1.25vw] flex-[1.68]"
+              parallaxY={yPortrait}
+              className={`rounded-[1.25vw] flex-[1.68] transition-all duration-700 ease-out ${
+                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              }`}
+              style={{ transitionDelay: isInView ? "0ms" : "0ms" }}
             />
             <ParallaxImage
               src="/images/why-choose-us/Luggage assistance.png"
               alt="Chauffeur assisting with luggage"
-              className="rounded-[1.25vw] flex-[1]"
+              parallaxY={yLuggage}
+              className={`rounded-[1.25vw] flex-[1] transition-all duration-700 ease-out ${
+                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              }`}
+              style={{ transitionDelay: isInView ? "120ms" : "0ms" }}
             />
           </div>
 
@@ -94,63 +112,80 @@ export default function DifferenceSection() {
             <ParallaxImage
               src="/images/why-choose-us/Leather passenger cabin.png"
               alt="Leather passenger cabin interior"
-              className="rounded-[1.25vw] flex-[1]"
+              parallaxY={yCabin}
+              className={`rounded-[1.25vw] flex-[1] transition-all duration-700 ease-out ${
+                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              }`}
+              style={{ transitionDelay: isInView ? "240ms" : "0ms" }}
             />
             <ParallaxImage
               src="/images/why-choose-us/Refined interior details.png"
               alt="Refined interior leather and door details"
-              className="rounded-[1.25vw] flex-[1.32]"
+              parallaxY={yInterior}
+              className={`rounded-[1.25vw] flex-[1.32] transition-all duration-700 ease-out ${
+                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              }`}
+              style={{ transitionDelay: isInView ? "360ms" : "0ms" }}
             />
           </div>
         </div>
 
-        {/* RIGHT: Content */}
+        {/* RIGHT: Content — text block rises/fades, then checklist items stagger in */}
         <div>
-          <p
-            className="uppercase text-gray-500 mb-[1.0417vw]"
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 600,
-              fontSize: "0.6771vw",
-              lineHeight: "1",
-              letterSpacing: "0.18em",
-            }}
+          <div
+            className={`transition-all duration-700 ease-out ${
+              isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
           >
-            The Art of Personal Service
-          </p>
+            <p
+              className="uppercase text-gray-500 mb-[1.0417vw]"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 600,
+                fontSize: "0.6771vw",
+                lineHeight: "1",
+                letterSpacing: "0.18em",
+              }}
+            >
+              The Art of Personal Service
+            </p>
 
-          <h2
-            className="uppercase text-black mb-[1.25vw]"
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 800,
-              fontSize: "3.3333vw",
-              lineHeight: "1.06",
-              letterSpacing: "-0.03em",
-            }}
-          >
-            The Difference Is In<br />Every Detail.
-          </h2>
+            <h2
+              className="uppercase text-black mb-[1.25vw]"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 800,
+                fontSize: "3.3333vw",
+                lineHeight: "1.06",
+                letterSpacing: "-0.03em",
+              }}
+            >
+              The Difference Is In<br />Every Detail.
+            </h2>
 
-          <p
-            className="text-gray-600 mb-[1.6667vw] max-w-[40vw]"
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 400,
-              fontSize: "0.9375vw",
-              lineHeight: "1.6",
-              letterSpacing: "0",
-            }}
-          >
-            From the presentation of our vehicles to the professionalism of our chauffeurs, every
-            detail contributes to a more comfortable and considered travel experience.
-          </p>
+            <p
+              className="text-gray-600 mb-[1.6667vw] max-w-[40vw]"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 400,
+                fontSize: "0.9375vw",
+                lineHeight: "1.6",
+                letterSpacing: "0",
+              }}
+            >
+              From the presentation of our vehicles to the professionalism of our chauffeurs, every
+              detail contributes to a more comfortable and considered travel experience.
+            </p>
+          </div>
 
           <ul className="mb-[1.6667vw]">
             {points.map((point, i) => (
               <li
                 key={i}
-                className={`flex items-start gap-[0.8333vw] py-[1.1458vw] ${i !== points.length - 1 ? "border-b border-gray-200" : "border-b border-gray-200"}`}
+                className={`flex items-start gap-[0.8333vw] py-[1.1458vw] border-b border-gray-200 transition-all duration-700 ease-out ${
+                  isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                }`}
+                style={{ transitionDelay: isInView ? `${220 + i * 120}ms` : "0ms" }}
               >
                 <span className="text-black shrink-0 mt-[0.1vw]">{point.icon}</span>
                 <div>
@@ -183,19 +218,22 @@ export default function DifferenceSection() {
 
           <a
             href="#about"
-            className="inline-flex items-center justify-between gap-[1.25vw] bg-black text-white uppercase px-[2.0833vw] py-[1.1458vw] rounded-full hover:bg-gray-800 transition-colors"
+            className={`group relative overflow-hidden inline-flex items-center justify-between gap-[1.25vw] bg-black text-white uppercase px-[2.0833vw] py-[1.1458vw] rounded-full border-[1.5px] border-transparent hover:border-black/30 hover:shadow-[0_0_16px_rgba(0,0,0,0.2)] ${
+              isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
             style={{
               fontFamily: "'Inter', sans-serif",
               fontWeight: 700,
               fontSize: "0.6771vw",
               lineHeight: "1",
               letterSpacing: "0.05em",
+              transitionProperty: "opacity, transform, border-color, box-shadow",
+              transitionDuration: "0.7s, 0.7s, 0.5s, 0.5s",
+              transitionTimingFunction: "ease-out, ease-out, ease, ease",
+              transitionDelay: isInView ? "600ms, 600ms, 0ms, 0ms" : "0ms, 0ms, 0ms, 0ms",
             }}
           >
-            Discover Our Story
-            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-              <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <PillButtonContent fill="white">Discover Our Story</PillButtonContent>
           </a>
         </div>
 

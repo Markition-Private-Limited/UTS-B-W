@@ -16,6 +16,11 @@
    font-family: Inter | weight: 400 | size: 17px | line-height: 170% | letter-spacing: 0% */
 html {
   font-size: 17px;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {

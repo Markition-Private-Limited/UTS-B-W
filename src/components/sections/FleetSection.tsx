@@ -23,6 +23,7 @@
 
 import { useState } from "react";
 import { useInView } from "@/hooks/useInView";
+import PillButtonContent from "@/components/ui/PillButtonContent";
 
 const cars = [
   {
@@ -60,6 +61,7 @@ export default function FleetSection() {
     <section
       id="fleet"
       ref={ref}
+      data-navbar-theme="light"
       className={`w-full bg-white py-[6.25vw] px-[4.1667vw] transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
@@ -135,10 +137,16 @@ export default function FleetSection() {
           })}
         </div>
 
-        {/* Car Cards Grid */}
+        {/* Car Cards Grid — each card rises/fades in with a stagger */}
         <div className="grid md:grid-cols-3 gap-[1.25vw]">
-          {visibleCars.map((car) => (
-            <div key={car.id} className="rounded-[1.25vw] overflow-hidden">
+          {visibleCars.map((car, i) => (
+            <div
+              key={car.id}
+              className={`rounded-[1.25vw] overflow-hidden transition-all duration-700 ease-out ${
+                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              }`}
+              style={{ transitionDelay: isInView ? `${i * 130}ms` : "0ms" }}
+            >
               <div className="h-[16.25vw] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -178,7 +186,7 @@ export default function FleetSection() {
                 <div className="flex items-center justify-between">
                   <a
                     href="#contact"
-                    className="inline-flex items-center gap-[0.3125vw] bg-black text-white uppercase px-[1.0417vw] py-[0.5729vw] rounded-full hover:bg-gray-800 transition-colors"
+                    className="group relative overflow-hidden inline-flex items-center gap-[0.3125vw] bg-black text-white uppercase px-[1.0417vw] py-[0.5729vw] rounded-full border-[1.5px] border-transparent transition-all duration-500 hover:border-black/30 hover:shadow-[0_0_16px_rgba(0,0,0,0.2)]"
                     style={{
                       fontFamily: "'Inter', sans-serif",
                       fontWeight: 700,
@@ -187,10 +195,7 @@ export default function FleetSection() {
                       letterSpacing: "0.05em",
                     }}
                   >
-                    Book This Class
-                    <svg width="8" height="8" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                      <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <PillButtonContent fill="white">Book This Class</PillButtonContent>
                   </a>
 
                   <a

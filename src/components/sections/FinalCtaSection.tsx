@@ -20,6 +20,7 @@
 "use client";
 
 import { useInView } from "@/hooks/useInView";
+import PillButtonContent from "@/components/ui/PillButtonContent";
 
 export default function FinalCtaSection() {
   const { ref, isInView } = useInView<HTMLElement>();
@@ -28,27 +29,35 @@ export default function FinalCtaSection() {
     <section
       id="contact"
       ref={ref}
-      className={`w-full bg-white px-0 md:px-[4.1667vw] pb-[4.1667vw] transition-all duration-700 ease-out ${
+      data-navbar-theme="light"
+      className={`w-full bg-white px-0 md:px-[4.1667vw] pt-[4.1667vw] pb-[4.1667vw] transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
       <div
-        className="relative w-full min-h-[480px] md:h-[38.5417vw] rounded-[1.6667vw] overflow-hidden flex items-center justify-center text-center bg-gray-800 bg-cover bg-center p-6 md:p-[4.1667vw]"
+        data-navbar-theme="dark"
+        className="relative w-full min-h-[480px] md:h-[38.5417vw] rounded-[1.6667vw] overflow-hidden flex items-center bg-gray-800 bg-cover bg-center p-6 md:p-[4.1667vw]"
         style={{ backgroundImage: "url('/images/Cinematic photograph.png')" }}
       >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/55" />
+        {/* Readability gradient: light, fading left-to-right behind the text */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(235,235,235,0.6) 0%, rgba(235,235,235,0.45) 35%, rgba(235,235,235,0.15) 65%, rgba(235,235,235,0) 100%)",
+          }}
+        />
 
-        <div className="relative z-10 max-w-3xl md:max-w-[40vw] mx-auto text-white">
+        <div className="relative z-10 max-w-3xl md:max-w-[40vw] text-black pl-[2.0833vw]">
           <p
-            className="uppercase text-[#E3E3E3]/80 mb-[1.0417vw]"
+            className="uppercase text-black mb-[1.0417vw]"
             style={{
               fontFamily: "'Inter', sans-serif",
-              fontWeight: 500,
+              fontWeight: 600,
               fontSize: "0.6771vw",
               lineHeight: "1",
               letterSpacing: "0.18em",
-              textAlign: "center",
+              textAlign: "left",
             }}
           >
             The Next Journey Starts With You
@@ -62,30 +71,29 @@ export default function FinalCtaSection() {
               fontSize: "3.3333vw",
               lineHeight: "1.06",
               letterSpacing: "-0.04em",
-              textAlign: "center",
+              textAlign: "left",
             }}
           >
             Your Journey.<br />Our Priority.
           </h2>
 
           <p
-            className="text-[#E3E3E3]/80 mb-[2.0833vw] max-w-xl mx-auto"
+            className="text-black mb-[2.0833vw] max-w-xl"
             style={{
               fontFamily: "'Inter', sans-serif",
-              fontWeight: 400,
+              fontWeight: 500,
               fontSize: "1.0417vw",
               lineHeight: "1.6",
               letterSpacing: "0",
-              textAlign: "center",
+              textAlign: "left",
             }}
           >
-            Make your next journey more comfortable with professional chauffeur services
-            tailored to your travel needs.
+            Make your next journey more comfortable with professional<br />chauffeur services tailored to your travel needs.
           </p>
 
           <a
             href="#hero"
-            className="inline-flex items-center justify-between gap-[1.25vw] bg-white text-black uppercase px-[2.0833vw] py-[1.1458vw] rounded-full hover:bg-gray-100 transition-colors"
+            className="group relative overflow-hidden inline-flex items-center justify-between gap-[1.25vw] bg-black text-white uppercase px-[2.0833vw] py-[1.1458vw] rounded-full border-[1.5px] border-transparent transition-all duration-500 hover:border-black/30 hover:shadow-[0_0_16px_rgba(0,0,0,0.2)]"
             style={{
               fontFamily: "'Inter', sans-serif",
               fontWeight: 700,
@@ -94,10 +102,7 @@ export default function FinalCtaSection() {
               letterSpacing: "0.05em",
             }}
           >
-            Book Your Chauffeur
-            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-              <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <PillButtonContent fill="white">Book Your Chauffeur</PillButtonContent>
           </a>
         </div>
       </div>
