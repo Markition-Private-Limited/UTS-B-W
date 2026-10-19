@@ -115,9 +115,19 @@ export default function HeroSection() {
         {/* Explore Fleet link */}
         <a
           href="#fleet"
-          className="text-[11px] font-medium tracking-[0.2em] uppercase text-white underline underline-offset-4 decoration-white/50 hover:decoration-white transition-colors duration-200"
+          className="group inline-flex items-center gap-[0.4em] text-[11px] font-medium tracking-[0.2em] uppercase text-white underline underline-offset-4 decoration-white/50 hover:decoration-white transition-colors duration-200"
         >
           Explore Our Fleet
+          <svg
+            width="9"
+            height="9"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          >
+            <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </a>
       </div>
 

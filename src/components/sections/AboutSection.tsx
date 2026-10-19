@@ -245,7 +245,7 @@ export default function AboutSection() {
             >
               More Than a Ride.<br />A Better Way to Travel.
             </h2>
-            <p className="text-black mx-auto" style={{ fontSize: "14px", lineHeight: "1.6", maxWidth: "780px" }}>
+            <p className="text-black mx-auto whitespace-nowrap" style={{ fontSize: "14px", lineHeight: "1.6" }}>
               Discover a more refined way to travel with professional chauffeurs, premium vehicles, and thoughtfully
               coordinated journeys.
             </p>
