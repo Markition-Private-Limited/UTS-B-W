@@ -190,9 +190,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── Divider ── */}
-        <div className="border-t border-[#E3E3E3]/10" />
-
         {/* ── Copyright bar ── */}
         <div className="pt-[1.0417vw] flex flex-col md:flex-row justify-between items-center gap-[0.625vw] text-[#E3E3E3]/70" style={{ fontWeight: 400, fontSize: "0.8333vw" }}>
           <p>© 2026 United Travel Services. All rights reserved.</p>
