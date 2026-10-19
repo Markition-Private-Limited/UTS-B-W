@@ -153,6 +153,7 @@ export default function FleetSection() {
                   src={car.image}
                   alt={car.name}
                   className="w-full h-full object-cover select-none pointer-events-none"
+                  style={car.id === "first-class" ? { transform: "scaleX(-1)" } : undefined}
                   draggable={false}
                 />
               </div>
