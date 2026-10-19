@@ -233,7 +233,9 @@ const ScrollStack = ({
         const transform =
           depth < 0.0005
             ? ""
-            : `perspective(1200px) rotateX(${tilt.toFixed(2)}deg) rotate(${turn.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
+            : tilt === 0 && turn === 0
+              ? `scale(${scale.toFixed(4)})`
+              : `perspective(1200px) rotateX(${tilt.toFixed(2)}deg) rotate(${turn.toFixed(2)}deg) scale(${scale.toFixed(4)})`;
         write(`transform${i}`, transform, (value: string) => {
           card.style.transform = value;
         });

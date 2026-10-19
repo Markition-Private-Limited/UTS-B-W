@@ -71,7 +71,8 @@ export default function AboutSection() {
   const yCenter = useTransform(scrollYProgress, [0, 1], ["16%", "-16%"]);
   const yRight  = useTransform(scrollYProgress, [0, 1], ["6%",  "-6%"]);
 
-  const isInView = useInView(galleryRef, { once: true, margin: "-15% 0px" });
+  const isInView = useInView(gallerySectionRef, { once: false, amount: 0.6 });
+  const hasEnteredRef = useRef(false);
 
   const swapWithCenter = useCallback((slot: number) => {
     setArrangement(prev => {
@@ -120,26 +121,32 @@ export default function AboutSection() {
     }, 2400);
   }, [triggerAutoSwap]);
 
-  // ── Auto-swap on section enter ────────────────────────────────────────────
+  // ── Auto-swap: only while section is visible ─────────────────────────────
+  // triggerAutoSwap / restartInterval are useCallback with stable deps — they
+  // never change identity, so listing them here is safe and keeps hook counts constant.
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView) {
+      if (intervalId.current) { clearInterval(intervalId.current); intervalId.current = null; }
+      return;
+    }
 
-    const t1 = setTimeout(() => {
-      triggerAutoSwap(0);
+    if (!hasEnteredRef.current) {
+      hasEnteredRef.current = true;
+      let t2: ReturnType<typeof setTimeout>;
+      const t1 = setTimeout(() => {
+        triggerAutoSwap(0);
+        t2 = setTimeout(() => restartInterval(), 700);
+      }, 700);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        if (intervalId.current) clearInterval(intervalId.current);
+      };
+    }
 
-      const t2 = setTimeout(() => {
-        restartInterval();
-      }, 700); // start cycle after first swap lands
-
-      return () => clearTimeout(t2);
-    }, 700);
-
-    return () => {
-      clearTimeout(t1);
-      if (intervalId.current) clearInterval(intervalId.current);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInView]);
+    restartInterval();
+    return () => { if (intervalId.current) clearInterval(intervalId.current); };
+  }, [isInView, triggerAutoSwap, restartInterval]);
 
   // ── Smooth cursor lag ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -282,7 +289,7 @@ export default function AboutSection() {
           <div ref={galleryRef} className="flex gap-3 flex-1 min-h-0">
 
             {/* Left */}
-            <div className="flex flex-col gap-3" style={{ width: "25%" }}>
+            <div className="flex flex-col gap-3" style={{ width: "20%" }}>
               <GallerySlot slot={0} imgIdx={arrangement[0]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yLeft} outerRef={setSlotRef(0)} />
               <GallerySlot slot={1} imgIdx={arrangement[1]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yLeft} outerRef={setSlotRef(1)} />
             </div>
@@ -323,14 +330,14 @@ export default function AboutSection() {
             </div>
 
             {/* Right */}
-            <div className="flex flex-col gap-3" style={{ width: "25%" }}>
+            <div className="flex flex-col gap-3" style={{ width: "20%" }}>
               <GallerySlot slot={3} imgIdx={arrangement[3]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yRight} outerRef={setSlotRef(3)} />
               <GallerySlot slot={4} imgIdx={arrangement[4]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yRight} outerRef={setSlotRef(4)} />
             </div>
 
           </div>
 
-          <div className="flex justify-between items-center mt-10 shrink-0" style={{ transform: "translateY(-22px)" }}>
+          <div className="flex justify-between items-center mt-10 shrink-0" style={{ transform: "translateY(0px)" }}>
             <p className="text-[10px] font-bold tracking-[0.03em] uppercase text-black" style={{ wordSpacing: "normal" }}>
               A considered experience. From the first moment.
             </p>

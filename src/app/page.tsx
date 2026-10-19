@@ -30,10 +30,9 @@ export default function HomePage() {
         <AboutSection />
         <FeaturesSection />
         <AirportTransfersSection />
-        <CityStatsSection />
-
         {/* ── DEV 2 SECTIONS ── */}
         <FleetSection />
+        <CityStatsSection />
         <DifferenceSection />
         <TestimonialsSection />
         <FinalCtaSection />

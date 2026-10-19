@@ -107,10 +107,21 @@ export default function Navbar() {
         {/* CTA Button */}
         <a
           href="#booking"
-          className="group relative overflow-hidden hidden md:inline-flex items-center gap-6 text-[10px] font-medium tracking-[0.18em] uppercase px-6 py-3 rounded-full border-[1.5px] border-transparent transition-all duration-500 hover:border-white/50 hover:shadow-[0_0_16px_rgba(255,255,255,0.25)]"
-          style={{ background: "#F9F9F9", color: "#1a1a1a", minWidth: "262px", justifyContent: "center" }}
+          className={[
+            "group relative overflow-hidden hidden md:inline-flex items-center gap-6 text-[10px] font-medium tracking-[0.18em] uppercase px-6 py-3 rounded-full border-[1.5px] border-transparent transition-all duration-500",
+            isDark
+              ? "hover:border-white/50 hover:shadow-[0_0_16px_rgba(255,255,255,0.25)]"
+              : "hover:border-black/30 hover:shadow-[0_0_16px_rgba(0,0,0,0.15)]",
+          ].join(" ")}
+          style={{
+            background: isDark ? "#F9F9F9" : "#1a1a1a",
+            color: isDark ? "#1a1a1a" : "#F9F9F9",
+            minWidth: "262px",
+            justifyContent: "center",
+            transition: "background 500ms, color 500ms",
+          }}
         >
-          <PillButtonContent fill="black">Book Your Chauffeur</PillButtonContent>
+          <PillButtonContent fill={isDark ? "black" : "white"}>Book Your Chauffeur</PillButtonContent>
         </a>
 
         {/* Mobile hamburger placeholder */}
