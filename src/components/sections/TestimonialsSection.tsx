@@ -59,7 +59,7 @@ const testimonials = [
   },
 ];
 
-const AUTOPLAY_MS = 5000;
+const AUTOPLAY_MS = 3000;
 
 function mod(n: number, m: number) {
   return ((n % m) + m) % m;
@@ -121,6 +121,30 @@ export default function TestimonialsSection() {
         initial: (dir: number) => ({ rotateY: dir > 0 ? 90 : -90, opacity: 0 }),
         animate: { rotateY: 0, opacity: 1 },
         exit: (dir: number) => ({ rotateY: dir > 0 ? -90 : 90, opacity: 0 }),
+      };
+
+  // Peek images (prev/next) — a cinematic slide + scale + blur crossfade,
+  // direction-aware so they glide the same way the carousel is moving.
+  const peekVariants = prefersReducedMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: (dir: number) => ({
+          opacity: 0,
+          scale: 1.15,
+          x: dir > 0 ? "18%" : "-18%",
+          filter: "blur(10px)",
+        }),
+        animate: { opacity: 1, scale: 1, x: "0%", filter: "blur(0px)" },
+        exit: (dir: number) => ({
+          opacity: 0,
+          scale: 0.88,
+          x: dir > 0 ? "-18%" : "18%",
+          filter: "blur(10px)",
+        }),
       };
 
   return (
@@ -189,18 +213,20 @@ export default function TestimonialsSection() {
             </button>
 
             <div className="w-[18.2292vw] h-[14.0625vw] rounded-[1.25vw] overflow-hidden self-end mt-auto ml-auto">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" custom={direction}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <motion.img
                   key={prev.id}
                   src={prev.image}
                   alt={prev.alt}
-                  className="w-full h-full object-cover select-none pointer-events-none"
+                  className="w-full h-full object-cover object-top select-none pointer-events-none"
                   draggable={false}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  custom={direction}
+                  variants={peekVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
                 />
               </AnimatePresence>
             </div>
@@ -229,7 +255,7 @@ export default function TestimonialsSection() {
                     <img
                       src={active.image}
                       alt={active.alt}
-                      className="w-full h-full object-cover select-none pointer-events-none"
+                      className="w-full h-full object-cover object-top select-none pointer-events-none"
                       draggable={false}
                     />
                   </div>
@@ -282,18 +308,20 @@ export default function TestimonialsSection() {
           {/* Right box */}
           <div className="relative hidden md:flex flex-col justify-start">
             <div className="w-[18.2292vw] h-[14.0625vw] rounded-[1.25vw] overflow-hidden self-start mr-auto">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" custom={direction}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <motion.img
                   key={next.id}
                   src={next.image}
                   alt={next.alt}
-                  className="w-full h-full object-cover select-none pointer-events-none"
+                  className="w-full h-full object-cover object-top select-none pointer-events-none"
                   draggable={false}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  custom={direction}
+                  variants={peekVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
                 />
               </AnimatePresence>
             </div>
