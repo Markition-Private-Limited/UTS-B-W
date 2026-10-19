@@ -245,12 +245,12 @@ export default function AboutSection() {
             >
               More Than a Ride.<br />A Better Way to Travel.
             </h2>
-            <p className="text-black mx-auto whitespace-nowrap" style={{ fontSize: "14px", lineHeight: "1.6" }}>
+            <p className="text-black mx-auto whitespace-nowrap" style={{ fontSize: "14px", lineHeight: "170%" }}>
               Discover a more refined way to travel with professional chauffeurs, premium vehicles, and thoughtfully
               coordinated journeys.
             </p>
             <p
-              className="text-black mx-auto mt-3"
+              className="text-black mx-auto mt-0"
               style={{
                 fontFamily: "Inter, sans-serif",
                 fontWeight: 400,
@@ -330,11 +330,11 @@ export default function AboutSection() {
 
           </div>
 
-          <div className="flex justify-between items-center mt-10 shrink-0">
-            <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-gray-400">
+          <div className="flex justify-between items-center mt-10 shrink-0" style={{ transform: "translateY(-22px)" }}>
+            <p className="text-[10px] font-bold tracking-[0.03em] uppercase text-black" style={{ wordSpacing: "normal" }}>
               A considered experience. From the first moment.
             </p>
-            <p className="text-[11px] text-gray-400 font-light italic">
+            <p className="text-[11px] tracking-[0.03em] text-black font-bold italic" style={{ wordSpacing: "normal" }}>
               People. Presence. Personal attention.
             </p>
           </div>
