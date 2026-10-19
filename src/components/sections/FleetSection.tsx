@@ -24,6 +24,7 @@
 import { useState } from "react";
 import { useInView } from "@/hooks/useInView";
 import PillButtonContent from "@/components/ui/PillButtonContent";
+import DotsNav from "@/components/ui/DotsNav";
 
 const cars = [
   {
@@ -220,6 +221,8 @@ export default function FleetSection() {
             </div>
           ))}
         </div>
+
+        <DotsNav count={visibleCars.length} activeIndex={0} className="mt-[2.0833vw]" />
 
       </div>
     </section>

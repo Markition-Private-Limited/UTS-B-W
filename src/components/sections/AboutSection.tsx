@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import type { PanInfo, MotionValue } from "framer-motion";
 import { useInView as useScrollReveal } from "@/hooks/useInView";
+import DotsNav from "@/components/ui/DotsNav";
 
 // ── Images + per-image overlay text ──────────────────────────────────────────
 const IMAGES = [
@@ -329,6 +330,8 @@ export default function AboutSection() {
             </div>
 
           </div>
+
+          <DotsNav count={5} activeIndex={0} className="mt-6 shrink-0" />
 
           <div className="flex justify-between items-center mt-10 shrink-0">
             <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-gray-400">
