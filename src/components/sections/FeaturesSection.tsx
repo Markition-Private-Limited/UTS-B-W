@@ -430,6 +430,20 @@ export default function FeaturesSection() {
   // others. [totalLength, lengthToIcon1, lengthToIcon2, lengthToIcon3].
   const [waveLengths, setWaveLengths] = useState<number[] | null>(null);
 
+  // Below `md` the 1920px-baseline wave layout (everything positioned via
+  // vw() against a fixed px design) has no room to reflow — text, dots and
+  // icons all keep their desktop proportions and end up overlapping or
+  // hugging the screen edges instead of just scaling down. Swap to a plain
+  // stacked list on small screens instead of trying to shrink the wave.
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   useEffect(() => {
     const path = waveRef.current;
     if (!path) return;
@@ -473,20 +487,22 @@ export default function FeaturesSection() {
   }, []);
 
   return (
-    <div ref={wrapperRef} style={{ height: "400vh" }}>
+    <div ref={wrapperRef} style={{ height: isMobile ? "auto" : "400vh" }}>
     <section
       id="features"
       data-navbar-theme="light"
-      className="w-full sticky top-0 h-screen overflow-hidden flex flex-col justify-center"
-      style={{ backgroundColor: "#fafafa", paddingTop: "90px" }}
+      className={`w-full overflow-hidden flex flex-col justify-center ${
+        isMobile ? "" : "sticky top-0 h-screen"
+      }`}
+      style={{ backgroundColor: "#fafafa", paddingTop: "48px", paddingBottom: "96px" }}
     >
       {/* Header */}
-      <div className="text-center" style={{ padding: "0 4vw" }}>
+      <div className="text-center px-6" style={{ padding: isMobile ? "0 24px" : "0 4vw" }}>
         <p
           className="uppercase"
           style={{
             fontFamily: "Inter, sans-serif", fontWeight: 500,
-            fontSize: "0.6771vw", letterSpacing: "0.18em", color: "#121212",
+            fontSize: "clamp(10px, 0.6771vw, 13px)", letterSpacing: "0.18em", color: "#121212",
             marginBottom: "1.2vw",
           }}
         >
@@ -496,7 +512,7 @@ export default function FeaturesSection() {
           className="uppercase"
           style={{
             fontFamily: "Inter, sans-serif", fontWeight: 700,
-            fontSize: "3.3333vw", lineHeight: "106%",
+            fontSize: "clamp(1.75rem, 3.3333vw, 64px)", lineHeight: "106%",
             letterSpacing: "-0.04em", color: "#121212", marginBottom: "1.3vw",
           }}
         >
@@ -506,7 +522,8 @@ export default function FeaturesSection() {
           className="mx-auto"
           style={{
             fontFamily: "Inter, sans-serif", fontWeight: 400,
-            fontSize: "1.0417vw", lineHeight: "1.6", color: "#121212", maxWidth: "50vw",
+            fontSize: "clamp(13px, 1.0417vw, 18px)", lineHeight: "1.6", color: "#121212",
+            maxWidth: isMobile ? "480px" : "50vw",
           }}
         >
           From selecting your vehicle to arriving at your destination, enjoy a
@@ -515,7 +532,43 @@ export default function FeaturesSection() {
         </p>
       </div>
 
-      {/* Stage — wave line + four staggered steps */}
+      {isMobile ? (
+        /* ── Mobile fallback — plain stacked list, no scroll-jacking, no
+             1920px-baseline absolute positioning. ── */
+        <div className="flex flex-col px-6 mt-10">
+          {STEPS.map((s, i) => (
+            <div
+              key={s.step}
+              className="flex items-start gap-4 py-5 border-b border-gray-200 last:border-b-0"
+            >
+              <div className="w-12 h-12 shrink-0">
+                <StepIconTile paths={ICON_PATHS[i]} active />
+              </div>
+              <div>
+                <p
+                  className="uppercase font-semibold mb-1"
+                  style={{ fontFamily: "Inter, sans-serif", fontSize: "11px", letterSpacing: "0.1em", color: "#9ca3af" }}
+                >
+                  Step {s.step}
+                </p>
+                <h3
+                  className="uppercase font-semibold mb-1"
+                  style={{ fontFamily: "Inter, sans-serif", fontSize: "15px", color: "#121212" }}
+                >
+                  {s.title}
+                </h3>
+                <p
+                  className="leading-relaxed"
+                  style={{ fontFamily: "Inter, sans-serif", fontSize: "13px", color: "#4b5563" }}
+                >
+                  {s.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+      /* Stage — wave line + four staggered steps */
       <div className="relative w-full" style={{ height: vw(STAGE_H), marginTop: "3.5vw" }}>
         {/* Wave line: black lead-in is static; the rest is gray with a black
             overlay that reveals left-to-right as `stage` advances (3 segments,
@@ -646,6 +699,7 @@ export default function FeaturesSection() {
           );
         })}
       </div>
+      )}
     </section>
     </div>
   );

@@ -51,7 +51,7 @@ const CARDS = [
 
 export default function AirportTransfersSection() {
   return (
-    <section data-navbar-theme="light" className="w-full bg-white px-6 md:px-10 pt-24 md:pt-32 pb-24 md:pb-32">
+    <section data-navbar-theme="light" className="w-full bg-white px-6 md:px-10 pt-[96px] pb-[60px]">
       <ScrollStack
         useWindowScroll
         itemDistance={120}

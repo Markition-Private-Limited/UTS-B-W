@@ -221,7 +221,7 @@ export default function AboutSection() {
 
       {/* ── Text header section ──────────────────────────────────────────────── */}
       <section id="about" data-navbar-theme="light" className="w-full bg-white px-6 md:px-14">
-        <div className="w-full pt-20 pb-14">
+        <div className="w-full pt-[96px] pb-14">
           <div
             ref={headerRef}
             className={`mx-auto text-center transition-all duration-700 ease-out ${
@@ -278,7 +278,7 @@ export default function AboutSection() {
         onMouseEnter={() => setInGallery(true)}
         onMouseLeave={() => setInGallery(false)}
       >
-        <div className="flex-1 min-h-0 flex flex-col pb-8" style={{ maxWidth: "1280px", width: "100%", margin: "0 auto" }}>
+        <div className="flex-1 min-h-0 flex flex-col pb-[48px]" style={{ maxWidth: "1280px", width: "100%", margin: "0 auto" }}>
           <div ref={galleryRef} className="flex gap-3 flex-1 min-h-0">
 
             {/* Left */}

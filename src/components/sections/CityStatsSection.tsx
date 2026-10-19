@@ -84,13 +84,14 @@ export default function CityStatsSection() {
       className={`w-full overflow-hidden transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
+      style={{ paddingBottom: "96px" }}
     >
 
       {/* ── TOP: white bg, heading left + stats right ── */}
       <div
         data-navbar-theme="light"
         className="relative w-full bg-white overflow-hidden"
-        style={{ padding: "4.1667vw 4.1667vw" }}
+        style={{ paddingTop: "48px", paddingBottom: "4.1667vw", paddingLeft: "4.1667vw", paddingRight: "4.1667vw" }}
       >
 
         {/* Watermark logo */}

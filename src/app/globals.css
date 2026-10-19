@@ -4,6 +4,11 @@
   --background: #ffffff;
   --foreground: #171717;
   --font-inter: "Inter", sans-serif;
+
+  /* Shared vertical rhythm for ordinary homepage sections — scales with the
+     1920px Figma frame (6.25vw = 120px there), clamped to 120px on desktop
+     and 48px on small screens so it never gets too tight or too loose. */
+  --section-spacing-y: clamp(48px, 6.25vw, 120px);
 }
 
 @theme inline {
@@ -39,6 +44,14 @@ body {
 
 body::-webkit-scrollbar {
   display: none;
+}
+
+/* Reusable vertical padding for ordinary homepage sections (not for the
+   hero, scroll-jacking carousels, or the Final CTA card, which keep their
+   own deliberate spacing). */
+.section-y {
+  padding-top: var(--section-spacing-y);
+  padding-bottom: var(--section-spacing-y);
 }
 
 @keyframes cursor-spin {

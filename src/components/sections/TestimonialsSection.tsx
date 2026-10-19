@@ -128,7 +128,7 @@ export default function TestimonialsSection() {
       id="testimonials"
       ref={ref}
       data-navbar-theme="light"
-      className={`w-full bg-[#ECECEC] pt-[9.375vw] pb-[6.25vw] px-[4.1667vw] overflow-hidden transition-all duration-700 ease-out ${
+      className={`w-full bg-[#ECECEC] section-y px-[4.1667vw] overflow-hidden transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
