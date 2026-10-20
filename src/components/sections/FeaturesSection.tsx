@@ -422,6 +422,7 @@ export default function FeaturesSection() {
   // wrapper's extra height instead of moving the section, until the wave
   // finishes filling (stage 3), at which point normal scroll continues.
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const leadRef = useRef<SVGPathElement>(null);
   const waveRef = useRef<SVGPathElement>(null);
   const [stage, setStage] = useState(0); // 0..3 — how many wave segments / icons are "reached"
   // Real arc-length (in SVG user units) from the wave path's start to each
@@ -429,6 +430,12 @@ export default function FeaturesSection() {
   // evenly spaced thirds, since the humps make some stretches longer than
   // others. [totalLength, lengthToIcon1, lengthToIcon2, lengthToIcon3].
   const [waveLengths, setWaveLengths] = useState<number[] | null>(null);
+  // Real Y (in SVG user units) of the curve at each icon's dotX, sampled
+  // from the actual path rather than assumed — the hand-picked guide-line
+  // lengths didn't account for the humps swinging between y=168 and y=351,
+  // so icons sitting near a hump's peak (the 2nd and 3rd) had their
+  // connector line stop well short of (or past) where the curve actually is.
+  const [dotY, setDotY] = useState<number[] | null>(null);
 
   // Below `md` the 1920px-baseline wave layout (everything positioned via
   // vw() against a fixed px design) has no room to reflow — text, dots and
@@ -446,20 +453,33 @@ export default function FeaturesSection() {
 
   useEffect(() => {
     const path = waveRef.current;
-    if (!path) return;
-    const total = path.getTotalLength();
-    const targets = LAYOUT.slice(1).map((l) => l.dotX); // icons 1, 2, 3
-    const lengths = targets.map((targetX) => {
+    const lead = leadRef.current;
+    if (!path || !lead) return;
+
+    // Binary-search the path for the point whose x matches targetX, and
+    // return both its arc-length (for the dash-fill animation) and its
+    // actual y (for positioning the connector line precisely on the curve).
+    const pointAtX = (p: SVGPathElement, targetX: number) => {
+      const len = p.getTotalLength();
       let lo = 0;
-      let hi = total;
+      let hi = len;
       for (let k = 0; k < 30; k++) {
         const mid = (lo + hi) / 2;
-        if (path.getPointAtLength(mid).x < targetX) lo = mid;
+        if (p.getPointAtLength(mid).x < targetX) lo = mid;
         else hi = mid;
       }
-      return (lo + hi) / 2;
-    });
-    setWaveLengths([total, ...lengths]);
+      const length = (lo + hi) / 2;
+      return { length, y: p.getPointAtLength(length).y };
+    };
+
+    const total = path.getTotalLength();
+    const r0 = pointAtX(lead, LAYOUT[0].dotX);
+    const r1 = pointAtX(path, LAYOUT[1].dotX);
+    const r2 = pointAtX(path, LAYOUT[2].dotX);
+    const r3 = pointAtX(path, LAYOUT[3].dotX);
+
+    setWaveLengths([total, r1.length, r2.length, r3.length]);
+    setDotY([r0.y, r1.y, r2.y, r3.y]);
   }, []);
 
   useEffect(() => {
@@ -580,7 +600,7 @@ export default function FeaturesSection() {
           fill="none"
           aria-hidden="true"
         >
-          <path d="M0 275 C 50 335 90 351 181 351" stroke="#0d0d0d" strokeWidth="4" strokeLinecap="round" />
+          <path ref={leadRef} d="M0 275 C 50 335 90 351 181 351" stroke="#0d0d0d" strokeWidth="4" strokeLinecap="round" />
           <path
             d="M181 351 C 424 351 424 168 667 168 C 910 168 911 351 1154 351 C 1397 351 1397 168 1640 168 C 1760 168 1850 215 1920 255"
             stroke="#e6e6e6"
@@ -592,10 +612,17 @@ export default function FeaturesSection() {
             d="M181 351 C 424 351 424 168 667 168 C 910 168 911 351 1154 351 C 1397 351 1397 168 1640 168 C 1760 168 1850 215 1920 255"
             stroke="#0d0d0d"
             strokeWidth="4"
-            strokeLinecap="round"
+            strokeLinecap="butt"
             strokeDasharray={waveLengths ? waveLengths[0] : undefined}
             strokeDashoffset={
-              waveLengths ? waveLengths[0] - (stage > 0 ? waveLengths[stage] : 0) : undefined
+              waveLengths
+                ? waveLengths[0] -
+                  (stage >= 3
+                    ? waveLengths[0]
+                    : stage > 0
+                    ? Math.min(waveLengths[stage] + 40, waveLengths[0])
+                    : 0)
+                : undefined
             }
             style={{ transition: `stroke-dashoffset 0.7s ${WAVE_EASE}`, visibility: waveLengths ? "visible" : "hidden" }}
           />
@@ -606,6 +633,10 @@ export default function FeaturesSection() {
           const numberFirst = l.variant === "numberFirst";
           const dotTop = numberFirst ? 130 : 419;
           const textTop = numberFirst ? 115 : 406;
+          // Where the connector line should actually meet the curve — the
+          // real sampled y when available, falling back to the old assumed
+          // constant until the path has mounted and been measured.
+          const curveY = dotY ? dotY[i] : numberFirst ? 260 : 280;
           const reached = stage >= i; // icon 0 is reached at rest; icons 1-3 reached by stage i
           const tone = reached ? "#121212" : "#c9c9c9";
 
@@ -634,9 +665,9 @@ export default function FeaturesSection() {
                 className="absolute"
                 style={{
                   left: vw(l.dotX + 7),
-                  top: vw(numberFirst ? dotTop : 280),
+                  top: vw(numberFirst ? dotTop : curveY),
                   width: "2px",
-                  height: vw(numberFirst ? 130 : dotTop - 280),
+                  height: vw(numberFirst ? curveY - dotTop : dotTop - curveY),
                   background: numberFirst
                     ? `linear-gradient(to bottom, ${tone}, transparent)`
                     : "linear-gradient(to bottom, transparent, #c9c9c9)",

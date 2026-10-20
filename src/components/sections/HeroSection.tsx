@@ -4,10 +4,26 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import PillButtonContent from "@/components/ui/PillButtonContent";
 
+const HERO_IMAGES = [
+  { src: "/hero_img.png", alt: "Executive chauffeur service" },
+  { src: "/hero_img_2.webp", alt: "Chauffeur in central London" },
+  { src: "/hero_img_3.webp", alt: "Chauffeur loading luggage at the airport" },
+];
+
+const SLIDE_MS = 4000;
+
 export default function HeroSection() {
   const imgDivRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [panelTilt, setPanelTilt] = useState({ rx: 0, ry: 0, mx: 50, my: 50 });
+  const [activeImage, setActiveImage] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setActiveImage((i) => (i + 1) % HERO_IMAGES.length);
+    }, SLIDE_MS);
+    return () => clearInterval(id);
+  }, []);
 
   const handlePanelMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = panelRef.current;
@@ -64,14 +80,21 @@ export default function HeroSection() {
         ref={imgDivRef}
         className="absolute inset-0 z-0"
       >
-        <Image
-          src="/hero_img.png"
-          alt="Executive chauffeur service"
-          fill
-          priority
-          className="object-cover object-top"
-          sizes="100vw"
-        />
+        {HERO_IMAGES.map((img, i) => (
+          <Image
+            key={img.src}
+            src={img.src}
+            alt={img.alt}
+            fill
+            priority={i === 0}
+            className="object-cover object-top"
+            style={{
+              opacity: i === activeImage ? 1 : 0,
+              transition: "opacity 2200ms cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+            sizes="100vw"
+          />
+        ))}
         <div
           className="absolute inset-0"
           style={{
