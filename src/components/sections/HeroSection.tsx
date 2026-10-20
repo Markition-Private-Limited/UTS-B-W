@@ -75,10 +75,11 @@ export default function HeroSection() {
       className="relative w-full bg-white flex flex-col overflow-hidden"
       style={{ height: "100svh" }}
     >
-      {/* Hero photo — fills the whole section; cropped from the bottom (object-top) so it never overflows the screen */}
+      {/* Hero photo — fills the whole section; cropped from the bottom (object-top) so it never overflows the screen.
+          bg-black so the crossfade dips through dark (not the page's white) while both images are partially transparent. */}
       <div
         ref={imgDivRef}
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-black"
       >
         {HERO_IMAGES.map((img, i) => (
           <Image
@@ -104,8 +105,13 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* ── Hero content ── */}
-      <div className="relative z-10 flex flex-col items-center text-center text-white px-6 pt-32">
+      {/* ── Hero content — centered in the space between the navbar and the
+          booking bar, nudged slightly below true-center; vh-based so the
+          offset stays proportionally the same at any screen size. ── */}
+      <div
+        className="relative z-10 flex-1 flex flex-col items-center justify-center text-center text-white px-6"
+        style={{ paddingTop: "14vh" }}
+      >
         {/* Eye-brow label */}
         <p
           className="text-[11px] font-medium tracking-[0.3em] uppercase text-white/70 mb-8"

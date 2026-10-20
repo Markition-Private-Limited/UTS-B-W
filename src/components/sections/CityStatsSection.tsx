@@ -221,12 +221,18 @@ export default function CityStatsSection() {
         }`}
         style={{ height: "29.6875vw", transitionDelay: isInView ? "300ms" : "0ms" }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/Chauffeur driving through the city.png"
-          alt="Chauffeur driving through the city"
+        {/* object-cover + object-position: center crops symmetrically off the
+            top and bottom only (never the sides) to fit this short, wide
+            frame, regardless of the source video's own aspect ratio. */}
+        <video
+          src="/stats-video/UTS%20video.mp4"
+          poster="/images/Chauffeur driving through the city.png"
+          autoPlay
+          muted
+          loop
+          playsInline
           className="w-full h-full object-cover select-none"
-          draggable={false}
+          style={{ objectPosition: "center center" }}
         />
 
         {/* Top-to-bottom gradient overlay */}
@@ -238,21 +244,6 @@ export default function CityStatsSection() {
           }}
         />
 
-        {/* Play button overlay */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div
-            className="w-[4.1667vw] h-[4.1667vw] rounded-full bg-white/90 flex items-center justify-center shadow-lg"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="text-black"
-              style={{ width: "1.5625vw", height: "1.5625vw", marginLeft: "0.2vw" }}
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
       </div>
 
     </section>
