@@ -77,6 +77,59 @@ export default function CityStatsSection() {
     return () => observer.disconnect();
   }, []);
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [muted, setMuted] = useState(true);
+
+  // Set when the viewer mutes by hand, so scrolling doesn't override them.
+  const userMutedRef = useRef(false);
+
+  // Muted at rest; unmutes while the video is in the viewport, re-mutes when
+  // it leaves. Browsers only allow sound after a user gesture, so we also
+  // re-check on the first click / key / touch anywhere on the page (covers a
+  // video that is already in view).
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    let inView = false;
+    const apply = () => setMuted(inView ? userMutedRef.current : true);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.intersectionRatio >= 0.5;
+        apply();
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(v);
+    const gestures = ["pointerup", "click", "keydown", "touchend"] as const;
+    gestures.forEach((g) => window.addEventListener(g, apply, { passive: true }));
+    return () => {
+      observer.disconnect();
+      gestures.forEach((g) => window.removeEventListener(g, apply));
+    };
+  }, []);
+
+  // Keep the element in sync with state (React only sets `muted` on mount).
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = muted;
+    v.volume = muted ? 0 : 1;
+    if (v.paused) {
+      v.play().catch(() => {
+        // Browser blocked sound without a user gesture: fall back to muted playback.
+        v.muted = true;
+        setMuted(true);
+        v.play().catch(() => {});
+      });
+    }
+  }, [muted]);
+
+  function toggleMute() {
+    const next = !muted;
+    userMutedRef.current = next;
+    setMuted(next);
+  }
+
   return (
     <section
       id="city-stats"
@@ -225,10 +278,11 @@ export default function CityStatsSection() {
             top and bottom only (never the sides) to fit this short, wide
             frame, regardless of the source video's own aspect ratio. */}
         <video
+          ref={videoRef}
           src="/stats-video/UTS-video.mp4"
           poster="/images/Chauffeur driving through the city.png"
           autoPlay
-          muted
+          muted={muted}
           loop
           playsInline
           className="w-full h-full object-cover select-none"
@@ -246,6 +300,35 @@ export default function CityStatsSection() {
 
         {/* Slight overall dark tint so the video sits a touch quieter behind the stats above it */}
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.08)" }} />
+
+        {/* Mute / unmute */}
+        <button
+          type="button"
+          onClick={toggleMute}
+          aria-label={muted ? "Unmute video" : "Mute video"}
+          className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full text-white transition-all duration-300 hover:scale-110 active:scale-100"
+          style={{
+            background: "rgba(255,255,255,0.18)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            border: "1px solid rgba(255,255,255,0.35)",
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
+            {muted ? (
+              <>
+                <line x1="22" y1="9" x2="16" y2="15" />
+                <line x1="16" y1="9" x2="22" y2="15" />
+              </>
+            ) : (
+              <>
+                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+                <path d="M19 5a10 10 0 0 1 0 14" />
+              </>
+            )}
+          </svg>
+        </button>
 
       </div>
 
