@@ -68,7 +68,7 @@ export default function FinalCtaSection() {
             style={{
               fontFamily: "'Inter', sans-serif",
               fontWeight: 700,
-              fontSize: "3.3333vw",
+              fontSize: "clamp(1.75rem, 3.3333vw, 64px)",
               lineHeight: "1.06",
               letterSpacing: "-0.04em",
               textAlign: "left",
@@ -82,7 +82,7 @@ export default function FinalCtaSection() {
             style={{
               fontFamily: "'Inter', sans-serif",
               fontWeight: 500,
-              fontSize: "1.0417vw",
+              fontSize: "clamp(13px, 1.0417vw, 18px)",
               lineHeight: "1.6",
               letterSpacing: "0",
               textAlign: "left",

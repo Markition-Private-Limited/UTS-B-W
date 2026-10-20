@@ -244,7 +244,7 @@ export default function AboutSection() {
               style={{
                 fontFamily: "Inter, sans-serif",
                 fontWeight: 700,
-                fontSize: "46px",
+                fontSize: "clamp(1.75rem, 3.3333vw, 64px)",
                 lineHeight: "106%",
                 letterSpacing: "-0.04em",
                 textAlign: "center",
@@ -252,7 +252,7 @@ export default function AboutSection() {
             >
               More Than a Ride.<br />A Better Way to Travel.
             </h2>
-            <p className="text-black mx-auto whitespace-nowrap" style={{ fontSize: "14px", lineHeight: "170%" }}>
+            <p className="text-black mx-auto whitespace-nowrap" style={{ fontSize: "clamp(13px, 1.0417vw, 18px)", lineHeight: "170%" }}>
               Discover a more refined way to travel with professional chauffeurs, premium vehicles, and thoughtfully
               coordinated journeys.
             </p>
@@ -261,7 +261,7 @@ export default function AboutSection() {
               style={{
                 fontFamily: "Inter, sans-serif",
                 fontWeight: 400,
-                fontSize: "14px",
+                fontSize: "clamp(13px, 1.0417vw, 18px)",
                 lineHeight: "170%",
                 letterSpacing: "normal",
                 textAlign: "center",

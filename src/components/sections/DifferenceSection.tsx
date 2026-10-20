@@ -155,7 +155,7 @@ export default function DifferenceSection() {
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 800,
-                fontSize: "3.3333vw",
+                fontSize: "clamp(1.75rem, 3.3333vw, 64px)",
                 lineHeight: "1.06",
                 letterSpacing: "-0.03em",
               }}
@@ -168,7 +168,7 @@ export default function DifferenceSection() {
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 400,
-                fontSize: "0.9375vw",
+                fontSize: "clamp(13px, 1.0417vw, 18px)",
                 lineHeight: "1.6",
                 letterSpacing: "0",
               }}

@@ -127,7 +127,7 @@ export default function AirportTransfersSection() {
                   {/* Body copy */}
                   <p
                     className="text-gray-300 leading-relaxed"
-                    style={{ fontSize: "clamp(0.85rem, 0.95vw, 0.98rem)", maxWidth: "400px" }}
+                    style={{ fontSize: "clamp(13px, 1.0417vw, 18px)", maxWidth: "400px" }}
                   >
                     {card.desc}
                   </p>

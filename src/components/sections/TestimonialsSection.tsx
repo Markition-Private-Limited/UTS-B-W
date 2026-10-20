@@ -178,7 +178,7 @@ export default function TestimonialsSection() {
             style={{
               fontFamily: "'Inter', sans-serif",
               fontWeight: 800,
-              fontSize: "2.5vw",
+              fontSize: "clamp(1.75rem, 3.3333vw, 64px)",
               lineHeight: "1.15",
               letterSpacing: "-0.03em",
               textAlign: "center",

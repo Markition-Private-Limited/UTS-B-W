@@ -130,7 +130,7 @@ export default function CityStatsSection() {
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 800,
-                fontSize: "3.3333vw",
+                fontSize: "clamp(1.75rem, 3.3333vw, 64px)",
                 lineHeight: 1.06,
                 letterSpacing: "-0.04em",
               }}
@@ -142,7 +142,7 @@ export default function CityStatsSection() {
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 400,
-                fontSize: "0.9375vw",
+                fontSize: "clamp(13px, 1.0417vw, 18px)",
                 lineHeight: 1.6,
               }}
             >
@@ -225,14 +225,14 @@ export default function CityStatsSection() {
             top and bottom only (never the sides) to fit this short, wide
             frame, regardless of the source video's own aspect ratio. */}
         <video
-          src="/stats-video/UTS%20video.mp4"
+          src="/stats-video/UTS-video.mp4"
           poster="/images/Chauffeur driving through the city.png"
           autoPlay
           muted
           loop
           playsInline
           className="w-full h-full object-cover select-none"
-          style={{ objectPosition: "center center" }}
+          style={{ objectPosition: "center center", filter: "saturate(1.25)" }}
         />
 
         {/* Top-to-bottom gradient overlay */}
@@ -243,6 +243,9 @@ export default function CityStatsSection() {
               "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.38) 100%)",
           }}
         />
+
+        {/* Slight overall dark tint so the video sits a touch quieter behind the stats above it */}
+        <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.08)" }} />
 
       </div>
 
