@@ -91,7 +91,27 @@ export default function CityStatsSection() {
     const v = videoRef.current;
     if (!v) return;
     let inView = false;
-    const apply = () => setMuted(inView ? userMutedRef.current : true);
+
+    // Drives the <video> directly (not just via React state) so that when this
+    // runs inside a real click/key/touch the browser sees the unmute as part
+    // of that gesture. Re-runs on every gesture while in view, so a first
+    // attempt the browser blocked (silent / auto-paused) is retried.
+    const apply = () => {
+      const wantSound = inView && !userMutedRef.current;
+      v.muted = !wantSound;
+      v.volume = wantSound ? 1 : 0;
+      setMuted(!wantSound);
+      if (wantSound) {
+        v.play().catch(() => {
+          // Sound still not allowed (no user gesture yet): stay muted and keep playing.
+          v.muted = true;
+          v.volume = 0;
+          setMuted(true);
+          v.play().catch(() => {});
+        });
+      }
+    };
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         inView = entry.intersectionRatio >= 0.5;
@@ -100,7 +120,7 @@ export default function CityStatsSection() {
       { threshold: 0.5 }
     );
     observer.observe(v);
-    const gestures = ["pointerup", "click", "keydown", "touchend"] as const;
+    const gestures = ["pointerdown", "pointerup", "click", "keydown", "touchstart", "touchend"] as const;
     gestures.forEach((g) => window.addEventListener(g, apply, { passive: true }));
     return () => {
       observer.disconnect();
@@ -108,26 +128,15 @@ export default function CityStatsSection() {
     };
   }, []);
 
-  // Keep the element in sync with state (React only sets `muted` on mount).
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = muted;
-    v.volume = muted ? 0 : 1;
-    if (v.paused) {
-      v.play().catch(() => {
-        // Browser blocked sound without a user gesture: fall back to muted playback.
-        v.muted = true;
-        setMuted(true);
-        v.play().catch(() => {});
-      });
-    }
-  }, [muted]);
-
   function toggleMute() {
+    const v = videoRef.current;
     const next = !muted;
     userMutedRef.current = next;
     setMuted(next);
+    if (!v) return;
+    v.muted = next;
+    v.volume = next ? 0 : 1;
+    if (!next) v.play().catch(() => {});
   }
 
   return (
