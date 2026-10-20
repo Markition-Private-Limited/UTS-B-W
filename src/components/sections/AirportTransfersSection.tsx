@@ -24,7 +24,7 @@ const CARDS = [
     title: "Intercity Travel",
     desc: "Travel between cities without the hassle of driving, parking or navigating unfamiliar routes. Sit back and enjoy a comfortable journey from door to door.",
     cta: "Explore Service",
-    image: "/intercity-travel.webp",
+    image: "/intercity-travel.png",
   },
   {
     eyebrow: "Arrive with a sense of calm",
@@ -60,7 +60,7 @@ export default function AirportTransfersSection() {
         itemScale={0.035}
         baseScale={0.8}
         dimAmount={0.45}
-        blurAmount={1.2}
+        blurAmount={0}
         rotationAmount={0}
         tiltAmount={0}
         holdDistance={200}

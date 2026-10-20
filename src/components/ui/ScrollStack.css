@@ -16,6 +16,7 @@
 
 .scroll-stack__slot {
   position: sticky;
+  contain: layout style;
 }
 
 .scroll-stack-card {
@@ -33,7 +34,8 @@
     0 24px 48px -24px rgb(0 0 0 / 0.4);
   transform-origin: 50% 0;
   will-change: transform;
-}
+  backface-visibility: hidden;
+  isolation: isolate;
 
 .scroll-stack-card__shade {
   position: absolute;
