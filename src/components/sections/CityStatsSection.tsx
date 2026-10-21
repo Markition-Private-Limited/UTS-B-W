@@ -78,60 +78,38 @@ export default function CityStatsSection() {
   }, []);
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
+  // The video stays paused behind a thumbnail + play button until the viewer
+  // clicks — calling .play() synchronously inside that click handler (not
+  // from an effect) is what lets the browser allow sound right away, since
+  // it still sees the call as part of the user's gesture.
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  // Set when the viewer mutes by hand, so scrolling doesn't override them.
-  const userMutedRef = useRef(false);
-
-  // Muted at rest; unmutes while the video is in the viewport, re-mutes when
-  // it leaves. Browsers only allow sound after a user gesture, so we also
-  // re-check on the first click / key / touch anywhere on the page (covers a
-  // video that is already in view).
-  useEffect(() => {
+  function handlePlay() {
     const v = videoRef.current;
+    setIsPlaying(true);
+    setMuted(false);
     if (!v) return;
-    let inView = false;
+    v.muted = false;
+    v.volume = 1;
+    v.play().catch(() => {
+      // Sound blocked for some reason — fall back to a muted autoplay
+      // rather than leaving the video stuck on the thumbnail.
+      v.muted = true;
+      v.volume = 0;
+      setMuted(true);
+      v.play().catch(() => {});
+    });
+  }
 
-    // Drives the <video> directly (not just via React state) so that when this
-    // runs inside a real click/key/touch the browser sees the unmute as part
-    // of that gesture. Re-runs on every gesture while in view, so a first
-    // attempt the browser blocked (silent / auto-paused) is retried.
-    const apply = () => {
-      const wantSound = inView && !userMutedRef.current;
-      v.muted = !wantSound;
-      v.volume = wantSound ? 1 : 0;
-      setMuted(!wantSound);
-      if (wantSound) {
-        v.play().catch(() => {
-          // Sound still not allowed (no user gesture yet): stay muted and keep playing.
-          v.muted = true;
-          v.volume = 0;
-          setMuted(true);
-          v.play().catch(() => {});
-        });
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        inView = entry.intersectionRatio >= 0.5;
-        apply();
-      },
-      { threshold: 0.5 }
-    );
-    observer.observe(v);
-    const gestures = ["pointerdown", "pointerup", "click", "keydown", "touchstart", "touchend"] as const;
-    gestures.forEach((g) => window.addEventListener(g, apply, { passive: true }));
-    return () => {
-      observer.disconnect();
-      gestures.forEach((g) => window.removeEventListener(g, apply));
-    };
-  }, []);
+  function handlePause() {
+    videoRef.current?.pause();
+    setIsPlaying(false);
+  }
 
   function toggleMute() {
     const v = videoRef.current;
     const next = !muted;
-    userMutedRef.current = next;
     setMuted(next);
     if (!v) return;
     v.muted = next;
@@ -281,16 +259,16 @@ export default function CityStatsSection() {
         className={`relative w-full overflow-hidden transition-all duration-700 ease-out ${
           isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
-        style={{ height: "29.6875vw", transitionDelay: isInView ? "300ms" : "0ms" }}
+        style={{ height: "29.6875vw", transitionDelay: isInView ? "300ms" : "0ms", backgroundColor: "#000" }}
       >
-        {/* object-cover + object-position: center crops symmetrically off the
-            top and bottom only (never the sides) to fit this short, wide
-            frame, regardless of the source video's own aspect ratio. */}
+        {/* object-cover + object-position: center fills this frame edge to
+            edge on the width (the source's ~2.6:1 aspect ratio is narrower
+            than this ~3.37:1 strip), cropping symmetrically off the top and
+            bottom only — the sides are never cropped. This is a display-only
+            scale, not a re-encode, so it doesn't reduce source quality. */}
         <video
           ref={videoRef}
           src="/stats-video/UTS-video.mp4"
-          poster="/images/Chauffeur driving through the city.png"
-          autoPlay
           muted={muted}
           loop
           playsInline
@@ -310,34 +288,103 @@ export default function CityStatsSection() {
         {/* Slight overall dark tint so the video sits a touch quieter behind the stats above it */}
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.08)" }} />
 
-        {/* Mute / unmute */}
-        <button
-          type="button"
-          onClick={toggleMute}
-          aria-label={muted ? "Unmute video" : "Mute video"}
-          className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full text-white transition-all duration-300 hover:scale-110 active:scale-100"
-          style={{
-            background: "rgba(255,255,255,0.18)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            border: "1px solid rgba(255,255,255,0.35)",
-          }}
+        {/* Thumbnail + play button — covers the (paused) video until clicked.
+            The black overlay is applied live via CSS, not baked into the
+            image file, which is what cuts the thumbnail's color down. */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-500 ${
+            isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
-            {muted ? (
-              <>
-                <line x1="22" y1="9" x2="16" y2="15" />
-                <line x1="16" y1="9" x2="22" y2="15" />
-              </>
-            ) : (
-              <>
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M19 5a10 10 0 0 1 0 14" />
-              </>
-            )}
-          </svg>
-        </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/city-stats-thumbnail.png"
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover select-none"
+            style={{ objectPosition: "center center" }}
+          />
+          <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.55)" }} />
+
+          <button
+            type="button"
+            onClick={handlePlay}
+            aria-label="Play video"
+            className="absolute inset-0 flex items-center justify-center group"
+          >
+            {/* Frosted glass ring — translucent + blurred, picks up the
+                thumbnail's colors behind it — wrapping the solid white core. */}
+            <span
+              className="flex items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110 group-active:scale-100"
+              style={{
+                width: "clamp(84px, 7.5vw, 140px)",
+                height: "clamp(84px, 7.5vw, 140px)",
+                background: "rgba(255,255,255,0.16)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(255,255,255,0.4)",
+              }}
+            >
+              <span
+                className="flex items-center justify-center rounded-full bg-white shadow-xl"
+                style={{ width: "62%", height: "62%" }}
+              >
+                <svg
+                  width="38%"
+                  height="38%"
+                  viewBox="0 0 24 24"
+                  fill="#121212"
+                  style={{ marginLeft: "4%" }}
+                >
+                  <polygon points="5 3 21 12 5 21" />
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        {/* Click the playing video to pause — brings the thumbnail + play
+            button back. Sits below the mute button so that still works. */}
+        {isPlaying && (
+          <button
+            type="button"
+            onClick={handlePause}
+            aria-label="Pause video"
+            className="absolute inset-0"
+          />
+        )}
+
+        {/* Mute / unmute — only once the video is actually playing */}
+        {isPlaying && (
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-label={muted ? "Unmute video" : "Mute video"}
+            className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full text-white transition-all duration-300 hover:scale-110 active:scale-100"
+            style={{
+              background: "rgba(255,255,255,0.18)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              border: "1px solid rgba(255,255,255,0.35)",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
+              {muted ? (
+                <>
+                  <line x1="22" y1="9" x2="16" y2="15" />
+                  <line x1="16" y1="9" x2="22" y2="15" />
+                </>
+              ) : (
+                <>
+                  <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+                  <path d="M19 5a10 10 0 0 1 0 14" />
+                </>
+              )}
+            </svg>
+          </button>
+        )}
 
       </div>
 

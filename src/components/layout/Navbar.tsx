@@ -27,19 +27,20 @@ export default function Navbar() {
       const headerEl = headerRef.current;
       if (!headerEl) return;
 
-      const sampleY = headerEl.getBoundingClientRect().height / 2;
-      const sampleX = window.innerWidth / 2;
+      // Use layout-rect scanning instead of elementsFromPoint so that CSS
+      // transforms (translate-y reveal animations on sections) cannot cause
+      // a section to ghost-overlap a neighbour and fool the detector.
+      // DOM order means the LAST matching element wins — deepest/most-specific.
+      const navMid = headerEl.getBoundingClientRect().height / 2;
+      let best: HTMLElement | null = null;
+      const candidates = document.querySelectorAll<HTMLElement>("[data-navbar-theme]");
+      for (const el of candidates) {
+        if (headerEl.contains(el)) continue;
+        const { top, bottom } = el.getBoundingClientRect();
+        if (top <= navMid && bottom >= navMid) best = el;
+      }
 
-      // Walk the full element stack at that point (z-order) and use the
-      // first one that isn't the header itself — avoids mutating the
-      // header's styles (which, combined with `transition-all`, would have
-      // its visibility change deferred by the CSS transition instead of
-      // applying immediately).
-      const stack = document.elementsFromPoint(sampleX, sampleY);
-      const behind = stack.find((el) => !headerEl.contains(el));
-
-      const themed = behind?.closest<HTMLElement>("[data-navbar-theme]");
-      const next = themed?.dataset.navbarTheme === "light" ? "light" : "dark";
+      const next = best?.dataset.navbarTheme === "light" ? "light" : "dark";
       setTheme((prev) => (prev === next ? prev : next));
     };
 
@@ -67,8 +68,8 @@ export default function Navbar() {
         "fixed top-0 left-0 w-full z-50 transition-all duration-500",
         isDark
           ? scrolled
-            ? "backdrop-blur-md bg-white/10 border-b border-white/20 shadow-sm"
-            : "backdrop-blur-sm bg-white/5 border-b border-white/10"
+            ? "backdrop-blur-md bg-white/10 border-b border-white/10 shadow-sm"
+            : "backdrop-blur-sm bg-white/5 border-b border-white/5"
           : scrolled
             ? "backdrop-blur-md bg-white/60 border-b border-black/10 shadow-sm"
             : "backdrop-blur-sm bg-white/30 border-b border-black/5",

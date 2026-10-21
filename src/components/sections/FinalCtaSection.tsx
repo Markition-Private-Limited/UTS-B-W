@@ -30,13 +30,12 @@ export default function FinalCtaSection() {
       id="contact"
       ref={ref}
       data-navbar-theme="light"
-      className={`w-full bg-white px-0 md:px-[4.1667vw] pt-[4.1667vw] pb-[4.1667vw] transition-all duration-700 ease-out ${
-        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+      className="w-full bg-white px-0 md:px-[4.1667vw] pt-[4.1667vw] pb-[4.1667vw]"
     >
       <div
-        data-navbar-theme="dark"
-        className="relative w-full min-h-[480px] md:h-[38.5417vw] rounded-[1.6667vw] overflow-hidden flex items-center bg-gray-800 bg-cover bg-center p-6 md:p-[4.1667vw]"
+        className={`relative w-full min-h-[480px] md:h-[38.5417vw] rounded-[1.6667vw] overflow-hidden flex items-center bg-gray-800 bg-cover bg-center p-6 md:p-[4.1667vw] transition-all duration-700 ease-out ${
+          isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}
         style={{ backgroundImage: "url('/images/Cinematic photograph.png')" }}
       >
         {/* Readability gradient: light, fading left-to-right behind the text */}

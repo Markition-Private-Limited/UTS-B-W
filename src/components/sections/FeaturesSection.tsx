@@ -393,10 +393,19 @@ const ICON_PATHS: { d: string }[][] = [
 function StepIconTile({ paths, active }: { paths: { d: string }[]; active: boolean }) {
   return (
     <div className="relative" style={{ width: "100%", aspectRatio: "152 / 151" }}>
-      {/* Opaque backdrop — masks the wave line/dot behind the tile's
-          transparent padding and rounded corners, which would otherwise
-          peek through at the edges. */}
-      <div className="absolute inset-0" style={{ backgroundColor: "#fafafa" }} />
+      {/* Opaque backdrop — masks the wave line behind the visible rounded-rect
+          area only; the transparent SVG padding is intentionally left uncovered
+          so connector lines can reach the rect's edges without a visual gap. */}
+      <div
+        className="absolute"
+        style={{
+          backgroundColor: "#fafafa",
+          top: "7.9470%",
+          right: "18.4211%",
+          bottom: "18.5430%",
+          left: "7.8947%",
+        }}
+      />
       <svg viewBox="0 0 152 151" className="absolute inset-0 w-full h-full" style={{ filter: "drop-shadow(8px 8px 10px rgba(0,0,0,0.1))" }}>
         <rect
           x="12" y="12" width="112" height="111" rx="16"
@@ -497,7 +506,7 @@ export default function FeaturesSection() {
       // the remaining 25% of scroll as a buffer — the section stays pinned
       // so the fill animation has time to finish before normal scroll
       // resumes, instead of unpinning the instant the threshold is crossed.
-      const newStage = progress >= 0.75 ? 3 : progress >= 0.5 ? 2 : progress >= 0.25 ? 1 : 0;
+      const newStage = progress >= 0.75 ? 4 : progress >= 0.5 ? 3 : progress >= 0.25 ? 2 : 1;
       setStage((prev) => (prev === newStage ? prev : newStage));
     };
 
@@ -590,9 +599,9 @@ export default function FeaturesSection() {
       ) : (
       /* Stage — wave line + four staggered steps */
       <div className="relative w-full" style={{ height: vw(STAGE_H), marginTop: "3.5vw" }}>
-        {/* Wave line: black lead-in is static; the rest is gray with a black
-            overlay that reveals left-to-right as `stage` advances (3 segments,
-            one per scroll-triggered stage). */}
+        {/* Wave line — rendered first (behind the icon tiles and connectors);
+            the icon tile's backdrop + exact connector rail-end already close
+            the gap, so the wave doesn't need to paint over the icons. */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox={`0 0 1920 ${STAGE_H}`}
@@ -617,10 +626,10 @@ export default function FeaturesSection() {
             strokeDashoffset={
               waveLengths
                 ? waveLengths[0] -
-                  (stage >= 3
+                  (stage >= 4
                     ? waveLengths[0]
-                    : stage > 0
-                    ? Math.min(waveLengths[stage] + 40, waveLengths[0])
+                    : stage >= 2
+                    ? Math.min(waveLengths[stage - 1] + 40, waveLengths[0])
                     : 0)
                 : undefined
             }
@@ -633,11 +642,15 @@ export default function FeaturesSection() {
           const numberFirst = l.variant === "numberFirst";
           const dotTop = numberFirst ? 130 : 419;
           const textTop = numberFirst ? 115 : 406;
-          // Where the connector line should actually meet the curve — the
-          // real sampled y when available, falling back to the old assumed
-          // constant until the path has mounted and been measured.
-          const curveY = dotY ? dotY[i] : numberFirst ? 260 : 280;
-          const reached = stage >= i; // icon 0 is reached at rest; icons 1-3 reached by stage i
+          // Connector lines run to the icon tile's visible rounded-rect edge
+          // (not the curve's y, and not the tile's outer div edge) — the SVG
+          // has 12px/28px of transparent padding around that rect, so ending
+          // the line at the rect's actual edge is what makes it look
+          // seamless instead of leaving a gap in the transparent padding.
+          // numberFirst: icon top (284) + 12px top padding = 296
+          // iconFirst: icon top (101) + (12 + 111)px = bottom edge at 224
+          const railEnd = numberFirst ? 296 : 224;
+          const reached = stage > i;
           const tone = reached ? "#121212" : "#c9c9c9";
 
           return (
@@ -665,12 +678,10 @@ export default function FeaturesSection() {
                 className="absolute"
                 style={{
                   left: vw(l.dotX + 7),
-                  top: vw(numberFirst ? dotTop : curveY),
+                  top: vw(numberFirst ? dotTop : railEnd),
                   width: "2px",
-                  height: vw(numberFirst ? curveY - dotTop : dotTop - curveY),
-                  background: numberFirst
-                    ? `linear-gradient(to bottom, ${tone}, transparent)`
-                    : "linear-gradient(to bottom, transparent, #c9c9c9)",
+                  height: vw(numberFirst ? railEnd - dotTop : dotTop - railEnd),
+                  background: numberFirst ? tone : "#c9c9c9",
                   transition: `background 0.5s ${WAVE_EASE}`,
                 }}
               />
