@@ -337,13 +337,22 @@ export default function FeaturesSection() {
 
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-// ── Scroll-filled wave timeline — no background photo, no scroll-jacking ──
-// Normal page scroll (not pinned). As the stage scrolls through the viewport,
-// progress 0→1 maps to 3 discrete stages. Each stage turns the wave segment
-// up to the next dot black, and the icon at that dot black.
+// ── Scroll-filled wave timeline — no background photo ──────────────────────
+// The section pins (sticky) while the page scrolls through a tall wrapper.
+// Progress through that wrapper maps to 4 discrete stages, one per icon.
+// Each stage is calibrated to ~2 mouse-wheel scrolls, so the wave fills to
+// the next icon every 2 scrolls — 8 scrolls total — and the section unpins
+// right as the 8th scroll finishes the last fill, with no extra lingering.
 const STAGE_W = 1920;
 const STAGE_H = 560;
 const WAVE_EASE = "cubic-bezier(0.4,0,0.2,1)";
+
+const PX_PER_WHEEL_SCROLL = 100; // a typical single wheel-notch deltaY
+const SCROLLS_PER_STAGE = 2;
+const STAGE_COUNT = 4;
+// Extra scroll distance (beyond the pinned 100vh) the wrapper provides —
+// this is what the user scrolls through while the section stays pinned.
+const EXTRA_SCROLL_PX = PX_PER_WHEEL_SCROLL * SCROLLS_PER_STAGE * STAGE_COUNT;
 
 // Percentage of the stage's own rendered box, not the viewport. The wave SVG
 // fills the stage via w-full/h-full, so its coordinate space is exactly the
@@ -443,13 +452,13 @@ export default function FeaturesSection() {
   // wrapper's extra height instead of moving the section, until the wave
   // finishes filling (stage 3), at which point normal scroll continues.
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const leadRef = useRef<SVGPathElement>(null);
   const waveRef = useRef<SVGPathElement>(null);
-  const [stage, setStage] = useState(0); // 0..3 — how many wave segments / icons are "reached"
-  // Real arc-length (in SVG user units) from the wave path's start to each
-  // icon's x-position, measured from the actual curve — not assumed to be
-  // evenly spaced thirds, since the humps make some stretches longer than
-  // others. [totalLength, lengthToIcon1, lengthToIcon2, lengthToIcon3].
+  const [stage, setStage] = useState(0); // 0..4 — how many icons are "reached" (0 = rest, nothing shown)
+  // Real arc-length (in SVG user units) from the wave path's start (the very
+  // left screen edge, x=0) to each icon's x-position, measured from the
+  // actual curve — not assumed to be evenly spaced, since the humps make
+  // some stretches longer than others.
+  // [totalLength, lengthToIcon0, lengthToIcon1, lengthToIcon2, lengthToIcon3].
   const [waveLengths, setWaveLengths] = useState<number[] | null>(null);
   // Real Y (in SVG user units) of the curve at each icon's dotX, sampled
   // from the actual path rather than assumed — the hand-picked guide-line
@@ -474,8 +483,7 @@ export default function FeaturesSection() {
 
   useEffect(() => {
     const path = waveRef.current;
-    const lead = leadRef.current;
-    if (!path || !lead) return;
+    if (!path) return;
 
     // Binary-search the path for the point whose x matches targetX, and
     // return both its arc-length (for the dash-fill animation) and its
@@ -494,12 +502,12 @@ export default function FeaturesSection() {
     };
 
     const total = path.getTotalLength();
-    const r0 = pointAtX(lead, LAYOUT[0].dotX);
+    const r0 = pointAtX(path, LAYOUT[0].dotX);
     const r1 = pointAtX(path, LAYOUT[1].dotX);
     const r2 = pointAtX(path, LAYOUT[2].dotX);
     const r3 = pointAtX(path, LAYOUT[3].dotX);
 
-    setWaveLengths([total, r1.length, r2.length, r3.length]);
+    setWaveLengths([total, r0.length, r1.length, r2.length, r3.length]);
     setDotY([r0.y, r1.y, r2.y, r3.y]);
   }, []);
 
@@ -514,11 +522,12 @@ export default function FeaturesSection() {
       const scrolled = Math.max(0, -rect.top);
       const progress = Math.min(1, scrolled / total);
 
-      // Final stage (wave fully filled) is reached at 75% progress, leaving
-      // the remaining 25% of scroll as a buffer — the section stays pinned
-      // so the fill animation has time to finish before normal scroll
-      // resumes, instead of unpinning the instant the threshold is crossed.
-      const newStage = progress >= 0.75 ? 4 : progress >= 0.5 ? 3 : progress >= 0.25 ? 2 : 1;
+      // Starts at stage 0 (nothing revealed — no numbers, no fill) and
+      // reveals one icon per quarter of the wrapper's scroll budget, that
+      // budget calibrated (see wrapperRef's height below) to ~2 wheel-
+      // scrolls per quarter, 8 total, so the section unpins right as the
+      // 8th scroll finishes the last fill instead of lingering.
+      const newStage = progress >= 1 ? 4 : progress >= 0.75 ? 3 : progress >= 0.5 ? 2 : progress >= 0.25 ? 1 : 0;
       setStage((prev) => (prev === newStage ? prev : newStage));
     };
 
@@ -528,7 +537,7 @@ export default function FeaturesSection() {
   }, []);
 
   return (
-    <div ref={wrapperRef} style={{ height: isMobile ? "auto" : "400vh" }}>
+    <div ref={wrapperRef} style={{ height: isMobile ? "auto" : `calc(100vh + ${EXTRA_SCROLL_PX}px)` }}>
     <section
       id="features"
       data-navbar-theme="light"
@@ -621,27 +630,29 @@ export default function FeaturesSection() {
           fill="none"
           aria-hidden="true"
         >
-          <path ref={leadRef} d="M0 275 C 50 335 90 351 181 351" stroke="#0d0d0d" strokeWidth="4" strokeLinecap="round" />
+          {/* Gray track — full curve, from the very left screen edge */}
           <path
-            d="M181 351 C 424 351 424 168 667 168 C 910 168 911 351 1154 351 C 1397 351 1397 168 1640 168 C 1760 168 1850 215 1920 255"
+            d="M0 275 C 50 335 90 351 181 351 C 424 351 424 168 667 168 C 910 168 911 351 1154 351 C 1397 351 1397 168 1640 168 C 1760 168 1850 215 1920 255"
             stroke="#e6e6e6"
             strokeWidth="4"
             strokeLinecap="round"
           />
+          {/* Black fill — starts empty (nothing shown at rest) and draws
+              left-to-right as `stage` advances, reaching each icon in turn. */}
           <path
             ref={waveRef}
-            d="M181 351 C 424 351 424 168 667 168 C 910 168 911 351 1154 351 C 1397 351 1397 168 1640 168 C 1760 168 1850 215 1920 255"
+            d="M0 275 C 50 335 90 351 181 351 C 424 351 424 168 667 168 C 910 168 911 351 1154 351 C 1397 351 1397 168 1640 168 C 1760 168 1850 215 1920 255"
             stroke="#0d0d0d"
             strokeWidth="4"
-            strokeLinecap="butt"
+            strokeLinecap="round"
             strokeDasharray={waveLengths ? waveLengths[0] : undefined}
             strokeDashoffset={
               waveLengths
                 ? waveLengths[0] -
                   (stage >= 4
                     ? waveLengths[0]
-                    : stage >= 2
-                    ? Math.min(waveLengths[stage - 1] + 40, waveLengths[0])
+                    : stage >= 1
+                    ? Math.min(waveLengths[stage] + 40, waveLengths[0])
                     : 0)
                 : undefined
             }
@@ -693,7 +704,7 @@ export default function FeaturesSection() {
                   top: pctY(numberFirst ? dotTop : railEnd),
                   width: "2px",
                   height: pctY(numberFirst ? railEnd - dotTop : dotTop - railEnd),
-                  background: numberFirst ? tone : "#c9c9c9",
+                  background: tone,
                   transition: `background 0.5s ${WAVE_EASE}`,
                 }}
               />
