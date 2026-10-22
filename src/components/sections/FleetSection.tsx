@@ -21,7 +21,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInView } from "@/hooks/useInView";
 import PillButtonContent from "@/components/ui/PillButtonContent";
 import DotsNav from "@/components/ui/DotsNav";
@@ -85,6 +85,69 @@ export default function FleetSection() {
   const [activeTab, setActiveTab] = useState("All Vehicles");
 
   const visibleCars = activeTab === "All Vehicles" ? cars : cars.filter((c) => c.category === activeTab);
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [edge, setEdge] = useState({ start: true, end: false, page: 0, pages: 1 });
+
+  const updateEdge = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const pages = Math.max(1, Math.ceil(el.scrollWidth / el.clientWidth - 0.05));
+    const page = max <= 0 ? 0 : Math.round((el.scrollLeft / max) * (pages - 1));
+    setEdge({ start: el.scrollLeft <= 2, end: el.scrollLeft >= max - 2, page, pages });
+  };
+
+  useEffect(() => {
+    trackRef.current?.scrollTo({ left: 0 });
+    updateEdge();
+    window.addEventListener("resize", updateEdge);
+    return () => window.removeEventListener("resize", updateEdge);
+  }, [activeTab]);
+
+  const pausedRef = useRef(false);
+  const animRef = useRef(0);
+
+  // Slow eased glide (native smooth-scroll is too quick and fights scroll-snap).
+  const glideTo = (target: number, duration = 1400) => {
+    const el = trackRef.current;
+    if (!el) return;
+    cancelAnimationFrame(animRef.current);
+    const from = el.scrollLeft;
+    const t0 = performance.now();
+    el.style.scrollSnapType = "none";
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / duration);
+      const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      el.scrollLeft = from + (target - from) * e;
+      if (p < 1) animRef.current = requestAnimationFrame(tick);
+      else el.style.scrollSnapType = "";
+    };
+    animRef.current = requestAnimationFrame(tick);
+  };
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const el = trackRef.current;
+      if (!el || pausedRef.current) return;
+      const r = el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 2) return;
+      if (el.scrollLeft >= max - 2) glideTo(0, 1800);
+      else slide(1);
+    }, 3000);
+    return () => clearInterval(id);
+  }, [activeTab]);
+
+  const slide = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    const step = card ? card.offsetWidth + parseFloat(getComputedStyle(el).columnGap || "0") : el.clientWidth;
+    const max = el.scrollWidth - el.clientWidth;
+    glideTo(Math.max(0, Math.min(max, el.scrollLeft + dir * step)));
+  };
 
   return (
     <section
@@ -167,11 +230,37 @@ export default function FleetSection() {
         </div>
 
         {/* Car Cards Grid — each card rises/fades in with a stagger */}
-        <div className="grid md:grid-cols-3 gap-[1.25vw]">
+        <div className="relative">
+        {(["prev", "next"] as const).map((d) => {
+          const disabled = d === "prev" ? edge.start : edge.end;
+          return (
+            <button
+              key={d}
+              type="button"
+              aria-label={d === "prev" ? "Previous vehicles" : "Next vehicles"}
+              onClick={() => slide(d === "prev" ? -1 : 1)}
+              disabled={disabled}
+              className={`absolute top-[8vw] z-10 flex h-[2.6vw] w-[2.6vw] min-h-9 min-w-9 items-center justify-center rounded-full bg-white text-black shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition hover:bg-black hover:text-white disabled:pointer-events-none disabled:opacity-0 ${
+                d === "prev" ? "left-[-1.3vw]" : "right-[-1.3vw]"
+              }`}
+            >
+              <svg width="14" height="14" viewBox="0 0 12 12" fill="none" className={d === "prev" ? "rotate-180" : ""}>
+                <path d="M4 1l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          );
+        })}
+        <div
+          ref={trackRef}
+          onScroll={updateEdge}
+          onMouseEnter={() => (pausedRef.current = true)}
+          onMouseLeave={() => (pausedRef.current = false)}
+          className="flex gap-[1.25vw] overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {visibleCars.map((car, i) => (
             <div
               key={car.id}
-              className={`rounded-[1.25vw] overflow-hidden transition-all duration-700 ease-out ${
+              className={`snap-start shrink-0 basis-[calc((100%-2.5vw)/3)] rounded-[1.25vw] overflow-hidden transition-all duration-700 ease-out ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
               }`}
               style={{ transitionDelay: isInView ? `${i * 130}ms` : "0ms" }}
@@ -282,8 +371,9 @@ export default function FleetSection() {
             </div>
           ))}
         </div>
+        </div>
 
-        <DotsNav count={Math.ceil(visibleCars.length / 3)} activeIndex={0} className="mt-[2.0833vw]" />
+        <DotsNav count={edge.pages} activeIndex={edge.page} className="mt-[2.0833vw]" />
 
       </div>
     </section>
