@@ -28,29 +28,57 @@ import DotsNav from "@/components/ui/DotsNav";
 
 const cars = [
   {
+    id: "economy-saloon",
+    category: "Economy Saloon",
+    name: "VW Passat / Kia Niro or similar",
+    seating: "According to model",
+    image: "/images/fleet/economy-saloon-vw-passat.webp",
+  },
+  {
+    id: "business-class",
+    category: "Business Class",
+    name: "Mercedes-Benz E-Class or similar",
+    seating: "According to model",
+    image: "/images/fleet/business-class-mercedes-e-class.webp",
+  },
+  {
     id: "first-class",
     category: "First Class",
-    name: "First Class",
-    description: "An elevated setting for special arrivals and unhurried private journeys.",
-    image: "/images/fleet/first class.png",
+    name: "Mercedes-Benz S-Class or similar",
+    seating: "According to model",
+    image: "/images/fleet/first-class-mercedes-s-class.webp",
   },
   {
-    id: "business",
-    category: "Business",
-    name: "Business",
-    description: "Refined comfort for focused days, business travel and airport transfers.",
-    image: "/images/fleet/business.png",
+    id: "first-class-van",
+    category: "First Class Van",
+    name: "Mercedes-Benz V-Class or similar",
+    seating: "According to model",
+    image: "/images/fleet/first-class-van-mercedes-v-class.webp",
   },
   {
-    id: "luxury-suv",
-    category: "Luxury SUV",
-    name: "Luxury SUV",
-    description: "A confident presence with a spacious feel for considered, comfortable travel.",
-    image: "/images/fleet/luxury SUV.png",
+    id: "van",
+    category: "Van",
+    name: "8/9 - Seater Van",
+    seating: "8–9 passengers",
+    image: "/images/fleet/van-8-9-seater.webp",
+  },
+  {
+    id: "mpv",
+    category: "MPV",
+    name: "VW Sharan / Ford Galaxy or similar",
+    seating: "7 passengers",
+    image: "/images/fleet/mpv-vw-sharan.webp",
+  },
+  {
+    id: "standard-van",
+    category: "Standard Van",
+    name: "Hyundai i800 / VW Transporter or similar",
+    seating: "According to model",
+    image: "/images/fleet/standard-van-hyundai-i800.webp",
   },
 ];
 
-const tabs = ["All Vehicles", "First Class", "Business", "Luxury SUV"];
+const tabs = ["All Vehicles", "Business Class", "First Class", "Economy Saloon", "First Class Van", "Van", "MPV", "Standard Van"];
 
 export default function FleetSection() {
   const { ref, isInView } = useInView<HTMLElement>();
@@ -159,28 +187,62 @@ export default function FleetSection() {
               </div>
               <div className="bg-[#EFEFEF] p-[1.6667vw]">
                 <h3
-                  className="uppercase text-black mb-[0.8333vw]"
+                  className="text-black mb-[0.8333vw]"
                   style={{
                     fontFamily: "'Inter', sans-serif",
                     fontWeight: 700,
-                    fontSize: "1.25vw",
+                    fontSize: "clamp(14px, 1.15vw, 22px)",
                     lineHeight: "1.2",
                     letterSpacing: "-0.01em",
                   }}
                 >
                   {car.name}
                 </h3>
-                <p
-                  className="text-gray-600 mb-[1.25vw]"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontWeight: 400,
-                    fontSize: "0.8333vw",
-                    lineHeight: "1.5",
-                  }}
+
+                {/* Seating row */}
+                <div
+                  className="flex items-center justify-between bg-white rounded-[0.3125vw] px-[0.625vw] py-[0.4167vw] mb-[1.0417vw]"
+                  style={{ fontFamily: "'Inter', sans-serif", fontSize: "clamp(10px, 0.7292vw, 14px)" }}
                 >
-                  {car.description}
-                </p>
+                  <span className="font-bold uppercase tracking-wide text-black">Seating:</span>
+                  <span className="text-black font-normal">{car.seating}</span>
+                </div>
+
+                {/* Amenity icons */}
+                <div className="grid grid-cols-4 gap-x-[0.4167vw] gap-y-[0.4167vw] mb-[1.0417vw]">
+                  {[
+                    {
+                      label: "Wifi Available",
+                      // eslint-disable-next-line @next/next/no-img-element
+                      icon: <img src="/images/card icons/wifi-available.png" alt="Wifi Available" className="w-full h-full object-contain" draggable={false} />,
+                    },
+                    {
+                      label: "GPS Tracking",
+                      // eslint-disable-next-line @next/next/no-img-element
+                      icon: <img src="/images/card icons/gps-tracking.png" alt="GPS Tracking" className="w-full h-full object-contain" draggable={false} />,
+                    },
+                    {
+                      label: "Water Available",
+                      // eslint-disable-next-line @next/next/no-img-element
+                      icon: <img src="/images/card icons/water-available.png" alt="Water Available" className="w-full h-full object-contain" draggable={false} />,
+                    },
+                    {
+                      label: "Child Seat Available",
+                      // eslint-disable-next-line @next/next/no-img-element
+                      icon: <img src="/images/card icons/child-seat-available.png" alt="Child Seat Available" className="w-full h-full object-contain" draggable={false} />,
+                    },
+                  ].map(({ label, icon }) => (
+                    <div key={label} className="flex flex-col items-center gap-[0.2083vw] text-center">
+                      <div className="w-[1.25vw] h-[1.25vw] min-w-[18px] min-h-[18px] text-black">{icon}</div>
+                      <span
+                        className="text-black leading-tight"
+                        style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400, fontSize: "clamp(8px, 0.5208vw, 10px)" }}
+                      >
+                        {label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
 
                 <div className="border-t border-gray-300 mb-[1.0417vw]" />
 
@@ -221,7 +283,7 @@ export default function FleetSection() {
           ))}
         </div>
 
-        <DotsNav count={visibleCars.length} activeIndex={0} className="mt-[2.0833vw]" />
+        <DotsNav count={Math.ceil(visibleCars.length / 3)} activeIndex={0} className="mt-[2.0833vw]" />
 
       </div>
     </section>

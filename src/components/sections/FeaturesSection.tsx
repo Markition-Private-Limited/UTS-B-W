@@ -497,6 +497,40 @@ export default function FeaturesSection() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  // ── Scroll-lock: keep section pinned until wave fully fills ─────────────
+  // Real scroll (both mouse and touchpad) drives stage advancement naturally
+  // via the scroll handler below. This lock ONLY prevents the section from
+  // unpinning before the last animation completes: once the user has scrolled
+  // to the end of the wrapper (scrolledSoFar ≥ EXTRA_SCROLL_PX), further
+  // downward scroll is blocked until stage 5's CSS transition finishes.
+  // Upward scroll is always allowed through.
+  const waveCompleteRef = useRef(false); // true after stage 5 + transition
+  const stageRef = useRef(0);
+  const isMobileRef = useRef(false);
+  useEffect(() => { stageRef.current = stage; }, [stage]);
+  useEffect(() => { isMobileRef.current = isMobile; }, [isMobile]);
+
+  useEffect(() => {
+    if (stage < 5) { waveCompleteRef.current = false; return; }
+    const t = setTimeout(() => { waveCompleteRef.current = true; }, FILL_DURATION_MS + 50);
+    return () => clearTimeout(t);
+  }, [stage]);
+
+  // Boundary lock — only blocks the very last bit of scroll (past the end of
+  // the wrapper) until waveCompleteRef fires. Real scroll inside the wrapper
+  // is never intercepted, so touchpad and mouse both feel natural.
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      if (isMobileRef.current || e.deltaY <= 0 || waveCompleteRef.current) return;
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+      const scrolledSoFar = Math.max(0, -wrapper.getBoundingClientRect().top);
+      if (scrolledSoFar >= EXTRA_SCROLL_PX - 1) e.preventDefault();
+    };
+    window.addEventListener('wheel', onWheel, { passive: false });
+    return () => window.removeEventListener('wheel', onWheel);
+  }, []); // stable: all mutable state via refs
+
   useEffect(() => {
     const path = waveRef.current;
     if (!path) return;
@@ -562,7 +596,7 @@ export default function FeaturesSection() {
       // lingering. This only sets the *target* — see the pacing effect
       // below for what's actually shown.
       const newTarget =
-        progress >= 1 ? 5 : progress >= 0.8 ? 4 : progress >= 0.6 ? 3 : progress >= 0.4 ? 2 : progress >= 0.2 ? 1 : 0;
+        progress >= 0.8 ? 5 : progress >= 0.6 ? 4 : progress >= 0.4 ? 3 : progress >= 0.2 ? 2 : progress > 0 ? 1 : 0;
       setTargetStage((prev) => (prev === newTarget ? prev : newTarget));
     };
 
@@ -582,8 +616,16 @@ export default function FeaturesSection() {
       setStage(targetStage);
       return;
     }
-    const t = setTimeout(() => setStage((s) => Math.min(s + 1, targetStage)), FILL_DURATION_MS);
-    return () => clearTimeout(t);
+    if (stage + 1 >= targetStage) {
+      // Single-step advance — move immediately so the CSS transition starts
+      // the moment the scroll threshold is crossed, with no extra delay.
+      setStage((s) => Math.min(s + 1, targetStage));
+    } else {
+      // Multiple stages queued (fast scroll/trackpad) — pace them one at a
+      // time so each icon still gets its own animation before the next.
+      const t = setTimeout(() => setStage((s) => Math.min(s + 1, targetStage)), FILL_DURATION_MS);
+      return () => clearTimeout(t);
+    }
   }, [stage, targetStage]);
 
   // Fill length is simply the committed checkpoint for the current (paced)
