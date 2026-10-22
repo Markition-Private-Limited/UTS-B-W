@@ -514,13 +514,28 @@ export default function FeaturesSection() {
     };
 
     const total = path.getTotalLength();
-    const r0 = pointAtX(path, LAYOUT[0].dotX);
-    const r1 = pointAtX(path, LAYOUT[1].dotX);
-    const r2 = pointAtX(path, LAYOUT[2].dotX);
-    const r3 = pointAtX(path, LAYOUT[3].dotX);
 
-    setWaveLengths([total, r0.length, r1.length, r2.length, r3.length]);
-    setDotY([r0.y, r1.y, r2.y, r3.y]);
+    // The fill should reach (and visually disappear behind) each icon
+    // tile, not just its dot marker — `dotX` sits ~24-25 units to the left
+    // of the icon tile's own left edge (iconX), let alone its horizontal
+    // center, so filling only to dotX left a visible gray gap before the
+    // icon. Measure to the icon's actual horizontal center instead (the
+    // icon tile is 152 wide), matching where the curve already passes
+    // through the icon vertically.
+    const ICON_HALF_W = 76;
+    const f0 = pointAtX(path, LAYOUT[0].iconX + ICON_HALF_W);
+    const f1 = pointAtX(path, LAYOUT[1].iconX + ICON_HALF_W);
+    const f2 = pointAtX(path, LAYOUT[2].iconX + ICON_HALF_W);
+    const f3 = pointAtX(path, LAYOUT[3].iconX + ICON_HALF_W);
+    setWaveLengths([total, f0.length, f1.length, f2.length, f3.length]);
+
+    // dotY still describes the curve's y at the dot marker's own x (kept
+    // separate from the fill-target measurement above).
+    const d0 = pointAtX(path, LAYOUT[0].dotX);
+    const d1 = pointAtX(path, LAYOUT[1].dotX);
+    const d2 = pointAtX(path, LAYOUT[2].dotX);
+    const d3 = pointAtX(path, LAYOUT[3].dotX);
+    setDotY([d0.y, d1.y, d2.y, d3.y]);
   }, []);
 
   useEffect(() => {
