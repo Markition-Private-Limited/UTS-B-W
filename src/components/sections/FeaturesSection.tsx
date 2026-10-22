@@ -454,6 +454,11 @@ export default function FeaturesSection() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const waveRef = useRef<SVGPathElement>(null);
   const [stage, setStage] = useState(0); // 0..4 — how many icons are "reached" (0 = rest, nothing shown)
+  // Raw continuous scroll progress (0..1) — drives the wave fill smoothly,
+  // independent of `stage`. The fill tracks scroll in real time (half filled
+  // after 1 of the 2 scrolls toward an icon), while `stage`/`reached` only
+  // snaps once that icon's 2-scroll segment is fully complete.
+  const [progress, setProgress] = useState(0);
   // Real arc-length (in SVG user units) from the wave path's start (the very
   // left screen edge, x=0) to each icon's x-position, measured from the
   // actual curve — not assumed to be evenly spaced, since the humps make
@@ -520,14 +525,16 @@ export default function FeaturesSection() {
       const total = el.offsetHeight - window.innerHeight;
       if (total <= 0) return;
       const scrolled = Math.max(0, -rect.top);
-      const progress = Math.min(1, scrolled / total);
+      const newProgress = Math.min(1, scrolled / total);
+      setProgress((prev) => (prev === newProgress ? prev : newProgress));
 
-      // Starts at stage 0 (nothing revealed — no numbers, no fill) and
-      // reveals one icon per quarter of the wrapper's scroll budget, that
-      // budget calibrated (see wrapperRef's height below) to ~2 wheel-
-      // scrolls per quarter, 8 total, so the section unpins right as the
-      // 8th scroll finishes the last fill instead of lingering.
-      const newStage = progress >= 1 ? 4 : progress >= 0.75 ? 3 : progress >= 0.5 ? 2 : progress >= 0.25 ? 1 : 0;
+      // Starts at stage 0 (nothing revealed — no numbers) and reveals one
+      // icon per quarter of the wrapper's scroll budget, that budget
+      // calibrated (see wrapperRef's height below) to ~2 wheel-scrolls per
+      // quarter, 8 total, so the section unpins right as the 8th scroll
+      // finishes the last fill instead of lingering. The wave fill itself
+      // (below) tracks `progress` continuously, not this discrete stage.
+      const newStage = newProgress >= 1 ? 4 : newProgress >= 0.75 ? 3 : newProgress >= 0.5 ? 2 : newProgress >= 0.25 ? 1 : 0;
       setStage((prev) => (prev === newStage ? prev : newStage));
     };
 
@@ -535,6 +542,20 @@ export default function FeaturesSection() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Continuous fill length — interpolates arc-length between the real
+  // measured checkpoints (waveLengths) for whichever quarter `progress`
+  // currently sits in, so the line visibly creeps forward scroll-by-scroll
+  // (half filled after 1 of a segment's 2 scrolls) instead of jumping all
+  // at once when the segment completes.
+  let fillLength = 0;
+  if (waveLengths) {
+    const qi = Math.min(3, Math.floor(progress / 0.25));
+    const qp = Math.min(1, Math.max(0, (progress - qi * 0.25) / 0.25));
+    const startLen = qi === 0 ? 0 : waveLengths[qi];
+    const endLen = waveLengths[qi + 1];
+    fillLength = startLen + (endLen - startLen) * qp;
+  }
 
   return (
     <div ref={wrapperRef} style={{ height: isMobile ? "auto" : `calc(100vh + ${EXTRA_SCROLL_PX}px)` }}>
@@ -646,17 +667,8 @@ export default function FeaturesSection() {
             strokeWidth="4"
             strokeLinecap="round"
             strokeDasharray={waveLengths ? waveLengths[0] : undefined}
-            strokeDashoffset={
-              waveLengths
-                ? waveLengths[0] -
-                  (stage >= 4
-                    ? waveLengths[0]
-                    : stage >= 1
-                    ? Math.min(waveLengths[stage] + 40, waveLengths[0])
-                    : 0)
-                : undefined
-            }
-            style={{ transition: `stroke-dashoffset 0.7s ${WAVE_EASE}`, visibility: waveLengths ? "visible" : "hidden" }}
+            strokeDashoffset={waveLengths ? waveLengths[0] - fillLength : undefined}
+            style={{ transition: `stroke-dashoffset 0.12s linear`, visibility: waveLengths ? "visible" : "hidden" }}
           />
         </svg>
 
