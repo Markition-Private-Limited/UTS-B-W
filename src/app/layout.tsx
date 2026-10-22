@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/providers/SmoothScroll";
+import PageLoader from "@/components/ui/PageLoader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,6 +14,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "United Travel Services",
   description: "The Art of a Better Journey",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -22,6 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <PageLoader />
         <SmoothScroll />
         {children}
       </body>
