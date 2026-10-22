@@ -284,10 +284,13 @@ function BookingField({
   className?: string;
 }) {
   return (
-    <div className={`flex flex-col flex-1 min-w-0 ${className}`}>
+    <div
+      className={`group flex flex-col flex-1 min-w-0 transition-transform duration-200 ease-out hover:scale-[1.04] ${className}`}
+      style={{ transformOrigin: "left center" }}
+    >
       <span
-        className={`text-[10px] font-semibold tracking-wide mb-0.5 ${
-          showError ? "text-red-400" : "text-white/60"
+        className={`text-[10px] font-semibold tracking-wide mb-0.5 transition-colors duration-200 ${
+          showError ? "text-red-400" : "text-white/60 group-hover:text-white/80"
         }`}
       >
         {label}
