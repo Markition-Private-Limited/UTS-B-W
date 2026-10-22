@@ -13,11 +13,36 @@ const HERO_IMAGES = [
 
 const SLIDE_MS = 4000;
 
+type BookingForm = {
+  pickup: string;
+  destination: string;
+  date: string;
+  time: string;
+};
+
+const EMPTY_FORM: BookingForm = { pickup: "", destination: "", date: "", time: "" };
+
 export default function HeroSection() {
   const imgDivRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [panelTilt, setPanelTilt] = useState({ rx: 0, ry: 0, mx: 50, my: 50 });
   const [activeImage, setActiveImage] = useState(0);
+  const [form, setForm] = useState<BookingForm>(EMPTY_FORM);
+  const [touched, setTouched] = useState(false);
+
+  const updateField = (key: keyof BookingForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setTouched(true);
+    const missing = Object.values(form).some((v) => !v.trim());
+    if (missing) return; // required-field styling (below) shows what's missing
+    // No live booking backend on this marketing site yet — take the user to
+    // the fleet so they can pick a vehicle for the trip they just described.
+    document.getElementById("fleet")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -183,7 +208,8 @@ export default function HeroSection() {
           />
 
           {/* Fields row */}
-          <div
+          <form
+            onSubmit={handleSubmit}
             className="relative z-10 w-full flex flex-col md:flex-row md:items-center md:divide-x divide-white/20 gap-4 md:gap-0"
             style={{
               transform: `translate3d(${panelTilt.ry * 0.8}px, ${-panelTilt.rx * 0.8}px, 0)`,
@@ -193,34 +219,47 @@ export default function HeroSection() {
             <BookingField
               label="Pickup Location"
               placeholder="Enter pickup location"
+              value={form.pickup}
+              onChange={updateField("pickup")}
+              showError={touched && !form.pickup.trim()}
               className="md:pl-0 md:pr-8"
             />
             <BookingField
               label="Destination"
               placeholder="Where would you like to go?"
+              value={form.destination}
+              onChange={updateField("destination")}
+              showError={touched && !form.destination.trim()}
               className="md:px-8"
             />
             <BookingField
               label="Pickup Date"
-              placeholder="Select date"
+              type="date"
+              value={form.date}
+              onChange={updateField("date")}
+              showError={touched && !form.date.trim()}
               className="md:px-8"
             />
             <BookingField
               label="Pickup Time"
-              placeholder="Select time"
+              type="time"
+              value={form.time}
+              onChange={updateField("time")}
+              showError={touched && !form.time.trim()}
               className="md:px-8"
             />
 
             {/* Find Your Ride CTA */}
             <div className="md:pl-6 flex-shrink-0">
               <button
+                type="submit"
                 className="group relative overflow-hidden inline-flex items-center gap-2 text-black text-[11px] font-semibold tracking-[0.12em] uppercase px-6 py-4 rounded-full whitespace-nowrap border-[1.5px] border-transparent transition-all duration-500 hover:border-white/50 hover:shadow-[0_0_16px_rgba(255,255,255,0.25)]"
                 style={{ background: "#ffffff", minWidth: "168px" }}
               >
                 <PillButtonContent fill="black">Find Your Ride</PillButtonContent>
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </section>
@@ -230,20 +269,37 @@ export default function HeroSection() {
 function BookingField({
   label,
   placeholder,
+  type = "text",
+  value,
+  onChange,
+  showError = false,
   className = "",
 }: {
   label: string;
-  placeholder: string;
+  placeholder?: string;
+  type?: "text" | "date" | "time";
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  showError?: boolean;
   className?: string;
 }) {
   return (
     <div className={`flex flex-col flex-1 min-w-0 ${className}`}>
-      <span className="text-[10px] font-semibold text-white/60 tracking-wide mb-0.5">
+      <span
+        className={`text-[10px] font-semibold tracking-wide mb-0.5 ${
+          showError ? "text-red-400" : "text-white/60"
+        }`}
+      >
         {label}
       </span>
-      <span className="text-[13px] font-medium text-white truncate">
-        {placeholder}
-      </span>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        style={{ colorScheme: "dark" }}
+        className="w-full bg-transparent text-[13px] font-medium text-white placeholder:text-white/40 truncate outline-none"
+      />
     </div>
   );
 }
