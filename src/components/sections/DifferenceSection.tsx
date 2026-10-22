@@ -79,7 +79,7 @@ export default function DifferenceSection() {
       id="difference"
       ref={ref}
       data-navbar-theme="light"
-      className="w-full bg-white pt-[58px] pb-[var(--section-spacing-y)] px-[4.1667vw]"
+      className="w-full bg-white pt-[28px] pb-[var(--section-spacing-y)] px-[4.1667vw]"
     >
       <div className="max-w-[1920px] mx-auto grid md:grid-cols-2 gap-[4.1667vw] items-center">
 
