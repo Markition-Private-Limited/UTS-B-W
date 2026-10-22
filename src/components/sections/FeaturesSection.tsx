@@ -341,10 +341,22 @@ export default function FeaturesSection() {
 // Normal page scroll (not pinned). As the stage scrolls through the viewport,
 // progress 0→1 maps to 3 discrete stages. Each stage turns the wave segment
 // up to the next dot black, and the icon at that dot black.
-const vw = (px: number) => `${(px / 19.2).toFixed(4)}vw`;
-
+const STAGE_W = 1920;
 const STAGE_H = 560;
 const WAVE_EASE = "cubic-bezier(0.4,0,0.2,1)";
+
+// Percentage of the stage's own rendered box, not the viewport. The wave SVG
+// fills the stage via w-full/h-full, so its coordinate space is exactly the
+// stage's actual box — but `vw` units are relative to the *true* viewport,
+// which includes the scrollbar gutter. At full browser width (scrollbar
+// visible) those two bases diverge by the scrollbar's width, so icons/text
+// positioned in `vw` drift away from the wave line the wider the window
+// gets. Percentages of the stage box can't drift: they're defined in terms
+// of the exact same box the SVG is drawn into. The stage also locks its
+// aspect ratio to STAGE_W/STAGE_H (instead of a vw-based height) so pctX and
+// pctY stay mutually consistent regardless of actual rendered width.
+const pctX = (px: number) => `${((px / STAGE_W) * 100).toFixed(4)}%`;
+const pctY = (px: number) => `${((px / STAGE_H) * 100).toFixed(4)}%`;
 
 type Layout = {
   // "numberFirst": number → dot/text → icon (top to bottom). "iconFirst": icon → number → dot/text.
@@ -598,7 +610,7 @@ export default function FeaturesSection() {
         </div>
       ) : (
       /* Stage — wave line + four staggered steps */
-      <div className="relative w-full" style={{ height: vw(STAGE_H), marginTop: "3.5vw" }}>
+      <div className="relative w-full" style={{ aspectRatio: `${STAGE_W} / ${STAGE_H}`, marginTop: "3.5vw" }}>
         {/* Wave line — rendered first (behind the icon tiles and connectors);
             the icon tile's backdrop + exact connector rail-end already close
             the gap, so the wave doesn't need to paint over the icons. */}
@@ -664,9 +676,9 @@ export default function FeaturesSection() {
                 draggable={false}
                 className="absolute select-none pointer-events-none"
                 style={{
-                  left: vw(l.numberX),
-                  top: vw(numberFirst ? 5 : 296),
-                  width: vw(l.numberW),
+                  left: pctX(l.numberX),
+                  top: pctY(numberFirst ? 5 : 296),
+                  width: pctX(l.numberW),
                   opacity: reached ? 1 : 0,
                   transform: `translateY(${reached ? 0 : 24}px)`,
                   transition: `opacity 0.6s ${WAVE_EASE}, transform 0.6s ${WAVE_EASE}`,
@@ -677,10 +689,10 @@ export default function FeaturesSection() {
               <div
                 className="absolute"
                 style={{
-                  left: vw(l.dotX + 7),
-                  top: vw(numberFirst ? dotTop : railEnd),
+                  left: pctX(l.dotX + 7),
+                  top: pctY(numberFirst ? dotTop : railEnd),
                   width: "2px",
-                  height: vw(numberFirst ? railEnd - dotTop : dotTop - railEnd),
+                  height: pctY(numberFirst ? railEnd - dotTop : dotTop - railEnd),
                   background: numberFirst ? tone : "#c9c9c9",
                   transition: `background 0.5s ${WAVE_EASE}`,
                 }}
@@ -688,10 +700,10 @@ export default function FeaturesSection() {
               <div
                 className="absolute rounded-full"
                 style={{
-                  left: vw(l.dotX),
-                  top: vw(dotTop - 8),
-                  width: vw(16),
-                  height: vw(16),
+                  left: pctX(l.dotX),
+                  top: pctY(dotTop - 8),
+                  width: pctX(16),
+                  height: pctY(16),
                   backgroundColor: tone,
                   opacity: reached ? 1 : 0,
                   transform: `translateY(${reached ? 0 : 24}px)`,
@@ -703,9 +715,9 @@ export default function FeaturesSection() {
               <div
                 className="absolute"
                 style={{
-                  left: vw(l.textX),
-                  top: vw(textTop),
-                  width: vw(l.textW),
+                  left: pctX(l.textX),
+                  top: pctY(textTop),
+                  width: pctX(l.textW),
                   opacity: reached ? 1 : 0,
                   transform: `translateY(${reached ? 0 : 24}px)`,
                   transition: `opacity 0.6s ${WAVE_EASE}, transform 0.6s ${WAVE_EASE}`,
@@ -733,7 +745,7 @@ export default function FeaturesSection() {
               {/* Icon tile — crossfades gray→black as the wave reaches it */}
               <div
                 className="absolute"
-                style={{ left: vw(l.iconX), top: vw(numberFirst ? 284 : 101), width: vw(152) }}
+                style={{ left: pctX(l.iconX), top: pctY(numberFirst ? 284 : 101), width: pctX(152) }}
               >
                 <StepIconTile paths={ICON_PATHS[i]} active={reached} />
               </div>
