@@ -346,6 +346,7 @@ export default function FeaturesSection() {
 const STAGE_W = 1920;
 const STAGE_H = 560;
 const WAVE_EASE = "cubic-bezier(0.4,0,0.2,1)";
+const FILL_DURATION_MS = 650; // how long each single-icon fill step takes to animate
 
 // A single "scroll" varies a lot by device — a basic mouse wheel notch is
 // ~100px, but trackpads and high-res mice commonly send 300-500px+ per
@@ -457,12 +458,14 @@ export default function FeaturesSection() {
   // finishes filling (stage 3), at which point normal scroll continues.
   const wrapperRef = useRef<HTMLDivElement>(null);
   const waveRef = useRef<SVGPathElement>(null);
+  // `targetStage` is wherever the raw scroll position says we should be —
+  // it can jump straight to 4 if the user scrolls far in one big gesture.
+  // `stage` is what's actually displayed/revealed; it's paced to advance
+  // only one icon at a time (see the effect below), so a single big scroll
+  // can't make the fill skip ahead past an icon that hasn't been revealed
+  // yet — it queues up and plays out one reveal at a time instead.
+  const [targetStage, setTargetStage] = useState(0);
   const [stage, setStage] = useState(0); // 0..4 — how many icons are "reached" (0 = rest, nothing shown)
-  // Raw continuous scroll progress (0..1) — drives the wave fill smoothly,
-  // independent of `stage`. The fill tracks scroll in real time (half filled
-  // after 1 of the 2 scrolls toward an icon), while `stage`/`reached` only
-  // snaps once that icon's 2-scroll segment is fully complete.
-  const [progress, setProgress] = useState(0);
   // Real arc-length (in SVG user units) from the wave path's start (the very
   // left screen edge, x=0) to each icon's x-position, measured from the
   // actual curve — not assumed to be evenly spaced, since the humps make
@@ -529,17 +532,16 @@ export default function FeaturesSection() {
       const total = el.offsetHeight - window.innerHeight;
       if (total <= 0) return;
       const scrolled = Math.max(0, -rect.top);
-      const newProgress = Math.min(1, scrolled / total);
-      setProgress((prev) => (prev === newProgress ? prev : newProgress));
+      const progress = Math.min(1, scrolled / total);
 
       // Starts at stage 0 (nothing revealed — no numbers) and reveals one
       // icon per quarter of the wrapper's scroll budget, that budget
       // calibrated (see wrapperRef's height below) to ~2 wheel-scrolls per
       // quarter, 8 total, so the section unpins right as the 8th scroll
-      // finishes the last fill instead of lingering. The wave fill itself
-      // (below) tracks `progress` continuously, not this discrete stage.
-      const newStage = newProgress >= 1 ? 4 : newProgress >= 0.75 ? 3 : newProgress >= 0.5 ? 2 : newProgress >= 0.25 ? 1 : 0;
-      setStage((prev) => (prev === newStage ? prev : newStage));
+      // finishes the last fill instead of lingering. This only sets the
+      // *target* — see the pacing effect below for what's actually shown.
+      const newTarget = progress >= 1 ? 4 : progress >= 0.75 ? 3 : progress >= 0.5 ? 2 : progress >= 0.25 ? 1 : 0;
+      setTargetStage((prev) => (prev === newTarget ? prev : newTarget));
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -547,19 +549,26 @@ export default function FeaturesSection() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Continuous fill length — interpolates arc-length between the real
-  // measured checkpoints (waveLengths) for whichever quarter `progress`
-  // currently sits in, so the line visibly creeps forward scroll-by-scroll
-  // (half filled after 1 of a segment's 2 scrolls) instead of jumping all
-  // at once when the segment completes.
-  let fillLength = 0;
-  if (waveLengths) {
-    const qi = Math.min(3, Math.floor(progress / 0.25));
-    const qp = Math.min(1, Math.max(0, (progress - qi * 0.25) / 0.25));
-    const startLen = qi === 0 ? 0 : waveLengths[qi];
-    const endLen = waveLengths[qi + 1];
-    fillLength = startLen + (endLen - startLen) * qp;
-  }
+  // Pace `stage` toward `targetStage` one icon at a time. A single big
+  // scroll (fast trackpad, high-res mouse) can set targetStage straight to
+  // 4 — without this, the fill would jump/stretch ahead of whatever icon
+  // is actually revealed. Scrolling back up snaps down immediately (no
+  // need to replay reveals in reverse); only forward progress is paced.
+  useEffect(() => {
+    if (stage === targetStage) return;
+    if (stage > targetStage) {
+      setStage(targetStage);
+      return;
+    }
+    const t = setTimeout(() => setStage((s) => Math.min(s + 1, targetStage)), FILL_DURATION_MS);
+    return () => clearTimeout(t);
+  }, [stage, targetStage]);
+
+  // Fill length is simply the committed checkpoint for the current (paced)
+  // stage — the CSS transition below (duration = FILL_DURATION_MS) is what
+  // animates it smoothly from the previous checkpoint, so the line always
+  // creeps continuously but never past the icon that's actually revealed.
+  const fillLength = waveLengths ? (stage === 0 ? 0 : waveLengths[stage]) : 0;
 
   return (
     <div ref={wrapperRef} style={{ height: isMobile ? "auto" : `calc(100vh + ${EXTRA_SCROLL_PX}px)` }}>
@@ -672,7 +681,7 @@ export default function FeaturesSection() {
             strokeLinecap="round"
             strokeDasharray={waveLengths ? waveLengths[0] : undefined}
             strokeDashoffset={waveLengths ? waveLengths[0] - fillLength : undefined}
-            style={{ transition: `stroke-dashoffset 0.12s linear`, visibility: waveLengths ? "visible" : "hidden" }}
+            style={{ transition: `stroke-dashoffset ${FILL_DURATION_MS}ms ${WAVE_EASE}`, visibility: waveLengths ? "visible" : "hidden" }}
           />
         </svg>
 
