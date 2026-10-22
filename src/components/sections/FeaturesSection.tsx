@@ -347,7 +347,11 @@ const STAGE_W = 1920;
 const STAGE_H = 560;
 const WAVE_EASE = "cubic-bezier(0.4,0,0.2,1)";
 
-const PX_PER_WHEEL_SCROLL = 100; // a typical single wheel-notch deltaY
+// A single "scroll" varies a lot by device — a basic mouse wheel notch is
+// ~100px, but trackpads and high-res mice commonly send 300-500px+ per
+// gesture. Biased high (toward needing more physical scrolling) since
+// "too fast" reads as broken, while "needs one more nudge" doesn't.
+const PX_PER_WHEEL_SCROLL = 350;
 const SCROLLS_PER_STAGE = 2;
 const STAGE_COUNT = 4;
 // Extra scroll distance (beyond the pinned 100vh) the wrapper provides —
@@ -562,10 +566,10 @@ export default function FeaturesSection() {
     <section
       id="features"
       data-navbar-theme="light"
-      className={`w-full overflow-hidden flex flex-col justify-center ${
+      className={`w-full overflow-hidden flex flex-col justify-start ${
         isMobile ? "" : "sticky top-0 h-screen"
       }`}
-      style={{ backgroundColor: "#fafafa", paddingTop: "48px", paddingBottom: "96px" }}
+      style={{ backgroundColor: "#fafafa", paddingTop: "88px", paddingBottom: "48px" }}
     >
       {/* Header */}
       <div className="text-center px-6" style={{ padding: isMobile ? "0 24px" : "0 4vw" }}>
