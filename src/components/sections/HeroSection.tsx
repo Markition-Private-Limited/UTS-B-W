@@ -3,7 +3,15 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import PillButtonContent from "@/components/ui/PillButtonContent";
-import BookingTabs from "@/components/ui/BookingTabs";
+import BookingTabs, { type Tab } from "@/components/ui/BookingTabs";
+import BookingModal from "@/components/booking/BookingModal";
+import { DRAFT_KEY, type BookingDraft, type ServiceType } from "@/lib/booking";
+
+const TAB_TO_SERVICE: Record<Tab, ServiceType> = {
+  "Airport Transfer": "transfer",
+  "Day Booking": "day",
+  "Hourly Chauffeur": "hourly",
+};
 
 const HERO_IMAGES = [
   { src: "/hero_img.png", alt: "Executive chauffeur service" },
@@ -29,6 +37,17 @@ export default function HeroSection() {
   const [activeImage, setActiveImage] = useState(0);
   const [form, setForm] = useState<BookingForm>(EMPTY_FORM);
   const [touched, setTouched] = useState(false);
+  const [tab, setTab] = useState<Tab>("Airport Transfer");
+  const [showBooking, setShowBooking] = useState(false);
+
+  // A fresh visit/refresh of the home page always starts with a clean booking panel.
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
 
   const updateField = (key: keyof BookingForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -39,9 +58,24 @@ export default function HeroSection() {
     setTouched(true);
     const missing = Object.values(form).some((v) => !v.trim());
     if (missing) return; // required-field styling (below) shows what's missing
-    // No live booking backend on this marketing site yet — take the user to
-    // the fleet so they can pick a vehicle for the trip they just described.
-    document.getElementById("fleet")?.scrollIntoView({ behavior: "smooth" });
+    // Hand the trip details to the booking form page, then clear the panel so
+    // coming back to the home page shows an empty form.
+    const draft: BookingDraft = {
+      service: TAB_TO_SERVICE[tab],
+      pickup: form.pickup,
+      dropoff: form.destination,
+      date: form.date,
+      time: form.time,
+    };
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      /* storage unavailable — the booking page just starts blank */
+    }
+    setForm(EMPTY_FORM);
+    setTouched(false);
+    setTab("Airport Transfer");
+    setShowBooking(true);
   };
 
   useEffect(() => {
@@ -173,7 +207,7 @@ export default function HeroSection() {
 
         {/* Small service-type tabs card */}
         <div className="mx-auto mb-3 flex justify-center" style={{ maxWidth: "91.6667vw" }}>
-          <BookingTabs />
+          <BookingTabs value={tab} onChange={setTab} />
         </div>
 
         {/* Main booking bar */}
@@ -262,6 +296,7 @@ export default function HeroSection() {
           </form>
         </div>
       </div>
+      {showBooking && <BookingModal onClose={() => setShowBooking(false)} />}
     </section>
   );
 }

@@ -13,7 +13,13 @@ export default function SmoothScroll() {
     }
     rafId = requestAnimationFrame(raf);
 
+    // Re-measure when the page height changes in place (e.g. the multi-step
+    // booking form), otherwise Lenis keeps the old, shorter scroll limit.
+    const ro = new ResizeObserver(() => lenis.resize());
+    ro.observe(document.body);
+
     return () => {
+      ro.disconnect();
       cancelAnimationFrame(rafId);
       lenis.destroy();
     };

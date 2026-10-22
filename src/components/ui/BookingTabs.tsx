@@ -2,11 +2,22 @@
 
 import { useRef, useState } from "react";
 
-const TABS = ["Airport Transfer", "Day Booking", "Hourly Chauffeur"] as const;
-type Tab = (typeof TABS)[number];
+export const TABS = ["Airport Transfer", "Day Booking", "Hourly Chauffeur"] as const;
+export type Tab = (typeof TABS)[number];
 
-export default function BookingTabs() {
-  const [activeTab, setActiveTab] = useState<Tab>("Airport Transfer");
+export default function BookingTabs({
+  value,
+  onChange,
+}: {
+  value?: Tab;
+  onChange?: (tab: Tab) => void;
+} = {}) {
+  const [innerTab, setInnerTab] = useState<Tab>("Airport Transfer");
+  const activeTab = value ?? innerTab;
+  const setActiveTab = (tab: Tab) => {
+    setInnerTab(tab);
+    onChange?.(tab);
+  };
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, mx: 50, my: 50 });
 

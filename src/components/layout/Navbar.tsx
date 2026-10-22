@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import PillButtonContent from "@/components/ui/PillButtonContent";
 
@@ -13,6 +14,12 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  // Off the homepage, hash links must point back to it, and a Home tab leads.
+  const links = onHome
+    ? NAV_LINKS
+    : [{ label: "Home", href: "/" }, ...NAV_LINKS.map((l) => ({ ...l, href: `/${l.href}` }))];
   const [scrolled, setScrolled] = useState(false);
   // "dark" = the content behind the navbar is dark, so nav text renders white.
   // "light" = the content behind is light, so nav text renders black.
@@ -91,7 +98,7 @@ export default function Navbar() {
 
         {/* Nav Links */}
         <ul className="hidden md:flex items-center gap-10">
-          {NAV_LINKS.map(({ label, href }) => (
+          {links.map(({ label, href }) => (
             <li key={label}>
               <a
                 href={href}
@@ -106,8 +113,8 @@ export default function Navbar() {
         </ul>
 
         {/* CTA Button */}
-        <a
-          href="#booking"
+        <Link
+          href="/book"
           className={[
             "group relative overflow-hidden hidden md:inline-flex items-center gap-6 text-[10px] font-medium tracking-[0.18em] uppercase px-6 py-3 rounded-full border-[1.5px] border-transparent transition-all duration-500",
             isDark
@@ -123,7 +130,7 @@ export default function Navbar() {
           }}
         >
           <PillButtonContent fill={isDark ? "black" : "white"}>Book Your Chauffeur</PillButtonContent>
-        </a>
+        </Link>
 
         {/* Mobile hamburger placeholder */}
         <button

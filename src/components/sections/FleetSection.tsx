@@ -248,7 +248,7 @@ export default function FleetSection() {
 
                 <div className="flex items-center justify-between">
                   <a
-                    href="#contact"
+                    href="/book"
                     className="group relative overflow-hidden inline-flex items-center gap-[0.3125vw] bg-black text-white uppercase px-[1.0417vw] py-[0.5729vw] rounded-full border-[1.5px] border-transparent transition-all duration-500 hover:border-black/30 hover:shadow-[0_0_16px_rgba(0,0,0,0.2)]"
                     style={{
                       fontFamily: "'Inter', sans-serif",

@@ -19,6 +19,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useInView } from "@/hooks/useInView";
 import PillButtonContent from "@/components/ui/PillButtonContent";
 
@@ -90,8 +91,8 @@ export default function FinalCtaSection() {
             Make your next journey more comfortable with professional<br />chauffeur services tailored to your travel needs.
           </p>
 
-          <a
-            href="#hero"
+          <Link
+            href="/book"
             className="group relative overflow-hidden inline-flex items-center justify-between gap-[1.25vw] bg-black text-white uppercase px-[2.0833vw] py-[1.1458vw] rounded-full border-[1.5px] border-transparent transition-all duration-500 hover:border-black/30 hover:shadow-[0_0_16px_rgba(0,0,0,0.2)]"
             style={{
               fontFamily: "'Inter', sans-serif",
@@ -102,7 +103,7 @@ export default function FinalCtaSection() {
             }}
           >
             <PillButtonContent fill="white">Book Your Chauffeur</PillButtonContent>
-          </a>
+          </Link>
         </div>
       </div>
     </section>
