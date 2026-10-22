@@ -95,11 +95,45 @@ export default function AirportTransfersSection() {
                 }}
               />
 
+              {/* Card number badge */}
+              <div
+                className="absolute top-0 right-0 flex items-center justify-center"
+                style={{
+                  width: "clamp(72px, 6.25vw, 120px)",
+                  height: "clamp(52px, 4.6875vw, 90px)",
+                  background: "#504f4d00",
+                  borderRadius: "1.5rem 0 0 0",
+                }}
+              >
+                <span
+                  className="font-bold select-none"
+                  style={{
+                    fontSize: "clamp(38px, 2.1875vw, 42px)",
+                    color: "#fffdfb9a",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </div>
+
               {/* Text — absolutely centred vertically on the left */}
               <div className="absolute inset-0 flex items-center">
                 <div
-                  className="flex flex-col justify-center pl-6 pr-10 md:pl-10 md:pr-16 lg:pl-12 lg:pr-20"
-                  style={{ width: "740px", maxWidth: "740px", gap: "32px" }}
+                  className="flex flex-col justify-center"
+                  style={{
+                    width: "740px",
+                    maxWidth: "740px",
+                    gap: "32px",
+                    // Fluid left offset — scales continuously with viewport
+                    // width instead of jumping at fixed breakpoints, so the
+                    // text sits proportionally in the same spot at any
+                    // screen size (incl. zoomed-out/ultra-wide). Uses
+                    // `marginLeft` rather than padding so the 740px content
+                    // box itself never shrinks and the heading never wraps.
+                    marginLeft: "clamp(24px, 4vw, 160px)",
+                  }}
                 >
 
                   <div>

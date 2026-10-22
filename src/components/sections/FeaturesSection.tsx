@@ -505,6 +505,7 @@ export default function FeaturesSection() {
   // downward scroll is blocked until stage 5's CSS transition finishes.
   // Upward scroll is always allowed through.
   const waveCompleteRef = useRef(false); // true after stage 5 + transition
+  const waveEmptyRef = useRef(true); // true after stage 0 + transition (back to empty)
   const stageRef = useRef(0);
   const isMobileRef = useRef(false);
   useEffect(() => { stageRef.current = stage; }, [stage]);
@@ -516,16 +517,30 @@ export default function FeaturesSection() {
     return () => clearTimeout(t);
   }, [stage]);
 
-  // Boundary lock — only blocks the very last bit of scroll (past the end of
-  // the wrapper) until waveCompleteRef fires. Real scroll inside the wrapper
-  // is never intercepted, so touchpad and mouse both feel natural.
+  useEffect(() => {
+    if (stage > 0) { waveEmptyRef.current = false; return; }
+    const t = setTimeout(() => { waveEmptyRef.current = true; }, FILL_DURATION_MS + 50);
+    return () => clearTimeout(t);
+  }, [stage]);
+
+  // Boundary lock — blocks the very last bit of scroll past either end of
+  // the wrapper (downward past the full fill, upward past the empty start)
+  // until the corresponding wave transition fully finishes. Real scroll
+  // inside the wrapper is never intercepted, so touchpad and mouse both feel
+  // natural in both directions.
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      if (isMobileRef.current || e.deltaY <= 0 || waveCompleteRef.current) return;
+      if (isMobileRef.current || e.deltaY === 0) return;
       const wrapper = wrapperRef.current;
       if (!wrapper) return;
       const scrolledSoFar = Math.max(0, -wrapper.getBoundingClientRect().top);
-      if (scrolledSoFar >= EXTRA_SCROLL_PX - 1) e.preventDefault();
+      if (e.deltaY > 0 && !waveCompleteRef.current && scrolledSoFar >= EXTRA_SCROLL_PX - 1) {
+        e.preventDefault();
+        return;
+      }
+      if (e.deltaY < 0 && !waveEmptyRef.current && scrolledSoFar <= 1) {
+        e.preventDefault();
+      }
     };
     window.addEventListener('wheel', onWheel, { passive: false });
     return () => window.removeEventListener('wheel', onWheel);
