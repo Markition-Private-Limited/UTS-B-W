@@ -109,7 +109,7 @@ export default function FleetSection() {
   const animRef = useRef(0);
 
   // Slow eased glide (native smooth-scroll is too quick and fights scroll-snap).
-  const glideTo = (target: number, duration = 1400) => {
+  const glideTo = (target: number, duration = 900) => {
     const el = trackRef.current;
     if (!el) return;
     cancelAnimationFrame(animRef.current);
@@ -134,7 +134,7 @@ export default function FleetSection() {
       if (r.bottom < 0 || r.top > window.innerHeight) return;
       const max = el.scrollWidth - el.clientWidth;
       if (max <= 2) return;
-      if (el.scrollLeft >= max - 2) glideTo(0, 1800);
+      if (el.scrollLeft >= max - 2) glideTo(0, 1200);
       else slide(1);
     }, 3000);
     return () => clearInterval(id);
