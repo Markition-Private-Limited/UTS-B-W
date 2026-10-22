@@ -354,7 +354,9 @@ const FILL_DURATION_MS = 650; // how long each single-icon fill step takes to an
 // "too fast" reads as broken, while "needs one more nudge" doesn't.
 const PX_PER_WHEEL_SCROLL = 350;
 const SCROLLS_PER_STAGE = 2;
-const STAGE_COUNT = 4;
+// 4 icon reveals + 1 extra stage that fills the remaining tail of the
+// curve (past the 4th icon, out to the right edge) on its own scroll.
+const STAGE_COUNT = 5;
 // Extra scroll distance (beyond the pinned 100vh) the wrapper provides —
 // this is what the user scrolls through while the section stays pinned.
 const EXTRA_SCROLL_PX = PX_PER_WHEEL_SCROLL * SCROLLS_PER_STAGE * STAGE_COUNT;
@@ -465,7 +467,9 @@ export default function FeaturesSection() {
   // can't make the fill skip ahead past an icon that hasn't been revealed
   // yet — it queues up and plays out one reveal at a time instead.
   const [targetStage, setTargetStage] = useState(0);
-  const [stage, setStage] = useState(0); // 0..4 — how many icons are "reached" (0 = rest, nothing shown)
+  // 0 = rest (nothing shown), 1-4 = that many icons reached, 5 = the tail
+  // past the 4th icon is also filled out to the right edge.
+  const [stage, setStage] = useState(0);
   // Real arc-length (in SVG user units) from the wave path's start (the very
   // left screen edge, x=0) to each icon's x-position, measured from the
   // actual curve — not assumed to be evenly spaced, since the humps make
@@ -550,12 +554,15 @@ export default function FeaturesSection() {
       const progress = Math.min(1, scrolled / total);
 
       // Starts at stage 0 (nothing revealed — no numbers) and reveals one
-      // icon per quarter of the wrapper's scroll budget, that budget
-      // calibrated (see wrapperRef's height below) to ~2 wheel-scrolls per
-      // quarter, 8 total, so the section unpins right as the 8th scroll
-      // finishes the last fill instead of lingering. This only sets the
-      // *target* — see the pacing effect below for what's actually shown.
-      const newTarget = progress >= 1 ? 4 : progress >= 0.75 ? 3 : progress >= 0.5 ? 2 : progress >= 0.25 ? 1 : 0;
+      // icon per fifth of the wrapper's scroll budget (stages 1-4), plus a
+      // 5th stage that fills the remaining tail past the last icon out to
+      // the right edge — that budget calibrated (see wrapperRef's height
+      // below) to ~2 wheel-scrolls per fifth, 10 total, so the section
+      // unpins right as the 10th scroll finishes the tail fill instead of
+      // lingering. This only sets the *target* — see the pacing effect
+      // below for what's actually shown.
+      const newTarget =
+        progress >= 1 ? 5 : progress >= 0.8 ? 4 : progress >= 0.6 ? 3 : progress >= 0.4 ? 2 : progress >= 0.2 ? 1 : 0;
       setTargetStage((prev) => (prev === newTarget ? prev : newTarget));
     };
 
@@ -583,7 +590,11 @@ export default function FeaturesSection() {
   // stage — the CSS transition below (duration = FILL_DURATION_MS) is what
   // animates it smoothly from the previous checkpoint, so the line always
   // creeps continuously but never past the icon that's actually revealed.
-  const fillLength = waveLengths ? (stage === 0 ? 0 : waveLengths[stage]) : 0;
+  // Stages 1-4 map to each icon's checkpoint (waveLengths[1..4]); stage 5
+  // is the extra tail-fill step, reaching the curve's full length
+  // (waveLengths[0] — getTotalLength() already covers the whole path, icon
+  // 4 and beyond, out to the right edge).
+  const fillLength = waveLengths ? (stage === 0 ? 0 : stage >= 5 ? waveLengths[0] : waveLengths[stage]) : 0;
 
   return (
     <div ref={wrapperRef} style={{ height: isMobile ? "auto" : `calc(100vh + ${EXTRA_SCROLL_PX}px)` }}>
