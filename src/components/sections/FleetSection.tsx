@@ -91,7 +91,7 @@ export default function FleetSection() {
       id="fleet"
       ref={ref}
       data-navbar-theme="light"
-      className={`w-full bg-white pt-[48px] pb-[var(--section-spacing-y)] px-[4.1667vw] transition-all duration-700 ease-out ${
+      className={`w-full bg-white pt-[48px] pb-[clamp(32px,3.75vw,72px)] px-[4.1667vw] transition-all duration-700 ease-out ${
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >

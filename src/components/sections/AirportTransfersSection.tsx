@@ -121,19 +121,8 @@ export default function AirportTransfersSection() {
               {/* Text — absolutely centred vertically on the left */}
               <div className="absolute inset-0 flex items-center">
                 <div
-                  className="flex flex-col justify-center"
-                  style={{
-                    width: "740px",
-                    maxWidth: "740px",
-                    gap: "32px",
-                    // Fluid left offset — scales continuously with viewport
-                    // width instead of jumping at fixed breakpoints, so the
-                    // text sits proportionally in the same spot at any
-                    // screen size (incl. zoomed-out/ultra-wide). Uses
-                    // `marginLeft` rather than padding so the 740px content
-                    // box itself never shrinks and the heading never wraps.
-                    marginLeft: "clamp(24px, 4vw, 160px)",
-                  }}
+                  className="flex flex-col justify-center pl-10 pr-10 md:pl-16 md:pr-16 lg:pl-20 lg:pr-20 min-[1500px]:box-content min-[1500px]:!pl-[8.3333vw] min-[1500px]:!pr-0"
+                  style={{ width: "740px", maxWidth: "740px", gap: "32px" }}
                 >
 
                   <div>
@@ -160,7 +149,7 @@ export default function AirportTransfersSection() {
 
                   {/* Body copy */}
                   <p
-                    className="text-gray-300 leading-relaxed"
+                    className="text-gray-300 leading-relaxed min-[1500px]:!max-w-[520px]"
                     style={{ fontSize: "clamp(13px, 1.0417vw, 18px)", maxWidth: "400px" }}
                   >
                     {card.desc}
