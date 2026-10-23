@@ -154,7 +154,7 @@ export default function PageLoader() {
           <div aria-hidden="true" style={{
             position: 'absolute', left: 0, right: 0, top: '44%', height: '56%',
             overflow: 'hidden',
-            background: 'linear-gradient(180deg,rgba(88,88,94,0.78) 0%,rgba(64,64,70,0.82) 30%,rgba(42,42,48,0.88) 68%,rgba(18,18,22,0.92) 100%)',
+            background: 'linear-gradient(180deg,rgba(255,255,255,.012) 0%,rgba(255,255,255,.005) 18%,rgba(0,0,0,.12) 100%)',
           }}>
             <div style={{
               position: 'absolute', left: 0, right: 0, top: 0, height: 1,
@@ -210,6 +210,19 @@ export default function PageLoader() {
               zIndex: 10,
             }}
           >
+            {/* White road line — same Y as car, behind it in z-order, trails to the left */}
+            <div aria-hidden="true" style={{
+              position: 'absolute',
+              top: '50%',
+              right: 8,
+              width: '200vw',
+              height: 2,
+              zIndex: -1,
+              transform: 'translateY(-50%)',
+              background: 'rgba(255,255,255,0.85)',
+              boxShadow: '-10px 0 10px rgba(255,255,255,0.4)',
+              pointerEvents: 'none',
+            }} />
             <Image
               src="/top-down-car.png"
               alt=""
