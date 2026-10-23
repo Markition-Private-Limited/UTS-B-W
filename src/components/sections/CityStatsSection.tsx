@@ -134,14 +134,14 @@ export default function CityStatsSection() {
         style={{ paddingTop: "48px", paddingBottom: "4.1667vw", paddingLeft: "4.1667vw", paddingRight: "4.1667vw" }}
       >
 
-        {/* Watermark logo */}
+        {/* Watermark — absolute to the white section, right edge sits at the column boundary */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo/6f215cf1-6331-4613-927d-f39a37dc39d0 1.png"
           alt=""
           aria-hidden="true"
-          className="absolute right-[calc(26%-22px)] top-[calc(50%+6%+52px)] -translate-y-1/2 select-none pointer-events-none"
-          style={{ width: "15vw", opacity: 1 }}
+          className="absolute left-[60%] -translate-x-1/2 top-1/2 -translate-y-1/2 select-none pointer-events-none"
+          style={{ width: "18vw", opacity: 1 }}
           draggable={false}
         />
 

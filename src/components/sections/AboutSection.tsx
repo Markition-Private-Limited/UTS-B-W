@@ -223,7 +223,7 @@ export default function AboutSection() {
         onMouseEnter={() => setInGallery(true)}
         onMouseLeave={() => setInGallery(false)}
       >
-        <div className="flex-1 min-h-0 flex flex-col pb-[48px]" style={{ maxWidth: "1280px", width: "100%", margin: "0 auto" }}>
+        <div className="flex-1 min-h-0 flex flex-col pb-[48px]" style={{ maxWidth: "1520px", width: "100%", margin: "0 auto" }}>
           <div ref={galleryRef} className="flex gap-3 flex-1 min-h-0">
 
             {/* Left */}
@@ -275,7 +275,7 @@ export default function AboutSection() {
 
           </div>
 
-          <div className="flex justify-between items-center mt-10 shrink-0" style={{ transform: "translateY(0px)" }}>
+          <div className="flex justify-between items-center mt-10 shrink-0 max-w-[75%]" style={{ transform: "translateY(0px)" }}>
             <p className="text-[10px] font-bold tracking-[0.03em] uppercase text-black" style={{ wordSpacing: "normal" }}>
               A considered experience. From the first moment.
             </p>
