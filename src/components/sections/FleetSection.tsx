@@ -22,6 +22,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 import PillButtonContent from "@/components/ui/PillButtonContent";
 import DotsNav from "@/components/ui/DotsNav";
@@ -107,6 +108,7 @@ export default function FleetSection() {
 
   const pausedRef = useRef(false);
   const animRef = useRef(0);
+  const holdUntilRef = useRef(0);
 
   // Slow eased glide (native smooth-scroll is too quick and fights scroll-snap).
   const glideTo = (target: number, duration = 900) => {
@@ -129,7 +131,7 @@ export default function FleetSection() {
   useEffect(() => {
     const id = setInterval(() => {
       const el = trackRef.current;
-      if (!el || pausedRef.current) return;
+      if (!el || pausedRef.current || Date.now() < holdUntilRef.current) return;
       const r = el.getBoundingClientRect();
       if (r.bottom < 0 || r.top > window.innerHeight) return;
       const max = el.scrollWidth - el.clientWidth;
@@ -238,7 +240,7 @@ export default function FleetSection() {
               key={d}
               type="button"
               aria-label={d === "prev" ? "Previous vehicles" : "Next vehicles"}
-              onClick={() => slide(d === "prev" ? -1 : 1)}
+              onClick={() => { holdUntilRef.current = Date.now() + 6000; slide(d === "prev" ? -1 : 1); }}
               disabled={disabled}
               className={`absolute top-[8vw] z-10 flex h-[2.6vw] w-[2.6vw] min-h-9 min-w-9 items-center justify-center rounded-full bg-white text-black shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition hover:bg-black hover:text-white disabled:pointer-events-none disabled:opacity-0 ${
                 d === "prev" ? "left-[-1.3vw]" : "right-[-1.3vw]"
@@ -258,12 +260,12 @@ export default function FleetSection() {
           className="flex gap-[1.25vw] overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {visibleCars.map((car, i) => (
-            <div
-              key={car.id}
-              className={`snap-start shrink-0 basis-[calc((100%-2.5vw)/3)] rounded-[1.25vw] overflow-hidden transition-all duration-700 ease-out ${
-                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              }`}
-              style={{ transitionDelay: isInView ? `${i * 130}ms` : "0ms" }}
+            <motion.div
+              key={car.id + activeTab}
+              className="snap-start shrink-0 basis-[calc((100%-2.5vw)/3)] rounded-[1.25vw] overflow-hidden"
+              initial={{ opacity: 0, x: 24, y: 24 }}
+              animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, x: 24, y: 24 }}
+              transition={{ duration: 0.55, delay: i * 0.09, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <div className="h-[16.25vw] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -368,7 +370,7 @@ export default function FleetSection() {
                   </a>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
         </div>

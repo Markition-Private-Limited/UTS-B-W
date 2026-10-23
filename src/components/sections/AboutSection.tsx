@@ -33,37 +33,19 @@ const INITIAL: [number, number, number, number, number] = [0, 1, 2, 3, 4];
 // slot indices for cycling: 0=top-left, 1=bottom-left, 3=top-right, 4=bottom-right
 const SIDE_SLOTS = [0, 1, 3, 4];
 
-type FlyCard = {
-  from: { left: number; top: number; width: number; height: number };
-  to:   { left: number; top: number; width: number; height: number };
-  imgIdx: number;
-};
-
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function AboutSection() {
   const { ref: headerRef, isInView: headerInView } = useScrollReveal<HTMLDivElement>();
   const [arrangement, setArrangement] = useState(INITIAL);
   const [inGallery, setInGallery]     = useState(false);
-  const [flyCard,   setFlyCard]       = useState<FlyCard | null>(null);
 
-  // Mirror arrangement in a ref so async callbacks always see the latest value
-  const arrangementRef = useRef(INITIAL);
-  useEffect(() => { arrangementRef.current = arrangement; }, [arrangement]);
-
-  const cursorRef  = useRef<HTMLDivElement>(null);
-  const galleryRef = useRef<HTMLDivElement>(null);
-  const centerRef  = useRef<HTMLDivElement>(null);
+  const cursorRef         = useRef<HTMLDivElement>(null);
+  const galleryRef        = useRef<HTMLDivElement>(null);
   const gallerySectionRef = useRef<HTMLElement>(null);
   const mousePos = useRef({ x: -1, y: -1 });
   const intervalId = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoIdxRef = useRef(1);
-  const flyInProgress = useRef(false);
-
-  // One ref per side slot so we can read their bounding rects
-  const slotRefs = useRef<Record<number, HTMLDivElement | null>>({ 0: null, 1: null, 3: null, 4: null });
-  const setSlotRef = useCallback((slot: number) => (el: HTMLDivElement | null) => {
-    slotRefs.current[slot] = el;
-  }, []);
+  const swapInProgress = useRef(false);
 
   // Parallax
   const { scrollYProgress } = useScroll({ target: galleryRef, offset: ["start end", "end start"] });
@@ -82,33 +64,12 @@ export default function AboutSection() {
     });
   }, []);
 
-  // Flying-card swap — same animation for every auto-swap
+  // Crossfade swap — just swap the arrangement; AnimatePresence handles the fade
   const triggerAutoSwap = useCallback((slot: number) => {
-    if (flyInProgress.current) return;
-    const slotEl   = slotRefs.current[slot];
-    const centerEl = centerRef.current;
-
-    if (!slotEl || !centerEl) {
-      swapWithCenter(slot);
-      return;
-    }
-
-    flyInProgress.current = true;
-    const from   = slotEl.getBoundingClientRect();
-    const to     = centerEl.getBoundingClientRect();
-    const imgIdx = arrangementRef.current[slot];
-
-    setFlyCard({
-      from: { left: from.left, top: from.top, width: from.width, height: from.height },
-      to:   { left: to.left,   top: to.top,   width: to.width,   height: to.height },
-      imgIdx,
-    });
-
-    setTimeout(() => {
-      swapWithCenter(slot);
-      setFlyCard(null);
-      flyInProgress.current = false;
-    }, 680);
+    if (swapInProgress.current) return;
+    swapInProgress.current = true;
+    swapWithCenter(slot);
+    setTimeout(() => { swapInProgress.current = false; }, 220);
   }, [swapWithCenter]);
 
   // Reset + restart the interval (called on manual drag start)
@@ -203,29 +164,6 @@ export default function AboutSection() {
         </svg>
       </div>
 
-      {/* ── Flying card ───────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {flyCard && (
-          <motion.div key={`fly-${flyCard.imgIdx}-${flyCard.from.left}`}
-            className="fixed rounded-2xl overflow-hidden pointer-events-none"
-            style={{ zIndex: 9998 }}
-            initial={{
-              left: flyCard.from.left, top: flyCard.from.top,
-              width: flyCard.from.width, height: flyCard.from.height,
-              scale: 1, boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-            }}
-            animate={{
-              left: flyCard.to.left, top: flyCard.to.top,
-              width: flyCard.to.width, height: flyCard.to.height,
-              scale: 1.04, boxShadow: "0 28px 70px rgba(0,0,0,0.28)",
-            }}
-            exit={{ opacity: 0, scale: 1, transition: { duration: 0.18 } }}
-            transition={{ duration: 0.62, ease: [0.4, 0, 0.15, 1] }}>
-            <Image src={IMAGES[flyCard.imgIdx].src} alt="" fill className="object-cover object-center" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ── Text header section ──────────────────────────────────────────────── */}
       <section id="about" data-navbar-theme="light" className="w-full bg-white px-6 md:px-14">
         <div className="w-full pt-[96px] pb-14">
@@ -290,16 +228,16 @@ export default function AboutSection() {
 
             {/* Left */}
             <div className="flex flex-col gap-3" style={{ width: "20%" }}>
-              <GallerySlot slot={0} imgIdx={arrangement[0]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yLeft} outerRef={setSlotRef(0)} />
-              <GallerySlot slot={1} imgIdx={arrangement[1]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yLeft} outerRef={setSlotRef(1)} />
+              <GallerySlot slot={0} imgIdx={arrangement[0]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yLeft} />
+              <GallerySlot slot={1} imgIdx={arrangement[1]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yLeft} />
             </div>
 
             {/* Center — taller than the stacked side columns, bleeding past the row's top/bottom edge */}
-            <div ref={centerRef} className="relative flex-1 z-10" style={{ marginTop: "-28px", marginBottom: "-36px" }}>
+            <div className="relative flex-1 z-10" style={{ marginTop: "-28px", marginBottom: "-36px" }}>
               <AnimatePresence mode="sync">
                 <motion.div key={centerImgIdx} className="absolute inset-0 rounded-2xl overflow-hidden"
                   initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }}
-                  transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}>
+                  transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}>
                   <motion.div className="absolute left-0 right-0 pointer-events-none"
                     style={{ y: yCenter, top: "-18%", bottom: "-18%" }}>
                     <Image src={IMAGES[centerImgIdx].src} alt={IMAGES[centerImgIdx].alt} fill className="object-cover object-center" priority />
@@ -315,7 +253,7 @@ export default function AboutSection() {
                   <AnimatePresence mode="wait">
                     <motion.div key={centerImgIdx}
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}>
+                      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
                       <h3 className="text-white font-semibold mb-2"
                         style={{ fontSize: "1.3rem", letterSpacing: "-0.025em", lineHeight: 1.3 }}>
                         {IMAGE_TEXT[centerImgIdx].title}
@@ -331,8 +269,8 @@ export default function AboutSection() {
 
             {/* Right */}
             <div className="flex flex-col gap-3" style={{ width: "20%" }}>
-              <GallerySlot slot={3} imgIdx={arrangement[3]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yRight} outerRef={setSlotRef(3)} />
-              <GallerySlot slot={4} imgIdx={arrangement[4]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yRight} outerRef={setSlotRef(4)} />
+              <GallerySlot slot={3} imgIdx={arrangement[3]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yRight} />
+              <GallerySlot slot={4} imgIdx={arrangement[4]} onSwap={swapWithCenter} onDragStart={restartInterval} parallaxY={yRight} />
             </div>
 
           </div>
@@ -353,14 +291,13 @@ export default function AboutSection() {
 
 // ── GallerySlot ───────────────────────────────────────────────────────────────
 function GallerySlot({
-  slot, imgIdx, onSwap, onDragStart, parallaxY, outerRef,
+  slot, imgIdx, onSwap, onDragStart, parallaxY,
 }: {
   slot: number;
   imgIdx: number;
   onSwap: (slot: number) => void;
   onDragStart: () => void;
   parallaxY: MotionValue<string>;
-  outerRef?: (el: HTMLDivElement | null) => void;
 }) {
   const handleDragEnd = useCallback(
     (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -370,11 +307,11 @@ function GallerySlot({
   );
 
   return (
-    <div ref={outerRef} className="relative flex-1 min-h-0">
+    <div className="relative flex-1 min-h-0">
       <AnimatePresence mode="sync">
         <motion.div key={imgIdx} className="absolute inset-0 rounded-2xl overflow-hidden"
           initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
-          transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
           drag dragElastic={0.16} dragMomentum={false}
           dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
           onDragStart={onDragStart}

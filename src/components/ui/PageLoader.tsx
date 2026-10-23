@@ -36,8 +36,6 @@ const FAINT_STREAKS = [
   { top: '84%', delay: '-1.70s' },
 ]
 
-// Segmented progress — 28 sticks that light up left to right
-const STICKS = 28
 
 export default function PageLoader() {
   const [visible,  setVisible]  = useState(true)
@@ -96,8 +94,6 @@ export default function PageLoader() {
     }
   }, [])
 
-  const litSticks = Math.round((progress / 100) * STICKS)
-
   return (
     <AnimatePresence>
       {visible && (
@@ -135,10 +131,6 @@ export default function PageLoader() {
             @keyframes utsDash {
               from { transform:translateX(0)      }
               to   { transform:translateX(-120px) }
-            }
-            @keyframes utsWave {
-              0%,100% { transform:scaleY(0.35) }
-              50%     { transform:scaleY(1.85) }
             }
           `}</style>
 
@@ -213,7 +205,7 @@ export default function PageLoader() {
               position: 'absolute',
               top: '50%',
               left: 0,
-              width: 'clamp(90px, 11vw, 148px)',
+              width: 'clamp(180px, 22vw, 296px)',
               y: '-50%',
               zIndex: 10,
             }}
@@ -224,7 +216,7 @@ export default function PageLoader() {
               width={400}
               height={700}
               priority
-              sizes="(max-width:640px) 90px, 11vw"
+              sizes="(max-width:640px) 180px, 22vw"
               style={{ display: 'block', width: '100%', height: 'auto' }}
             />
           </motion.div>
@@ -251,7 +243,7 @@ export default function PageLoader() {
                 height={160}
                 priority
                 style={{
-                  width: 'clamp(88px, 10.5vw, 130px)',
+                  width: 'clamp(150px, 18vw, 220px)',
                   height: 'auto',
                   display: 'block',
                   filter: 'brightness(0) invert(1)',
@@ -279,7 +271,7 @@ export default function PageLoader() {
             </motion.p>
           </div>
 
-          {/* ── Segmented progress — bottom ────────────────────────────────── */}
+          {/* ── Linear progress bar — bottom ───────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -288,33 +280,27 @@ export default function PageLoader() {
               position: 'absolute',
               left: '50%', bottom: '7%',
               transform: 'translateX(-50%)',
-              display: 'flex',
-              alignItems: 'flex-end',
-              gap: 3,
+              width: 'min(280px, 62vw)',
               zIndex: 20,
             }}
             aria-hidden="true"
           >
-            {Array.from({ length: STICKS }).map((_, i) => {
-              const lit = i < litSticks
-              const h = [8, 10, 12, 10, 8, 6, 8, 10, 14, 10, 8, 6, 10, 12, 10, 8, 10, 12, 8, 10, 6, 8, 10, 12, 10, 8, 10, 8][i % 28]
-              const period = 0.55 + (i % 5) * 0.09
-              return (
-                <div
-                  key={i}
-                  style={{
-                    width: 2,
-                    height: h,
-                    borderRadius: 1,
-                    background: lit ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.10)',
-                    transition: 'background 0.15s ease',
-                    boxShadow: lit ? '0 0 6px rgba(255,255,255,0.3)' : 'none',
-                    transformOrigin: 'bottom center',
-                    animation: prefersReducedMotion ? 'none' : `utsWave ${period}s ease-in-out ${-(i * 0.065 % period).toFixed(3)}s infinite`,
-                  }}
-                />
-              )
-            })}
+            <div style={{
+              width: '100%',
+              height: 2,
+              borderRadius: 1,
+              background: 'rgba(255,255,255,0.10)',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%',
+                width: `${progress}%`,
+                borderRadius: 1,
+                background: 'rgba(255,255,255,0.75)',
+                boxShadow: '0 0 8px rgba(255,255,255,0.4)',
+                transition: 'width 0.2s ease',
+              }} />
+            </div>
           </motion.div>
 
         </motion.div>

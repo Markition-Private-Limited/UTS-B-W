@@ -9,7 +9,8 @@ import PillButtonContent from "@/components/ui/PillButtonContent";
 const NAV_LINKS = [
   { label: "About Us", href: "#about" },
   { label: "Our Services", href: "#services" },
-  { label: "Day Tours", href: "#tours" },
+  { label: "Our Fleet", href: "#fleet" },
+  { label: "UTS Partners", href: "#partners" },
   { label: "Contact", href: "#contact" },
 ];
 

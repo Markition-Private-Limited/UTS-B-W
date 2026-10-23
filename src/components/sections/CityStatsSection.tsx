@@ -141,7 +141,7 @@ export default function CityStatsSection() {
           alt=""
           aria-hidden="true"
           className="absolute right-[calc(26%-22px)] top-[calc(50%+6%+52px)] -translate-y-1/2 select-none pointer-events-none"
-          style={{ width: "30vw", opacity: 1 }}
+          style={{ width: "15vw", opacity: 1 }}
           draggable={false}
         />
 
@@ -259,7 +259,7 @@ export default function CityStatsSection() {
         className={`relative w-full overflow-hidden transition-all duration-700 ease-out ${
           isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
-        style={{ height: "29.6875vw", transitionDelay: isInView ? "300ms" : "0ms", backgroundColor: "#000" }}
+        style={{ height: "38vw", transitionDelay: isInView ? "300ms" : "0ms", backgroundColor: "#000" }}
       >
         {/* object-cover + object-position: center fills this frame edge to
             edge on the width (the source's ~2.6:1 aspect ratio is narrower
