@@ -31,7 +31,7 @@ export default function FinalCtaSection() {
       id="contact"
       ref={ref}
       data-navbar-theme="light"
-      className="w-full bg-white px-0 md:px-[4.1667vw] pt-[6.25vw] pb-[4.1667vw]"
+      className="w-full bg-white px-0 md:px-[4.1667vw] pt-[6.25vw] pb-[6.25vw]"
     >
       <div
         className={`relative w-full min-h-[480px] md:h-[38.5417vw] rounded-[1.6667vw] overflow-hidden flex items-center bg-gray-800 bg-cover bg-center p-6 md:p-[4.1667vw] transition-all duration-700 ease-out ${
