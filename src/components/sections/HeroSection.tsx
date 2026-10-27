@@ -161,14 +161,15 @@ export default function HeroSection() {
         <h1
           className="font-bold uppercase text-white mb-7"
           style={{
-            fontSize: "clamp(1.75rem, 4.5833vw, 88px)",
+            fontSize: "clamp(1.5rem, 4.5833vw, 88px)",
             lineHeight: "1.04",
             letterSpacing: "-0.04em",
-            maxWidth: "83.3333vw",
+            maxWidth: "95vw",
+            whiteSpace: "nowrap",
             textAlign: "center",
           }}
         >
-          Your Journey Deserves<br />More Than a Ride.
+          Travel London in Timeless Luxury.
         </h1>
 
         <p

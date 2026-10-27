@@ -661,7 +661,7 @@ export default function FeaturesSection() {
       className={`w-full overflow-hidden flex flex-col justify-start ${
         isMobile ? "" : "sticky top-0 h-screen"
       }`}
-      style={{ backgroundColor: "#fafafa", paddingTop: "88px", paddingBottom: "48px" }}
+      style={{ backgroundColor: "#ffffff", paddingTop: "96px", paddingBottom: "96px", marginTop: "1px" }}
     >
       {/* Header */}
       <div className="text-center px-6" style={{ padding: isMobile ? "0 24px" : "0 4vw" }}>
