@@ -106,7 +106,7 @@ export default function BookingApp() {
       : `18 Nov · ${bookingState.pickupTime} · ${bookingState.durationHours} Hours Hourly`;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fcfcfc] text-[#111113]">
+    <div className="h-screen flex flex-col bg-[#fcfcfc] text-[#111113] overflow-hidden">
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 bg-zinc-950 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold border border-zinc-800">
           <BookmarkCheck className="w-4 h-4 text-emerald-400" />
@@ -122,27 +122,36 @@ export default function BookingApp() {
         dateTimeSummary={dateTimeSummary}
       />
 
-      <main className="flex-1 max-w-[1520px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        <div className="flex flex-col lg:flex-row items-start gap-8 xl:gap-10">
-          {currentService === 'airport-transfer' && (
-            <AirportTransferPage state={bookingState} fleet={FLEET} selectedVehicle={selectedVehicle}
-              onSelectVehicle={handleSelectVehicle} onUpdateState={updateBookingState} />
-          )}
-          {currentService === 'day-booking' && (
-            <DayBookingPage state={bookingState} fleet={FLEET} selectedVehicle={selectedVehicle}
-              onSelectVehicle={handleSelectVehicle} onUpdateState={updateBookingState} />
-          )}
-          {currentService === 'hourly-chauffeur' && (
-            <HourlyChauffeurPage state={bookingState} fleet={FLEET} selectedVehicle={selectedVehicle}
-              onSelectVehicle={handleSelectVehicle} onUpdateState={updateBookingState} />
-          )}
+      {/* Two independently scrolling panes — only the one under the cursor scrolls */}
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
+        {/* Left pane: page content, scrolls on its own */}
+        <div className="flex-1 min-w-0 min-h-0 overflow-y-auto">
+          <main className="max-w-[1130px] w-full mx-auto px-4 sm:px-6 lg:pl-8 lg:pr-0 py-8 sm:py-10">
+            {currentService === 'airport-transfer' && (
+              <AirportTransferPage state={bookingState} fleet={FLEET} selectedVehicle={selectedVehicle}
+                onSelectVehicle={handleSelectVehicle} onUpdateState={updateBookingState} />
+            )}
+            {currentService === 'day-booking' && (
+              <DayBookingPage state={bookingState} fleet={FLEET} selectedVehicle={selectedVehicle}
+                onSelectVehicle={handleSelectVehicle} onUpdateState={updateBookingState} />
+            )}
+            {currentService === 'hourly-chauffeur' && (
+              <HourlyChauffeurPage state={bookingState} fleet={FLEET} selectedVehicle={selectedVehicle}
+                onSelectVehicle={handleSelectVehicle} onUpdateState={updateBookingState} />
+            )}
+          </main>
 
-          <BookingSidebar state={bookingState} selectedVehicle={selectedVehicle}
-            onUpdateState={updateBookingState} onContinue={handleContinueToBooking} onSave={handleSaveJourney} />
+          <BookingFooter onSelectService={handleServiceChange} />
         </div>
-      </main>
 
-      <BookingFooter onSelectService={handleServiceChange} />
+        {/* Right pane: booking sidebar — always present, scrolls independently */}
+        <div className="w-full lg:w-[360px] xl:w-[390px] shrink-0 min-h-0 overflow-y-auto lg:border-l lg:border-zinc-200/80">
+          <div className="px-4 sm:px-6 lg:px-5 py-8 sm:py-10">
+            <BookingSidebar state={bookingState} selectedVehicle={selectedVehicle}
+              onUpdateState={updateBookingState} onContinue={handleContinueToBooking} onSave={handleSaveJourney} />
+          </div>
+        </div>
+      </div>
 
       <BookingReviewModal isOpen={reviewModalOpen} onClose={() => setReviewModalOpen(false)}
         state={bookingState} vehicle={selectedVehicle} />
