@@ -1,5 +1,6 @@
 'use client';
 
+import LocationInput from '@/components/ui/LocationInput';
 import React, { useState } from 'react';
 import { MapPin, Plus, Trash2, Clock, Calendar } from 'lucide-react';
 import { BookingState, Vehicle, VehicleTier } from '@/types/booking';
@@ -58,7 +59,7 @@ export const HourlyChauffeurPage: React.FC<HourlyChauffeurPageProps> = ({
           <label className="text-[11px] uppercase font-bold text-zinc-500 block mb-1">Chauffeur Meet / Pickup Location</label>
           <div className="flex items-center gap-2 p-3 bg-zinc-50 rounded-xl border border-zinc-200">
             <MapPin className="w-4 h-4 text-zinc-700 shrink-0" />
-            <input type="text" value={state.pickupAddress} onChange={(e) => onUpdateState({ pickupAddress: e.target.value })}
+            <LocationInput value={state.pickupAddress} onChange={(v) => onUpdateState({ pickupAddress: v })}
               className="w-full text-xs sm:text-sm bg-transparent focus:outline-none text-zinc-900 font-medium"
               placeholder="e.g. Claridge's, Brook Street, Mayfair, London" />
           </div>

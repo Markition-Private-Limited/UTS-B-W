@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookmarkCheck } from 'lucide-react';
 import { FLEET } from '@/data/fleet';
+import { DRAFT_KEY, type BookingDraft } from '@/lib/booking';
 import { BookingState, ServiceType, VehicleTier } from '@/types/booking';
 import { BookingHeader } from '@/components/booking/BookingHeader';
 import { BookingSidebar } from '@/components/booking/BookingSidebar';
@@ -61,6 +62,34 @@ export default function BookingApp() {
     setBookingState((prev) => ({ ...prev, serviceType: currentService }));
   }, [currentService]);
 
+  // Details entered in the homepage hero panel arrive here pre-filled.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      sessionStorage.removeItem(DRAFT_KEY);
+      const d = JSON.parse(raw) as BookingDraft;
+      const service: ServiceType | null =
+        d.service === 'day' ? 'day-booking' : d.service === 'hourly' ? 'hourly-chauffeur' : d.service === 'transfer' ? 'airport-transfer' : null;
+      if (service) {
+        setCurrentService(service);
+        window.location.hash = `#/${service}`;
+      }
+      const date = d.date ? new Date(d.date + 'T00:00:00') : null;
+      setBookingState((prev) => ({
+        ...prev,
+        pickupAddress: d.pickup || prev.pickupAddress,
+        destinationAddress: d.dropoff || prev.destinationAddress,
+        pickupDate: date && !isNaN(date.getTime()) ? date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : prev.pickupDate,
+        pickupTime: d.time || prev.pickupTime,
+        passengers: d.passengers || prev.passengers,
+        durationHours: d.duration || prev.durationHours,
+      }));
+    } catch {
+      /* storage unavailable — keep defaults */
+    }
+  }, []);
+
   const updateBookingState = (updates: Partial<BookingState>) => {
     setBookingState((prev) => ({ ...prev, ...updates }));
   };
@@ -97,13 +126,15 @@ export default function BookingApp() {
     setReviewModalOpen(true);
   };
 
-  const destinationSummary = currentService === 'airport-transfer' ? 'Heathrow T5 (LHR)' : undefined;
+  const short = (v: string, n = 28) => (v.length > n ? v.slice(0, n - 1).trimEnd() + '…' : v);
+  const shortDate = bookingState.pickupDate.replace(/^(\d+)\s+(\w{3})\w*.*$/, '$1 $2');
+  const destinationSummary = currentService === 'airport-transfer' ? short(bookingState.destinationAddress) : undefined;
   const dateTimeSummary =
     currentService === 'airport-transfer'
-      ? '18 Nov · 06:00 · Departure'
+      ? `${shortDate} · ${bookingState.pickupTime} · Departure`
       : currentService === 'day-booking'
-      ? `18 Nov · ${bookingState.pickupTime} · ${bookingState.durationHours} Hours Day`
-      : `18 Nov · ${bookingState.pickupTime} · ${bookingState.durationHours} Hours Hourly`;
+      ? `${shortDate} · ${bookingState.pickupTime} · ${bookingState.durationHours} Hours Day`
+      : `${shortDate} · ${bookingState.pickupTime} · ${bookingState.durationHours} Hours Hourly`;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fcfcfc] text-[#111113]">
@@ -117,7 +148,7 @@ export default function BookingApp() {
       <BookingHeader
         currentService={currentService}
         onServiceChange={handleServiceChange}
-        pickupSummary="The Langham, London"
+        pickupSummary={short(bookingState.pickupAddress)}
         destinationSummary={destinationSummary}
         dateTimeSummary={dateTimeSummary}
       />

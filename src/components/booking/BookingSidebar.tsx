@@ -1,5 +1,6 @@
 'use client';
 
+import LocationInput from '@/components/ui/LocationInput';
 import React, { useState } from 'react';
 import {
   MapPin, Plane, User, Briefcase, Plus, Trash2, AlertCircle,
@@ -47,8 +48,8 @@ export const BookingSidebar: React.FC<BookingSidebarProps> = ({
   };
 
   return (
-    <aside className="w-full lg:w-[360px] xl:w-[390px] shrink-0">
-      <div data-lenis-prevent className="sticky top-[72px] max-h-[calc(100vh-80px)] overflow-y-auto bg-white border border-zinc-200/90 rounded-2xl shadow-sm divide-y divide-zinc-100">
+    <aside data-lenis-prevent className="no-scrollbar overscroll-contain w-full shrink-0 lg:sticky lg:top-[72px] lg:max-h-[calc(100vh-88px)] lg:w-[360px] lg:self-start lg:overflow-y-auto xl:w-[390px]">
+      <div className="overflow-hidden bg-white border border-zinc-200/90 rounded-2xl shadow-sm divide-y divide-zinc-100">
         {/* Route Graphic */}
         <div className="relative bg-[#f4f4f7] p-4 border-b border-zinc-200/70">
           <div className="relative h-44 rounded-xl overflow-hidden bg-gradient-to-br from-zinc-100 to-zinc-200 border border-zinc-300/60 p-3 flex flex-col justify-between">
@@ -182,8 +183,8 @@ export const BookingSidebar: React.FC<BookingSidebarProps> = ({
               <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">Pickup address</span>
               {editingPickup ? (
                 <div className="mt-1 flex gap-2">
-                  <input type="text" value={state.pickupAddress} onChange={(e) => onUpdateState({ pickupAddress: e.target.value })}
-                    className="flex-1 text-xs border border-zinc-300 rounded px-2 py-1" />
+                  <LocationInput value={state.pickupAddress} onChange={(v) => onUpdateState({ pickupAddress: v })} popClassName="!bg-zinc-900/95"
+                    className="w-full text-xs border border-zinc-300 rounded px-2 py-1" />
                   <button onClick={() => setEditingPickup(false)} className="text-[11px] bg-zinc-950 text-white px-2 py-1 rounded">Done</button>
                 </div>
               ) : (
@@ -201,8 +202,8 @@ export const BookingSidebar: React.FC<BookingSidebarProps> = ({
                 <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">Airport & terminal</span>
                 {editingDestination ? (
                   <div className="mt-1 flex gap-2">
-                    <input type="text" value={state.destinationAddress} onChange={(e) => onUpdateState({ destinationAddress: e.target.value })}
-                      className="flex-1 text-xs border border-zinc-300 rounded px-2 py-1" />
+                    <LocationInput value={state.destinationAddress} onChange={(v) => onUpdateState({ destinationAddress: v })} popClassName="!bg-zinc-900/95"
+                      className="w-full text-xs border border-zinc-300 rounded px-2 py-1" />
                     <button onClick={() => setEditingDestination(false)} className="text-[11px] bg-zinc-950 text-white px-2 py-1 rounded">Done</button>
                   </div>
                 ) : (
@@ -275,7 +276,7 @@ export const BookingSidebar: React.FC<BookingSidebarProps> = ({
           </div>
           <div className="flex items-center gap-3 bg-zinc-50 p-2.5 rounded-xl border border-zinc-200/80">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selectedVehicle.image} alt={selectedVehicle.name} className="w-16 h-12 rounded-lg object-cover border border-zinc-200 shrink-0" />
+            <img src={selectedVehicle.image.replace('-1.webp', '-1-thumb.webp')} alt={selectedVehicle.name} className="w-16 h-12 rounded-lg object-cover border border-zinc-200 shrink-0" />
             <div className="min-w-0 flex-1">
               <h5 className="font-bold text-xs text-zinc-950 truncate">{selectedVehicle.name}</h5>
               <p className="text-[11px] text-zinc-500 truncate">{selectedVehicle.modelExample}</p>

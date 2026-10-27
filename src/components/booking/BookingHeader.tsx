@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MapPin, Menu, X, Check } from 'lucide-react';
+import Image from 'next/image';
+import { MapPin, PlaneTakeoff, Sun, Clock, ChevronDown, ChevronLeft } from 'lucide-react';
 import { ServiceType } from '@/types/booking';
 
 interface BookingHeaderProps {
@@ -18,6 +19,12 @@ const SERVICE_LABELS: Record<ServiceType, string> = {
   'hourly-chauffeur': 'HOURLY CHAUFFEUR',
 };
 
+const SERVICE_ICONS = {
+  'airport-transfer': PlaneTakeoff,
+  'day-booking': Sun,
+  'hourly-chauffeur': Clock,
+} as const;
+
 export const BookingHeader: React.FC<BookingHeaderProps> = ({
   currentService,
   onServiceChange,
@@ -25,58 +32,84 @@ export const BookingHeader: React.FC<BookingHeaderProps> = ({
   destinationSummary,
   dateTimeSummary,
 }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const active = { icon: SERVICE_ICONS[currentService] };
+  const others = (['airport-transfer', 'day-booking', 'hourly-chauffeur'] as ServiceType[]).filter((st) => st !== currentService);
 
   return (
     <header className="sticky top-0 z-50 bg-[#0e0f12] text-white border-b border-[#22242a] shadow-md">
       {/* Single row: logo (left) | centered cluster | Menu (right) */}
-      <div className="max-w-[1520px] mx-auto px-5 sm:px-8 h-[64px] grid grid-cols-[auto_1fr_auto] items-center gap-6">
+      <div className="max-w-[1520px] mx-auto px-5 sm:px-8 h-[64px] grid grid-cols-[1fr_auto_1fr] items-center gap-4">
 
-        {/* Logo */}
+        {/* Logo — same as the homepage navbar */}
+        <div className="flex items-center gap-1 justify-self-start">
+        <a
+          href="/"
+          aria-label="Back to homepage"
+          className="flex h-7 w-5 shrink-0 items-center justify-center rounded-full text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </a>
         <a href="/" className="flex items-center shrink-0 group">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo/uts-icon-white.png"
+          <Image
+            src="/logo/UTS-logo.png"
             alt="United Travel Services"
-            className="h-9 w-9 object-contain"
+            width={1072}
+            height={328}
+            className="h-14 w-auto object-contain"
+            priority
           />
         </a>
+        </div>
 
         {/* Centered cluster: pill | route | datetime */}
-        <div className="flex items-center justify-center gap-4 min-w-0">
-          {/* Service badge — clickable dropdown */}
-          <div className="relative shrink-0 leading-none">
+        <div className="contents">
+          {/* Service badge — hover dropdown with the other two services */}
+          <div
+            className="flex h-full shrink-0 items-center justify-self-center self-stretch leading-none"
+            onMouseEnter={() => setDropdownOpen(true)}
+            onMouseLeave={() => setDropdownOpen(false)}
+          >
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="inline-flex items-center gap-1.5 leading-none border border-white/30 hover:border-white/60 text-white text-[11px] font-bold tracking-[0.12em] uppercase px-3.5 py-2 rounded-full transition-colors"
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={dropdownOpen}
+              onClick={() => setDropdownOpen((v) => !v)}
+              className="inline-flex items-center gap-1.5 leading-none hover:bg-white/10 text-white text-[11px] font-bold tracking-[0.12em] uppercase px-3.5 py-2 rounded-full transition-colors"
             >
+              <active.icon className="hidden h-3.5 w-3.5 text-zinc-400 sm:inline" />
               {SERVICE_LABELS[currentService]}
+              <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {dropdownOpen && (
-              <div
-                className="absolute left-0 top-full mt-2 w-56 bg-[#14161d] border border-zinc-700 rounded-xl shadow-2xl py-1.5 z-50"
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
-                {(['airport-transfer', 'day-booking', 'hourly-chauffeur'] as ServiceType[]).map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => { onServiceChange(st); setDropdownOpen(false); }}
-                    className={`w-full px-4 py-2.5 text-xs flex items-center justify-between text-left transition-colors ${
-                      currentService === st
-                        ? 'text-white font-semibold bg-white/10'
-                        : 'text-zinc-400 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <span className="tracking-wide uppercase text-[11px]">{SERVICE_LABELS[st]}</span>
-                    {currentService === st && <Check className="w-3.5 h-3.5 text-white/70" />}
-                  </button>
-                ))}
+            {/* Expands straight out of the bar: same surface, no gap, no separate box */}
+            <div
+              role="menu"
+              className={`absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 overflow-hidden rounded-b-2xl bg-gradient-to-b from-[#0e0f12]/85 via-[#0e0f12]/65 to-black/50 backdrop-blur-lg transition-[max-height,opacity] duration-300 ease-out ${
+                dropdownOpen ? 'max-h-40 opacity-100' : 'pointer-events-none max-h-0 opacity-0'
+              }`}
+            >
+              <div className="p-1.5">
+                {others.map((st) => {
+                  const Icon = SERVICE_ICONS[st];
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => { onServiceChange(st); setDropdownOpen(false); }}
+                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-white/80 transition-all hover:bg-white/10 hover:text-white"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {SERVICE_LABELS[st]}
+                    </button>
+                  );
+                })}
               </div>
-            )}
+            </div>
           </div>
 
+          <div className="flex min-w-0 max-w-full items-center gap-4 justify-self-end overflow-hidden whitespace-nowrap">
           {/* Divider */}
           <span className="text-zinc-700 text-base leading-none font-thin select-none hidden md:block">|</span>
 
@@ -101,52 +134,10 @@ export const BookingHeader: React.FC<BookingHeaderProps> = ({
           <span className="hidden lg:flex items-center leading-none text-[13px] text-zinc-300 whitespace-nowrap shrink-0">
             {dateTimeSummary}
           </span>
+          </div>
         </div>
-
-        {/* Menu */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center gap-2 leading-none text-[13px] text-zinc-300 hover:text-white transition-colors shrink-0 justify-self-end"
-          aria-label="Navigation menu"
-        >
-          <span className="font-medium leading-none">Menu</span>
-          {menuOpen ? <X className="w-4 h-4" /> : (
-            <svg viewBox="0 0 20 14" className="w-4 h-[11px] fill-current">
-              <rect y="0" width="20" height="2" rx="1"/>
-              <rect y="6" width="20" height="2" rx="1"/>
-              <rect y="12" width="20" height="2" rx="1"/>
-            </svg>
-          )}
-        </button>
       </div>
 
-      {/* Mobile / tablet drawer */}
-      {menuOpen && (
-        <div className="bg-[#121318] border-t border-zinc-800 px-5 py-5">
-          <div className="mb-4 text-xs text-zinc-400">
-            <p className="font-semibold text-white text-sm mb-1">{pickupSummary}{destinationSummary ? ` → ${destinationSummary}` : ''}</p>
-            <p>{dateTimeSummary}</p>
-          </div>
-          <div className="border-t border-zinc-800 pt-4 space-y-1">
-            {(['airport-transfer', 'day-booking', 'hourly-chauffeur'] as ServiceType[]).map((st) => (
-              <button
-                key={st}
-                onClick={() => { onServiceChange(st); setMenuOpen(false); }}
-                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs tracking-wider uppercase font-semibold transition-colors ${
-                  currentService === st
-                    ? 'bg-white text-zinc-950'
-                    : 'text-zinc-400 hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                {SERVICE_LABELS[st]}
-              </button>
-            ))}
-          </div>
-          <div className="border-t border-zinc-800 mt-4 pt-4">
-            <a href="/" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">← Back to main site</a>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

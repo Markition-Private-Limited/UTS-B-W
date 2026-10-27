@@ -44,6 +44,8 @@ export interface BookingDraft {
   time?: string;
   name?: string;
   phone?: string;
+  passengers?: number;
+  duration?: number;
 }
 
 export const DRAFT_KEY = "uts-booking-draft";

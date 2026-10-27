@@ -10,11 +10,13 @@ export interface Vehicle {
   passengers: number;
   luggage: number;
   image: string;
+  image2: string;
   description: string;
   features: string[];
   airportRateKm: number | null;
   dayRateHour: number | null;
   hourlyRateHour: number | null;
+  fixedFare?: number;
 }
 
 export interface ItineraryStop {

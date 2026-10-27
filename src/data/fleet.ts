@@ -8,7 +8,8 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Mercedes-Benz E-Class or similar',
     passengers: 3,
     luggage: 2,
-    image: '/booking/images/uts_business_eclass_v2.jpg',
+    image: '/images/fleet-cards/business-class-1.webp',
+    image2: '/images/fleet-cards/business-class-2.webp',
     description: 'Refined executive travel for every journey. The Business Class provides a composed, private environment with a professional chauffeur and full luggage assistance.',
     features: [
       'Complimentary Wi-Fi & chilled mineral water',
@@ -27,7 +28,8 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Mercedes-Benz V-Class or similar',
     passengers: 6,
     luggage: 5,
-    image: '/booking/images/uts_vclass_van_v2.png',
+    image: '/images/fleet-cards/first-class-van-1.webp',
+    image2: '/images/fleet-cards/first-class-van-2.webp',
     description: 'Unmatched spacious luxury for groups, executive delegations, and families requiring extensive luggage capacity without compromising sophistication.',
     features: [
       'Conference-style luxury leather seating',
@@ -38,6 +40,7 @@ export const FLEET: Vehicle[] = [
     airportRateKm: null,
     dayRateHour: null,
     hourlyRateHour: null,
+    fixedFare: 75,
   },
   {
     id: 'first',
@@ -46,7 +49,8 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Mercedes-Benz S-Class or similar',
     passengers: 3,
     luggage: 2,
-    image: '/booking/images/uts_first_sclass_v2.png',
+    image: '/images/fleet-cards/first-class-1.webp',
+    image2: '/images/fleet-cards/first-class-2.webp',
     description: 'The pinnacle of automotive luxury and prestige. An extraordinarily quiet cabin, acoustic glazing, and sublime ride comfort for discerning travellers.',
     features: [
       'Reclining Nappa leather executive rear seats',
@@ -65,7 +69,8 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Volkswagen Passat / Kia Niro or similar',
     passengers: 3,
     luggage: 2,
-    image: '/booking/images/uts_passat_economy_1793099432066.jpg',
+    image: '/images/fleet-cards/economy-saloon-1.webp',
+    image2: '/images/fleet-cards/economy-saloon-2.webp',
     description: 'Dependable, understated executive transportation offering clean comfort, punctuality, and professional chauffeur standards across London.',
     features: [
       'Comfortable modern saloon seating',
@@ -84,7 +89,8 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Volkswagen Sharan / Ford Galaxy or similar',
     passengers: 4,
     luggage: 3,
-    image: '/booking/images/uts_mpv_sharan_1793099458068.jpg',
+    image: '/images/fleet-cards/mpv-1.webp',
+    image2: '/images/fleet-cards/mpv-2.webp',
     description: 'Versatile multi-passenger vehicle offering flexible seating configurations and elevated ride height, ideal for small groups with extra luggage.',
     features: [
       'Elevated seating position with enhanced visibility',
@@ -103,7 +109,8 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Volkswagen Caravelle / 8-9 Seater Van or similar',
     passengers: 8,
     luggage: 6,
-    image: '/booking/images/uts_vclass_van_1793099430742.jpg',
+    image: '/images/fleet-cards/standard-van-1.webp',
+    image2: '/images/fleet-cards/standard-van-2.webp',
     description: 'High-capacity passenger vehicle suited for corporate shuttles, production crews, and extended family transfers across the UK.',
     features: [
       'Accommodates up to 8 passengers comfortably',
@@ -122,7 +129,8 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Hyundai i800 / Volkswagen Transporter or similar',
     passengers: 7,
     luggage: 5,
-    image: '/booking/images/uts_vclass_van_1793099430742.jpg',
+    image: '/images/fleet-cards/standard-van-1.webp',
+    image2: '/images/fleet-cards/standard-van-2.webp',
     description: 'Practical, spacious group transfer vehicle delivering reliable group transportation with generous boot volume.',
     features: [
       'Seating for up to 7 passengers',
@@ -153,6 +161,19 @@ export function calculatePrice(
   vehicle: Vehicle,
   options: { distanceKm?: number; durationHours?: number }
 ): PriceCalculationResult {
+  if (vehicle.fixedFare !== undefined) {
+    return {
+      baseFare: vehicle.fixedFare,
+      rateLabel: 'Fixed fare',
+      ratePerUnit: null,
+      unitCount: 1,
+      unitLabel: 'journey',
+      bookingFee: 0,
+      total: vehicle.fixedFare,
+      isConfirmedPrice: true,
+      notes: [`Fixed fare of £${vehicle.fixedFare} for this vehicle class.`],
+    };
+  }
   if (service === 'airport-transfer') {
     const distance = options.distanceKm ?? 28;
     if (vehicle.airportRateKm === null) {

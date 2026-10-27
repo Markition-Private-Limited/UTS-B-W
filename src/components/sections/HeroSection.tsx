@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import PillButtonContent from "@/components/ui/PillButtonContent";
 import BookingTabs, { type Tab } from "@/components/ui/BookingTabs";
-import BookingModal from "@/components/booking/BookingModal";
+import HeroBookingPanel from "@/components/booking/HeroBookingPanel";
+import { useRouter } from "next/navigation";
 import { DRAFT_KEY, type BookingDraft, type ServiceType } from "@/lib/booking";
 
 const TAB_TO_SERVICE: Record<Tab, ServiceType> = {
@@ -32,13 +33,13 @@ const EMPTY_FORM: BookingForm = { pickup: "", destination: "", date: "", time: "
 
 export default function HeroSection() {
   const imgDivRef = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const [panelTilt, setPanelTilt] = useState({ rx: 0, ry: 0, mx: 50, my: 50 });
   const [activeImage, setActiveImage] = useState(0);
   const [form, setForm] = useState<BookingForm>(EMPTY_FORM);
   const [touched, setTouched] = useState(false);
   const [tab, setTab] = useState<Tab>("Airport Transfer");
-  const [showBooking, setShowBooking] = useState(false);
+  const router = useRouter();
+  const [passengers, setPassengers] = useState(1);
+  const [duration, setDuration] = useState(8);
 
   // A fresh visit/refresh of the home page always starts with a clean booking panel.
   useEffect(() => {
@@ -56,16 +57,20 @@ export default function HeroSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
-    const missing = Object.values(form).some((v) => !v.trim());
+    const required: (keyof BookingForm)[] =
+      tab === "Airport Transfer" ? ["pickup", "destination", "date", "time"] : ["pickup", "date", "time"];
+    const missing = required.some((k) => !form[k].trim());
     if (missing) return; // required-field styling (below) shows what's missing
     // Hand the trip details to the booking form page, then clear the panel so
     // coming back to the home page shows an empty form.
     const draft: BookingDraft = {
       service: TAB_TO_SERVICE[tab],
       pickup: form.pickup,
-      dropoff: form.destination,
+      dropoff: tab === "Airport Transfer" ? form.destination : undefined,
       date: form.date,
       time: form.time,
+      passengers,
+      duration: tab === "Airport Transfer" ? undefined : duration,
     };
     try {
       sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
@@ -75,7 +80,9 @@ export default function HeroSection() {
     setForm(EMPTY_FORM);
     setTouched(false);
     setTab("Airport Transfer");
-    setShowBooking(true);
+    setPassengers(1);
+    setDuration(8);
+    router.push("/book");
   };
 
   useEffect(() => {
@@ -84,22 +91,6 @@ export default function HeroSection() {
     }, SLIDE_MS);
     return () => clearInterval(id);
   }, []);
-
-  const handlePanelMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = panelRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    const maxTilt = 4;
-    const ry = (px - 0.5) * 2 * maxTilt;
-    const rx = (0.5 - py) * 2 * maxTilt;
-    setPanelTilt({ rx, ry, mx: px * 100, my: py * 100 });
-  };
-
-  const handlePanelMouseLeave = () => {
-    setPanelTilt({ rx: 0, ry: 0, mx: 50, my: 50 });
-  };
 
   useEffect(() => {
     const applyClip = () => {
@@ -208,137 +199,31 @@ export default function HeroSection() {
 
         {/* Small service-type tabs card */}
         <div className="mx-auto mb-3 flex justify-center" style={{ maxWidth: "91.6667vw" }}>
-          <BookingTabs value={tab} onChange={setTab} />
-        </div>
-
-        {/* Main booking bar */}
-        <div
-          ref={panelRef}
-          onMouseMove={handlePanelMouseMove}
-          onMouseLeave={handlePanelMouseLeave}
-          className="relative mx-auto flex flex-col md:flex-row items-start md:items-center gap-[1.1458vw] overflow-hidden"
-          style={{
-            maxWidth: "91.6667vw",
-            minHeight: "5.2083vw",
-            borderRadius: "1.25vw",
-            padding: "0.9375vw 1.4583vw",
-            backgroundColor: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.4)",
-            backdropFilter: "blur(28px) saturate(180%)",
-            WebkitBackdropFilter: "blur(28px) saturate(180%)",
-            boxShadow:
-              "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 40px rgba(255,255,255,0.05)",
-            transform: `perspective(1000px) rotateX(${panelTilt.rx}deg) rotateY(${panelTilt.ry}deg)`,
-            transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
-            transformStyle: "preserve-3d",
-          }}
-        >
-          {/* Glare */}
-          <div
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              background: `radial-gradient(circle 280px at ${panelTilt.mx}% ${panelTilt.my}%, rgba(255,255,255,0.18), transparent 70%)`,
-              transition: "background 0.25s cubic-bezier(0.4,0,0.2,1)",
+          <BookingTabs
+            value={tab}
+            onChange={(t) => {
+              setTab(t);
+              setDuration(t === "Day Booking" ? 8 : 4);
+              setTouched(false);
             }}
           />
+        </div>
 
-          {/* Fields row */}
-          <form
+        <div className="mx-auto" style={{ maxWidth: "78vw" }}>
+          <HeroBookingPanel
+            tab={tab}
+            duration={duration}
+            onDuration={(n) => setDuration(n)}
+            form={form}
+            onField={updateField}
+            onValue={(k, v) => setForm((f) => ({ ...f, [k]: v }))}
+            passengers={passengers}
+            onPassengers={setPassengers}
+            touched={touched}
             onSubmit={handleSubmit}
-            className="relative z-10 w-full flex flex-col md:flex-row md:items-center md:divide-x divide-white/20 gap-4 md:gap-0"
-            style={{
-              transform: `translate3d(${panelTilt.ry * 0.8}px, ${-panelTilt.rx * 0.8}px, 0)`,
-              transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
-            }}
-          >
-            <BookingField
-              label="Pickup Location"
-              placeholder="Enter pickup location"
-              value={form.pickup}
-              onChange={updateField("pickup")}
-              showError={touched && !form.pickup.trim()}
-              className="md:pl-0 md:pr-8"
-            />
-            <BookingField
-              label="Destination"
-              placeholder="Where would you like to go?"
-              value={form.destination}
-              onChange={updateField("destination")}
-              showError={touched && !form.destination.trim()}
-              className="md:px-8"
-            />
-            <BookingField
-              label="Pickup Date"
-              type="date"
-              value={form.date}
-              onChange={updateField("date")}
-              showError={touched && !form.date.trim()}
-              className="md:px-8"
-            />
-            <BookingField
-              label="Pickup Time"
-              type="time"
-              value={form.time}
-              onChange={updateField("time")}
-              showError={touched && !form.time.trim()}
-              className="md:px-8"
-            />
-
-            {/* Find Your Ride CTA */}
-            <div className="md:pl-6 flex-shrink-0">
-              <button
-                type="submit"
-                className="group relative overflow-hidden inline-flex items-center gap-2 text-black text-[11px] font-semibold tracking-[0.12em] uppercase px-6 py-4 rounded-full whitespace-nowrap border-[1.5px] border-transparent transition-all duration-500 hover:border-white/50 hover:shadow-[0_0_16px_rgba(255,255,255,0.25)]"
-                style={{ background: "#ffffff", minWidth: "168px" }}
-              >
-                <PillButtonContent fill="black">Find Your Ride</PillButtonContent>
-              </button>
-            </div>
-          </form>
+          />
         </div>
       </div>
-      {showBooking && <BookingModal onClose={() => setShowBooking(false)} />}
     </section>
-  );
-}
-
-function BookingField({
-  label,
-  placeholder,
-  type = "text",
-  value,
-  onChange,
-  showError = false,
-  className = "",
-}: {
-  label: string;
-  placeholder?: string;
-  type?: "text" | "date" | "time";
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  showError?: boolean;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`group flex flex-col flex-1 min-w-0 transition-transform duration-200 ease-out hover:scale-[1.04] ${className}`}
-      style={{ transformOrigin: "left center" }}
-    >
-      <span
-        className={`text-[10px] font-semibold tracking-wide mb-0.5 transition-colors duration-200 ${
-          showError ? "text-red-400" : "text-white/60 group-hover:text-white/80"
-        }`}
-      >
-        {label}
-      </span>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        style={{ colorScheme: "dark" }}
-        className="w-full bg-transparent text-[13px] font-medium text-white placeholder:text-white/40 truncate outline-none"
-      />
-    </div>
   );
 }

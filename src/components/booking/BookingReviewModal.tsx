@@ -73,7 +73,7 @@ Notice: Demonstration prototype estimate only.`;
         <div className="p-6 space-y-5">
           <div className="flex items-center gap-4 bg-zinc-50 p-3.5 rounded-xl border border-zinc-200">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={vehicle.image} alt={vehicle.name} className="w-24 rounded-lg object-cover border border-zinc-200" style={{ height: '72px' }} />
+            <img src={vehicle.image.replace('-1.webp', '-1-thumb.webp')} alt={vehicle.name} className="w-24 rounded-lg object-cover border border-zinc-200" style={{ height: '72px' }} />
             <div className="flex-1">
               <span className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Vehicle Allocated</span>
               <h4 className="font-bold text-base text-zinc-950">{vehicle.name}</h4>

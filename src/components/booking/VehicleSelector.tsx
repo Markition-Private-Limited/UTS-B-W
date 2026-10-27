@@ -74,47 +74,58 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
               <div className="relative aspect-[9/10] bg-zinc-100 overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={vehicle.image}
+                  src={vehicle.image.replace('-1.webp', '-1-card.webp')}
                   alt={vehicle.name}
-                  className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-700 ease-in-out group-hover:scale-110"
+                  className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-700 ease-in-out group-hover:scale-105 [backface-visibility:hidden] [transform:translateZ(0)]"
                   loading="lazy"
                   draggable={false}
                 />
               </div>
 
-              <div className="px-3.5 pt-3 pb-3.5">
-                <h3 className="font-bold text-sm text-zinc-900 tracking-tight leading-snug transition-colors duration-300 group-hover:text-zinc-600">{vehicle.name}</h3>
-                <p className="text-[11px] text-zinc-500 truncate mt-0.5 font-normal">{vehicle.modelExample}</p>
+              <div className="flex flex-col px-4 pt-4 pb-4">
+                <h3 className="font-bold text-base text-zinc-900 tracking-tight leading-snug transition-colors duration-300 group-hover:text-zinc-600">{vehicle.name}</h3>
+                <p className="text-xs text-zinc-500 mt-1 font-normal">{vehicle.modelExample}</p>
+
+                <p className="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 min-h-[3em]">{vehicle.description}</p>
+
+                {priceCalc.ratePerUnit === null && <p className="mt-4 min-h-[1.25rem]" aria-hidden="true" />}
+                {priceCalc.ratePerUnit !== null && (
+                  <p className="mt-4 min-h-[1.25rem] text-xs text-zinc-500">
+                    £{priceCalc.ratePerUnit.toFixed(2).replace(/\.00$/, '')}/{priceCalc.unitLabel === 'hours' ? 'hour' : priceCalc.unitLabel} × {priceCalc.unitCount} {priceCalc.unitLabel}
+                  </p>
+                )}
 
                 <div className="flex items-center justify-between mt-2">
                   {priceCalc.total !== null ? (
-                    <span className="text-base font-bold tracking-tight text-zinc-950">
+                    <span className="text-xl font-bold tracking-tight text-zinc-950">
                       £{priceCalc.total.toFixed(0)}
                     </span>
                   ) : (
-                    <span className="text-[11px] font-semibold text-zinc-700">Price to be confirmed</span>
+                    <span className="text-xs font-semibold text-zinc-700">Price to be confirmed</span>
                   )}
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-medium">
-                    <div className="flex items-center gap-0.5">
-                      <User className="w-3 h-3 text-zinc-400" />
+                  <div className="flex items-center gap-3 text-xs text-zinc-600 font-medium">
+                    <div className="flex items-center gap-1">
+                      <User className="w-3.5 h-3.5 text-zinc-500" />
                       <span>{vehicle.passengers}</span>
                     </div>
-                    <div className="flex items-center gap-0.5">
-                      <Briefcase className="w-3 h-3 text-zinc-400" />
+                    <div className="flex items-center gap-1">
+                      <Briefcase className="w-3.5 h-3.5 text-zinc-500" />
                       <span>{vehicle.luggage}</span>
                     </div>
                   </div>
                 </div>
 
-                {isSelected && (
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onSelectVehicle(vehicle.id); }}
-                    className="group relative overflow-hidden w-full mt-2.5 py-2 px-2 rounded-xl text-[11px] font-semibold bg-zinc-950 text-white shadow border-[1.5px] border-transparent transition-all duration-500 hover:border-white/30 justify-center inline-flex items-center gap-1.5"
-                  >
-                    <PillButtonContent fill="white">Select {vehicle.name}</PillButtonContent>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onSelectVehicle(vehicle.id); }}
+                  className={`group relative overflow-hidden w-full mt-3.5 py-2.5 px-3 rounded-full text-xs font-semibold border-[1.5px] transition-all duration-500 justify-center inline-flex items-center ${
+                    isSelected
+                      ? 'bg-zinc-950 text-white border-transparent hover:border-white/30'
+                      : 'bg-white text-zinc-950 border-zinc-300 hover:border-zinc-950'
+                  }`}
+                >
+                  <PillButtonContent fill={isSelected ? 'white' : 'black'}>{isSelected ? 'Selected' : 'Select'}</PillButtonContent>
+                </button>
               </div>
             </div>
           );

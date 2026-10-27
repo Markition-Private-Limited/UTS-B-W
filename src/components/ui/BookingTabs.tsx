@@ -47,14 +47,14 @@ export default function BookingTabs({
       onMouseLeave={handleMouseLeave}
       className="relative inline-grid grid-cols-3 overflow-hidden"
       style={{
-        borderRadius: "0.8vw",
+        borderRadius: "9999px",
         padding: "0.3vw",
-        backgroundColor: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.4)",
-        backdropFilter: "blur(28px) saturate(180%)",
-        WebkitBackdropFilter: "blur(28px) saturate(180%)",
+        backgroundColor: "rgba(255,255,255,0.015)",
+        border: "1px solid rgba(255,255,255,0.45)",
+        backdropFilter: "blur(5px) saturate(140%)",
+        WebkitBackdropFilter: "blur(5px) saturate(140%)",
         boxShadow:
-          "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 40px rgba(255,255,255,0.05)",
+          "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 30px rgba(255,255,255,0.03)",
         transform: `perspective(800px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
         transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
         transformStyle: "preserve-3d",
@@ -79,7 +79,7 @@ export default function BookingTabs({
           bottom: "0.3vw",
           left: "0.3vw",
           width: `calc((100% - 0.6vw) / ${TABS.length})`,
-          borderRadius: "0.55vw",
+          borderRadius: "9999px",
           backgroundColor: "rgba(255,255,255,0.12)",
           border: "1px solid rgba(255,255,255,0.25)",
           transform: `translateX(${activeIdx * 100}%)`,
