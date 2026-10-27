@@ -313,7 +313,7 @@ export default function HeroBookingPanel({
 
   return (
     <div
-      className="relative z-20 rounded-full border border-white/20 px-6 pb-4 pt-4 text-white backdrop-blur-xl backdrop-saturate-150 md:px-14"
+      className="relative z-20 rounded-2xl border border-white/20 px-6 pb-4 pt-4 text-white backdrop-blur-xl backdrop-saturate-150 md:px-14"
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       style={{
@@ -324,10 +324,10 @@ export default function HeroBookingPanel({
         transition: "background 0.3s, box-shadow 0.3s",
       }}
     >
-      {/* Decorative layers clipped to the pill so popovers can overflow */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-full">
+      {/* Decorative layers clipped to the panel so popovers can overflow */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
         <div
-          className="absolute inset-0 rounded-full"
+          className="absolute inset-0 rounded-2xl"
           style={{
             padding: "1px",
             background:
