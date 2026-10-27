@@ -106,7 +106,7 @@ export const FLEET: Vehicle[] = [
     id: 'van',
     name: 'Van (8-9 Seater)',
     categoryName: 'Van',
-    modelExample: 'Volkswagen Caravelle / 8-9 Seater Van or similar',
+    modelExample: 'Hyundai i800 / Volkswagen Transporter or similar',
     passengers: 8,
     luggage: 6,
     image: '/images/fleet-cards/standard-van-1.webp',
