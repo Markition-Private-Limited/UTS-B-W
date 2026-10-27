@@ -122,8 +122,8 @@ export default function BookingApp() {
         dateTimeSummary={dateTimeSummary}
       />
 
-      <main className="flex-1 max-w-[1520px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="flex flex-col lg:flex-row items-start gap-8 xl:gap-12">
+      <main className="flex-1 max-w-[1520px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <div className="flex flex-col lg:flex-row items-start gap-8 xl:gap-10">
           {currentService === 'airport-transfer' && (
             <AirportTransferPage state={bookingState} fleet={FLEET} selectedVehicle={selectedVehicle}
               onSelectVehicle={handleSelectVehicle} onUpdateState={updateBookingState} />

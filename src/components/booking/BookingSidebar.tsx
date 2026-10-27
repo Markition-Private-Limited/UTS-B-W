@@ -47,7 +47,7 @@ export const BookingSidebar: React.FC<BookingSidebarProps> = ({
 
   return (
     <aside className="w-full lg:w-[360px] xl:w-[390px] shrink-0">
-      <div className="sticky top-20 bg-white border border-zinc-200/90 rounded-2xl shadow-sm overflow-hidden divide-y divide-zinc-100">
+      <div className="sticky top-[100px] max-h-[calc(100vh-108px)] overflow-y-auto bg-white border border-zinc-200/90 rounded-2xl shadow-sm divide-y divide-zinc-100">
         {/* Route Graphic */}
         <div className="relative bg-[#f4f4f7] p-4 border-b border-zinc-200/70">
           <div className="relative h-44 rounded-xl overflow-hidden bg-gradient-to-br from-zinc-100 to-zinc-200 border border-zinc-300/60 p-3 flex flex-col justify-between">
