@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { User, Briefcase, ChevronLeft, ChevronRight, ChevronsUpDown, Check } from 'lucide-react';
+import { User, Briefcase, ChevronLeft, ChevronRight, ChevronsUpDown } from 'lucide-react';
 import { Vehicle, VehicleTier, ServiceType } from '@/types/booking';
 import { calculatePrice } from '@/data/fleet';
+import PillButtonContent from '@/components/ui/PillButtonContent';
 
 interface VehicleSelectorProps {
   vehicles: Vehicle[];
@@ -27,9 +28,18 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
 
   const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId) || vehicles[0];
 
+  const cardStep = () => {
+    const el = containerRef.current;
+    if (!el || !el.firstElementChild) return 300;
+    const cardWidth = (el.firstElementChild as HTMLElement).getBoundingClientRect().width;
+    const gap = parseFloat(getComputedStyle(el).columnGap || '16');
+    return cardWidth + gap;
+  };
+
   const scroll = (direction: 'left' | 'right') => {
     if (containerRef.current) {
-      containerRef.current.scrollBy({ left: direction === 'left' ? -340 : 340, behavior: 'smooth' });
+      const step = cardStep();
+      containerRef.current.scrollBy({ left: direction === 'left' ? -step : step, behavior: 'smooth' });
     }
   };
 
@@ -44,7 +54,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
 
       <div
         ref={containerRef}
-        className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth"
+        className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {vehicles.map((vehicle) => {
@@ -55,69 +65,57 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
             <div
               key={vehicle.id}
               onClick={() => onSelectVehicle(vehicle.id)}
-              className={`shrink-0 w-[280px] sm:w-[310px] snap-start rounded-2xl p-3 sm:p-3.5 transition-all cursor-pointer flex flex-col justify-between border bg-white ${
+              className={`group shrink-0 w-[calc((100%-2rem)/3)] min-w-[220px] snap-start rounded-xl overflow-hidden cursor-pointer border bg-white transition-all duration-500 ease-in-out hover:-translate-y-2 hover:shadow-xl ${
                 isSelected
-                  ? 'border-zinc-950 shadow-md ring-1 ring-zinc-950/10'
-                  : 'border-zinc-200/90 hover:border-zinc-400 hover:shadow-sm'
+                  ? 'border-zinc-950'
+                  : 'border-zinc-200/90 hover:border-zinc-400'
               }`}
             >
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-zinc-100 mb-3 border border-zinc-100">
+              <div className="relative aspect-[9/10] bg-zinc-100 overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={vehicle.image}
                   alt={vehicle.name}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.03]"
+                  className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-700 ease-in-out group-hover:scale-110"
                   loading="lazy"
+                  draggable={false}
                 />
-                {isSelected && (
-                  <div className="absolute top-2.5 right-2.5 bg-zinc-950 text-white rounded-full p-1 shadow">
-                    <Check className="w-3.5 h-3.5" />
+              </div>
+
+              <div className="px-3.5 pt-3 pb-3.5">
+                <h3 className="font-bold text-sm text-zinc-900 tracking-tight leading-snug transition-colors duration-300 group-hover:text-zinc-600">{vehicle.name}</h3>
+                <p className="text-[11px] text-zinc-500 truncate mt-0.5 font-normal">{vehicle.modelExample}</p>
+
+                <div className="flex items-center justify-between mt-2">
+                  {priceCalc.total !== null ? (
+                    <span className="text-base font-bold tracking-tight text-zinc-950">
+                      £{priceCalc.total.toFixed(0)}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-semibold text-zinc-700">Price to be confirmed</span>
+                  )}
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-medium">
+                    <div className="flex items-center gap-0.5">
+                      <User className="w-3 h-3 text-zinc-400" />
+                      <span>{vehicle.passengers}</span>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <Briefcase className="w-3 h-3 text-zinc-400" />
+                      <span>{vehicle.luggage}</span>
+                    </div>
                   </div>
+                </div>
+
+                {isSelected && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onSelectVehicle(vehicle.id); }}
+                    className="group relative overflow-hidden w-full mt-2.5 py-2 px-2 rounded-xl text-[11px] font-semibold bg-zinc-950 text-white shadow border-[1.5px] border-transparent transition-all duration-500 hover:border-white/30 justify-center inline-flex items-center gap-1.5"
+                  >
+                    <PillButtonContent fill="white">Select {vehicle.name}</PillButtonContent>
+                  </button>
                 )}
               </div>
-
-              <div className="mb-3">
-                <h3 className="font-bold text-base text-zinc-900 tracking-tight leading-snug">{vehicle.name}</h3>
-                <p className="text-xs text-zinc-500 truncate mt-0.5 font-normal">{vehicle.modelExample}</p>
-              </div>
-
-              <div className="flex items-center justify-between mb-4 border-t border-zinc-100 pt-3">
-                <div className="flex flex-col">
-                  {priceCalc.total !== null ? (
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-lg sm:text-xl font-bold tracking-tight text-zinc-950">
-                        £{priceCalc.total.toFixed(2)}
-                      </span>
-                      <span className="text-[10px] text-zinc-400 font-normal">est.</span>
-                    </div>
-                  ) : (
-                    <span className="text-xs font-semibold text-zinc-700">Price to be confirmed</span>
-                  )}
-                  <span className="text-[10px] text-zinc-400">{priceCalc.rateLabel}</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-zinc-500 font-medium">
-                  <div className="flex items-center gap-1">
-                    <User className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>{vehicle.passengers}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Briefcase className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>{vehicle.luggage}</span>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onSelectVehicle(vehicle.id); }}
-                className={`w-full py-2.5 px-3 rounded-xl text-xs font-semibold transition-all ${
-                  isSelected
-                    ? 'bg-zinc-950 text-white shadow hover:bg-zinc-800'
-                    : 'bg-zinc-100 text-zinc-800 hover:bg-zinc-200'
-                }`}
-              >
-                {isSelected ? `Selected: ${vehicle.name}` : `Select ${vehicle.name}`}
-              </button>
             </div>
           );
         })}
@@ -141,7 +139,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
                 const el = containerRef.current;
                 if (el) {
                   const idx = vehicles.findIndex((x) => x.id === v.id);
-                  el.scrollTo({ left: idx * 320, behavior: 'smooth' });
+                  el.scrollTo({ left: idx * cardStep(), behavior: 'smooth' });
                 }
               }}
               className={`h-1.5 rounded-full transition-all ${

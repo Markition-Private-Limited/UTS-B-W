@@ -8,7 +8,7 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Mercedes-Benz E-Class or similar',
     passengers: 3,
     luggage: 2,
-    image: '/booking/images/uts_business_eclass_1793099430480.jpg',
+    image: '/booking/images/uts_business_eclass_v2.jpg',
     description: 'Refined executive travel for every journey. The Business Class provides a composed, private environment with a professional chauffeur and full luggage assistance.',
     features: [
       'Complimentary Wi-Fi & chilled mineral water',
@@ -27,7 +27,7 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Mercedes-Benz V-Class or similar',
     passengers: 6,
     luggage: 5,
-    image: '/booking/images/uts_vclass_van_1793099430742.jpg',
+    image: '/booking/images/uts_vclass_van_v2.png',
     description: 'Unmatched spacious luxury for groups, executive delegations, and families requiring extensive luggage capacity without compromising sophistication.',
     features: [
       'Conference-style luxury leather seating',
@@ -46,7 +46,7 @@ export const FLEET: Vehicle[] = [
     modelExample: 'Mercedes-Benz S-Class or similar',
     passengers: 3,
     luggage: 2,
-    image: '/booking/images/uts_first_sclass_1793099430254.jpg',
+    image: '/booking/images/uts_first_sclass_v2.png',
     description: 'The pinnacle of automotive luxury and prestige. An extraordinarily quiet cabin, acoustic glazing, and sublime ride comfort for discerning travellers.',
     features: [
       'Reclining Nappa leather executive rear seats',

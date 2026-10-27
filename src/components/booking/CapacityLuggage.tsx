@@ -85,10 +85,10 @@ export const CapacityLuggage: React.FC<CapacityLuggageProps> = ({
             })}
           </div>
 
-          <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-zinc-900 shadow-md">
+          <div className="relative aspect-[1176/430] rounded-2xl overflow-hidden bg-zinc-900 shadow-md">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/booking/images/uts_open_trunk_1793099432307.jpg"
+              src="/booking/images/uts_open_trunk_v2.png"
               alt="UTS executive vehicle open boot trunk luggage capacity"
               className="w-full h-full object-cover"
             />

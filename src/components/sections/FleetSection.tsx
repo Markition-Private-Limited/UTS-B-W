@@ -83,6 +83,7 @@ const tabs = ["All Vehicles", "Business Class", "First Class", "Economy Saloon",
 export default function FleetSection() {
   const { ref, isInView } = useInView<HTMLElement>();
   const [activeTab, setActiveTab] = useState("All Vehicles");
+  const [switched, setSwitched] = useState(false);
 
   const visibleCars = activeTab === "All Vehicles" ? cars : cars.filter((c) => c.category === activeTab);
 
@@ -210,7 +211,10 @@ export default function FleetSection() {
             return (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setSwitched(true);
+                }}
                 className={`rounded-full px-[1.25vw] py-[0.5729vw] transition-colors ${
                   active
                     ? "bg-black text-white"
@@ -251,6 +255,7 @@ export default function FleetSection() {
           );
         })}
         <div
+          key={activeTab}
           ref={trackRef}
           onScroll={updateEdge}
           onMouseEnter={() => (pausedRef.current = true)}
@@ -260,10 +265,10 @@ export default function FleetSection() {
           {visibleCars.map((car, i) => (
             <div
               key={car.id}
+              style={switched ? { animation: `fleetIn 0.9s cubic-bezier(0.22,1,0.36,1) ${i * 110}ms both` } : { transitionDelay: isInView ? `${i * 130}ms` : "0ms" }}
               className={`snap-start shrink-0 basis-[calc((100%-2.5vw)/3)] rounded-[1.25vw] overflow-hidden transition-all duration-700 ease-out ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
               }`}
-              style={{ transitionDelay: isInView ? `${i * 130}ms` : "0ms" }}
             >
               <div className="h-[16.25vw] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

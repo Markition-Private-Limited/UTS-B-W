@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, AlertTriangle, Copy, Printer } from 'lucide-react';
+import { X, AlertTriangle } from 'lucide-react';
 import { BookingState, Vehicle } from '@/types/booking';
 import { calculatePrice } from '@/data/fleet';
+import PillButtonContent from '@/components/ui/PillButtonContent';
 
 interface BookingReviewModalProps {
   isOpen: boolean;
@@ -160,18 +161,16 @@ Notice: Demonstration prototype estimate only.`;
         <div className="p-4 sm:p-6 bg-zinc-50 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <button onClick={copySummary}
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white border border-zinc-300 text-zinc-800 hover:bg-zinc-100 flex items-center gap-1.5 transition-colors">
-              <Copy className="w-3.5 h-3.5" />
-              <span>{copied ? 'Copied!' : 'Copy Summary'}</span>
+              className="group relative overflow-hidden px-3.5 py-2 rounded-xl text-xs font-semibold bg-white border-[1.5px] border-zinc-300 text-zinc-800 transition-all duration-500 hover:border-black/20 flex items-center">
+              <PillButtonContent fill="black">{copied ? 'Copied!' : 'Copy Summary'}</PillButtonContent>
             </button>
             <button onClick={() => window.print()}
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white border border-zinc-300 text-zinc-800 hover:bg-zinc-100 flex items-center gap-1.5 transition-colors">
-              <Printer className="w-3.5 h-3.5" />
-              <span>Print</span>
+              className="group relative overflow-hidden px-3.5 py-2 rounded-xl text-xs font-semibold bg-white border-[1.5px] border-zinc-300 text-zinc-800 transition-all duration-500 hover:border-black/20 flex items-center">
+              <PillButtonContent fill="black">Print</PillButtonContent>
             </button>
           </div>
-          <button onClick={onClose} className="px-6 py-2.5 rounded-xl text-xs font-bold bg-zinc-950 hover:bg-zinc-800 text-white transition-colors shadow">
-            Close Preview
+          <button onClick={onClose} className="group relative overflow-hidden px-6 py-2.5 rounded-xl text-xs font-bold bg-zinc-950 text-white shadow border-[1.5px] border-transparent transition-all duration-500 hover:border-white/30 flex items-center">
+            <PillButtonContent fill="white">Close Preview</PillButtonContent>
           </button>
         </div>
       </div>

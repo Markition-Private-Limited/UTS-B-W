@@ -15,7 +15,7 @@ export const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ serviceType,
   const slidesByService: Record<ServiceType, Array<{ image: string; caption: string; subtext: string }>> = {
     'airport-transfer': [
       {
-        image: '/booking/images/uts_airport_hero_1793099459464.jpg',
+        image: '/booking/images/uts_airport_hero_v3.webp',
         caption: 'A composed, private journey from door to terminal.',
         subtext: `Refined executive travel for every airport journey. ${selectedVehicle.name} provides a composed, private environment with a professional chauffeur and full luggage assistance across London airports.`,
       },
@@ -62,7 +62,7 @@ export const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ serviceType,
       <div className="relative aspect-[16/9] sm:aspect-[21/9] rounded-2xl overflow-hidden bg-zinc-900 shadow-md group">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={activeSlide.image} alt={activeSlide.caption} className="w-full h-full object-cover transition-opacity duration-700" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
         <div className="absolute top-4 right-5 text-white/70 font-black tracking-widest text-sm uppercase">UTS</div>
 
         <button

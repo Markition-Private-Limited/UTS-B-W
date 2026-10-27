@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import {
-  MapPin, Plane, User, Briefcase, Plus, Trash2, Bookmark, ArrowRight, AlertCircle,
+  MapPin, Plane, User, Briefcase, Plus, Trash2, AlertCircle,
 } from 'lucide-react';
 import { BookingState, Vehicle } from '@/types/booking';
 import { calculatePrice } from '@/data/fleet';
+import PillButtonContent from '@/components/ui/PillButtonContent';
 
 interface BookingSidebarProps {
   state: BookingState;
@@ -46,8 +47,8 @@ export const BookingSidebar: React.FC<BookingSidebarProps> = ({
   };
 
   return (
-    <aside className="w-full">
-      <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-sm divide-y divide-zinc-100">
+    <aside className="w-full lg:w-[360px] xl:w-[390px] shrink-0">
+      <div data-lenis-prevent className="sticky top-[72px] max-h-[calc(100vh-80px)] overflow-y-auto bg-white border border-zinc-200/90 rounded-2xl shadow-sm divide-y divide-zinc-100">
         {/* Route Graphic */}
         <div className="relative bg-[#f4f4f7] p-4 border-b border-zinc-200/70">
           <div className="relative h-44 rounded-xl overflow-hidden bg-gradient-to-br from-zinc-100 to-zinc-200 border border-zinc-300/60 p-3 flex flex-col justify-between">
@@ -332,16 +333,18 @@ export const BookingSidebar: React.FC<BookingSidebarProps> = ({
         {/* Actions */}
         <div className="p-4 sm:p-5 space-y-2.5 bg-zinc-50/50">
           <button type="button" disabled={!isMinHoursValid} onClick={onContinue}
-            className={`w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold tracking-wide transition-all shadow-md flex items-center justify-center gap-2 ${
-              isMinHoursValid ? 'bg-zinc-950 hover:bg-zinc-800 text-white cursor-pointer' : 'bg-zinc-300 text-zinc-500 cursor-not-allowed'
+            className={`group relative overflow-hidden w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold tracking-wide shadow-md flex items-center justify-center border-[1.5px] border-transparent transition-all duration-500 disabled:pointer-events-none ${
+              isMinHoursValid ? 'bg-zinc-950 hover:border-white/30 text-white cursor-pointer' : 'bg-zinc-300 text-zinc-500 cursor-not-allowed'
             }`}>
-            <span>Continue to Booking</span>
-            <ArrowRight className="w-4 h-4" />
+            {isMinHoursValid ? (
+              <PillButtonContent fill="white">Continue to Booking</PillButtonContent>
+            ) : (
+              <span>Continue to Booking</span>
+            )}
           </button>
           <button type="button" onClick={onSave}
-            className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-zinc-700 bg-zinc-200/70 hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5">
-            <Bookmark className="w-3.5 h-3.5" />
-            <span>Save Journey Details</span>
+            className="group relative overflow-hidden w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-zinc-700 bg-zinc-200/70 border-[1.5px] border-transparent transition-all duration-500 hover:border-black/10 flex items-center justify-center">
+            <PillButtonContent fill="black">Save Journey Details</PillButtonContent>
           </button>
         </div>
       </div>

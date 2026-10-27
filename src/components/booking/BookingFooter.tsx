@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowUpRight } from 'lucide-react';
 import { ServiceType } from '@/types/booking';
+import PillButtonContent from '@/components/ui/PillButtonContent';
 
 interface BookingFooterProps {
   onSelectService?: (service: ServiceType) => void;
@@ -84,10 +84,9 @@ export const BookingFooter: React.FC<BookingFooterProps> = ({ onSelectService })
               />
               <button
                 type="submit"
-                className="absolute right-1 top-1 bottom-1 bg-white hover:bg-zinc-200 text-zinc-950 px-3 rounded-md text-[11px] font-bold tracking-wider inline-flex items-center gap-1 transition-colors"
+                className="group overflow-hidden absolute right-1 top-1 bottom-1 bg-white text-zinc-950 px-3 rounded-md text-[11px] font-bold tracking-wider border-[1.5px] border-transparent transition-all duration-500 hover:border-black/15 inline-flex items-center"
               >
-                <span>{subscribed ? 'JOINED' : 'SUBSCRIBE'}</span>
-                <ArrowUpRight className="w-3 h-3" />
+                <PillButtonContent fill="black">{subscribed ? 'JOINED' : 'SUBSCRIBE'}</PillButtonContent>
               </button>
             </form>
             <p className="text-[10px] text-zinc-400">Receive occasional travel inspiration and UTS updates.</p>
