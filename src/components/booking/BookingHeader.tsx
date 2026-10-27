@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MapPin, Menu, X, ChevronDown, Check } from 'lucide-react';
+import { MapPin, Menu, X, Check } from 'lucide-react';
 import { ServiceType } from '@/types/booking';
 
 interface BookingHeaderProps {
@@ -11,6 +11,12 @@ interface BookingHeaderProps {
   destinationSummary?: string;
   dateTimeSummary: string;
 }
+
+const SERVICE_LABELS: Record<ServiceType, string> = {
+  'airport-transfer': 'AIRPORT TRANSFER',
+  'day-booking': 'DAY BOOKING',
+  'hourly-chauffeur': 'HOURLY CHAUFFEUR',
+};
 
 export const BookingHeader: React.FC<BookingHeaderProps> = ({
   currentService,
@@ -22,143 +28,124 @@ export const BookingHeader: React.FC<BookingHeaderProps> = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const serviceLabels: Record<ServiceType, string> = {
-    'airport-transfer': 'AIRPORT TRANSFER',
-    'day-booking': 'DAY BOOKING',
-    'hourly-chauffeur': 'HOURLY CHAUFFEUR',
-  };
-
   return (
     <header className="sticky top-0 z-50 bg-[#0e0f12] text-white border-b border-[#22242a] shadow-md">
-      {/* Service Switcher Bar */}
-      <div className="bg-[#17191f] border-b border-[#282a32] px-4 py-1.5 text-xs text-zinc-300 flex items-center justify-between overflow-x-auto">
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 hidden sm:block">Service:</span>
-          <div className="flex items-center gap-1 bg-[#0b0c0f] p-0.5 rounded border border-zinc-800">
-            {(['airport-transfer', 'day-booking', 'hourly-chauffeur'] as ServiceType[]).map((st, i) => (
-              <button
-                key={st}
-                onClick={() => onServiceChange(st)}
-                className={`px-3 py-1 rounded text-[11px] font-medium transition-all ${
-                  currentService === st
-                    ? 'bg-white text-zinc-950 font-semibold shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                {['Airport Transfer', 'Day Booking', 'Hourly Chauffeur'][i]}
-              </button>
-            ))}
+      {/* Single row */}
+      <div className="max-w-[1520px] mx-auto px-5 sm:px-8 h-[64px] flex items-center gap-5">
+
+        {/* Logo */}
+        <a href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <div className="w-9 h-9 rounded-full border border-white/30 flex items-center justify-center group-hover:border-white/60 transition-colors">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+            </svg>
           </div>
-        </div>
-        <div className="hidden lg:flex items-center gap-3 text-[11px] text-zinc-400">
-          <span>London Executive Chauffeur Service</span>
-          <span className="text-zinc-600">·</span>
-          <span>United Travel Services</span>
-        </div>
-      </div>
+        </a>
 
-      {/* Main Header Row */}
-      <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Left: Brand + Service Dropdown */}
-        <div className="flex items-center gap-4 sm:gap-6 shrink-0">
-          <a href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-full bg-white text-zinc-950 flex items-center justify-center font-black text-sm tracking-tighter shadow-sm group-hover:scale-105 transition-transform">
-              <span className="font-serif italic font-bold text-base leading-none">U</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="font-extrabold tracking-wider text-xs block text-white leading-none">UNITED TRAVEL</span>
-              <span className="font-light tracking-[0.22em] text-[9px] block text-zinc-400 leading-tight">SERVICES</span>
-            </div>
-          </a>
+        {/* Divider */}
+        <span className="text-zinc-700 text-lg font-thin select-none hidden sm:block">|</span>
 
-          <div className="relative">
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="inline-flex items-center gap-2 bg-[#1b1d24] hover:bg-[#252833] text-zinc-200 text-xs font-semibold px-3 py-1.5 rounded-full border border-zinc-700/80 transition-colors"
+        {/* Service badge — clickable dropdown */}
+        <div className="relative shrink-0">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="inline-flex items-center gap-1.5 border border-white/30 hover:border-white/60 text-white text-[11px] font-bold tracking-[0.12em] uppercase px-3.5 py-1.5 rounded-full transition-colors"
+          >
+            {SERVICE_LABELS[currentService]}
+          </button>
+
+          {dropdownOpen && (
+            <div
+              className="absolute left-0 top-full mt-2 w-56 bg-[#14161d] border border-zinc-700 rounded-xl shadow-2xl py-1.5 z-50"
+              onMouseLeave={() => setDropdownOpen(false)}
             >
-              <span className="tracking-wide text-[11px] uppercase font-bold text-zinc-100">
-                {serviceLabels[currentService]}
-              </span>
-              <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {dropdownOpen && (
-              <div className="absolute left-0 mt-2 w-64 bg-[#14161d] border border-zinc-700 rounded-lg shadow-2xl py-2 z-50">
-                <div className="px-3 py-1 text-[10px] uppercase tracking-wider font-semibold text-zinc-400">
-                  Switch Chauffeur Service
-                </div>
-                {(['airport-transfer', 'day-booking', 'hourly-chauffeur'] as ServiceType[]).map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => { onServiceChange(st); setDropdownOpen(false); }}
-                    className={`w-full px-3 py-2 text-xs flex items-center justify-between text-left transition-colors ${
-                      currentService === st
-                        ? 'bg-white/10 text-white font-medium'
-                        : 'text-zinc-300 hover:bg-white/5 hover:text-white'
-                    }`}
-                  >
-                    <span>{serviceLabels[st]}</span>
-                    {currentService === st && <Check className="w-3.5 h-3.5 text-white" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Center: Journey summary */}
-        <div className="hidden md:flex items-center gap-2 text-xs text-zinc-300 truncate font-normal">
-          <MapPin className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-          <span className="truncate">
-            <strong className="font-medium text-white">{pickupSummary}</strong>
-            {destinationSummary && (
-              <>
-                <span className="text-zinc-500 mx-1.5">→</span>
-                <span>{destinationSummary}</span>
-              </>
-            )}
-          </span>
-          <span className="text-zinc-600 mx-1">|</span>
-          <span className="text-zinc-300 whitespace-nowrap">{dateTimeSummary}</span>
-        </div>
-
-        {/* Right: Menu */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center gap-2 text-xs text-zinc-300 hover:text-white px-3 py-1.5 rounded hover:bg-white/5 transition-colors"
-          aria-label="Navigation menu"
-        >
-          <span className="font-medium">Menu</span>
-          {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        </button>
-      </div>
-
-      {/* Mobile Drawer */}
-      {menuOpen && (
-        <div className="bg-[#121318] border-b border-zinc-800 px-6 py-6 md:hidden">
-          <div className="mb-4">
-            <div className="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Selected Journey</div>
-            <p className="text-sm font-medium text-white">{pickupSummary}</p>
-            {destinationSummary && <p className="text-xs text-zinc-400 mt-0.5">To: {destinationSummary}</p>}
-            <p className="text-xs text-zinc-400 mt-1">{dateTimeSummary}</p>
-          </div>
-          <div className="border-t border-zinc-800 pt-4">
-            <div className="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Available Services</div>
-            <div className="space-y-1">
               {(['airport-transfer', 'day-booking', 'hourly-chauffeur'] as ServiceType[]).map((st) => (
                 <button
                   key={st}
-                  onClick={() => { onServiceChange(st); setMenuOpen(false); }}
-                  className={`w-full text-left px-3 py-2 rounded text-sm ${
+                  onClick={() => { onServiceChange(st); setDropdownOpen(false); }}
+                  className={`w-full px-4 py-2.5 text-xs flex items-center justify-between text-left transition-colors ${
                     currentService === st
-                      ? 'bg-white text-zinc-950 font-semibold'
-                      : 'text-zinc-300 hover:bg-white/5'
+                      ? 'text-white font-semibold bg-white/10'
+                      : 'text-zinc-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  {serviceLabels[st]}
+                  <span className="tracking-wide uppercase text-[11px]">{SERVICE_LABELS[st]}</span>
+                  {currentService === st && <Check className="w-3.5 h-3.5 text-white/70" />}
                 </button>
               ))}
             </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        <span className="text-zinc-700 text-lg font-thin select-none hidden md:block">|</span>
+
+        {/* Route */}
+        <div className="hidden md:flex items-center gap-2 text-[13px] text-zinc-300 min-w-0 flex-1">
+          <MapPin className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+          <span className="truncate">
+            <span className="text-white font-medium">{pickupSummary}</span>
+            {destinationSummary && (
+              <>
+                <span className="text-zinc-600 mx-1.5">→</span>
+                <span className="text-zinc-300">{destinationSummary}</span>
+              </>
+            )}
+          </span>
+        </div>
+
+        {/* Divider */}
+        <span className="text-zinc-700 text-lg font-thin select-none hidden lg:block">|</span>
+
+        {/* Date / time */}
+        <span className="hidden lg:block text-[13px] text-zinc-300 whitespace-nowrap shrink-0">
+          {dateTimeSummary}
+        </span>
+
+        {/* Spacer */}
+        <div className="flex-1 md:hidden" />
+
+        {/* Menu */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="flex items-center gap-2 text-[13px] text-zinc-300 hover:text-white transition-colors shrink-0 ml-auto"
+          aria-label="Navigation menu"
+        >
+          <span className="font-medium">Menu</span>
+          {menuOpen ? <X className="w-4 h-4" /> : (
+            <svg viewBox="0 0 20 14" className="w-4 h-[11px] fill-current">
+              <rect y="0" width="20" height="2" rx="1"/>
+              <rect y="6" width="20" height="2" rx="1"/>
+              <rect y="12" width="20" height="2" rx="1"/>
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile / tablet drawer */}
+      {menuOpen && (
+        <div className="bg-[#121318] border-t border-zinc-800 px-5 py-5">
+          <div className="mb-4 text-xs text-zinc-400">
+            <p className="font-semibold text-white text-sm mb-1">{pickupSummary}{destinationSummary ? ` → ${destinationSummary}` : ''}</p>
+            <p>{dateTimeSummary}</p>
+          </div>
+          <div className="border-t border-zinc-800 pt-4 space-y-1">
+            {(['airport-transfer', 'day-booking', 'hourly-chauffeur'] as ServiceType[]).map((st) => (
+              <button
+                key={st}
+                onClick={() => { onServiceChange(st); setMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs tracking-wider uppercase font-semibold transition-colors ${
+                  currentService === st
+                    ? 'bg-white text-zinc-950'
+                    : 'text-zinc-400 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                {SERVICE_LABELS[st]}
+              </button>
+            ))}
+          </div>
+          <div className="border-t border-zinc-800 mt-4 pt-4">
+            <a href="/" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">← Back to main site</a>
           </div>
         </div>
       )}
