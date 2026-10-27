@@ -35,20 +35,11 @@ export const BookingHeader: React.FC<BookingHeaderProps> = ({
 
         {/* Logo */}
         <a href="/" className="flex items-center shrink-0 group">
-          <span
-            aria-label="United Travel Services"
-            role="img"
-            className="h-9 w-9 bg-white block"
-            style={{
-              WebkitMaskImage: "url('/logo/6f215cf1-6331-4613-927d-f39a37dc39d0 1.png')",
-              maskImage: "url('/logo/6f215cf1-6331-4613-927d-f39a37dc39d0 1.png')",
-              WebkitMaskSize: 'contain',
-              maskSize: 'contain',
-              WebkitMaskRepeat: 'no-repeat',
-              maskRepeat: 'no-repeat',
-              WebkitMaskPosition: 'center',
-              maskPosition: 'center',
-            }}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo/uts-icon-white.png"
+            alt="United Travel Services"
+            className="h-9 w-9 object-contain"
           />
         </a>
 
