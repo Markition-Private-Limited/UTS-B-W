@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Users } from 'lucide-react';
 import { Vehicle } from '@/types/booking';
+import { getLuggageImage } from '@/data/fleet';
 
 interface CapacityLuggageProps {
   selectedVehicle: Vehicle;
@@ -85,11 +86,12 @@ export const CapacityLuggage: React.FC<CapacityLuggageProps> = ({
             })}
           </div>
 
-          <div className="relative aspect-[1176/430] rounded-2xl overflow-hidden bg-zinc-900 shadow-md">
+          <div className="relative aspect-[2075/758] rounded-2xl overflow-hidden bg-zinc-900 shadow-md">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/booking/images/uts_open_trunk_v2.png"
-              alt="UTS executive vehicle open boot trunk luggage capacity"
+              key={`${selectedVehicle.id}-${currentLuggageType}`}
+              src={getLuggageImage(selectedVehicle.id, currentLuggageType)}
+              alt={`${selectedVehicle.name} luggage capacity — ${luggageOptions.find((o) => o.id === currentLuggageType)?.label}`}
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-4 left-4 right-4 bg-zinc-950/80 backdrop-blur-md text-white px-4 py-2.5 rounded-xl text-xs flex items-center justify-between">

@@ -1,4 +1,4 @@
-import { Vehicle, ServiceType } from '@/types/booking';
+import { Vehicle, ServiceType, VehicleTier } from '@/types/booking';
 
 export const FLEET: Vehicle[] = [
   {
@@ -143,6 +143,24 @@ export const FLEET: Vehicle[] = [
     hourlyRateHour: null,
   },
 ];
+
+// Maps each vehicle class onto its luggage-photo folder in /public/luggage.
+const LUGGAGE_FOLDER: Record<VehicleTier, string> = {
+  economy: 'economy-saloon',
+  business: 'business-class',
+  first: 'first-class',
+  mpv: 'mpv',
+  'first-class-van': 'first-class-van',
+  van: 'van',
+  'standard-van': 'standard-van',
+};
+
+// Standard Van's own shoot only covers carry-on and check-in; its large.png
+// borrows the Van (8-9 Seater) large-bag shot, the closest class with one.
+export function getLuggageImage(vehicleId: VehicleTier, luggageType: 'carry-on' | 'check-in' | 'large'): string {
+  const folder = LUGGAGE_FOLDER[vehicleId];
+  return `/luggage/${folder}/${luggageType}.png`;
+}
 
 export interface PriceCalculationResult {
   baseFare: number | null;

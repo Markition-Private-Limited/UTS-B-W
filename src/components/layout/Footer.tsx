@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useInView } from "@/hooks/useInView";
 import PillButtonContent from "@/components/ui/PillButtonContent";
 
@@ -34,6 +35,10 @@ const waysToTravel = [
 export default function Footer() {
   const [email, setEmail] = useState("");
   const { ref, isInView } = useInView<HTMLElement>();
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  // Off the homepage, hash links must point back to it (same pattern as Navbar).
+  const resolveHref = (href: string) => (onHome || !href.startsWith("#") ? href : `/${href}`);
 
   return (
     <footer
@@ -75,7 +80,7 @@ export default function Footer() {
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
                     style={{ fontWeight: 400, fontSize: "0.8854vw" }}
                   >
@@ -95,7 +100,7 @@ export default function Footer() {
               {chauffeurServices.map((link) => (
                 <li key={link.label}>
                   <a
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
                     style={{ fontWeight: 400, fontSize: "0.8854vw" }}
                   >
@@ -115,7 +120,7 @@ export default function Footer() {
               {waysToTravel.map((link) => (
                 <li key={link.label}>
                   <a
-                    href={link.href}
+                    href={resolveHref(link.href)}
                     className="leading-[1.23] tracking-normal text-[#E3E3E3]/70 hover:text-white transition-colors duration-200"
                     style={{ fontWeight: 400, fontSize: "0.8854vw" }}
                   >

@@ -7,7 +7,7 @@ import { DRAFT_KEY, type BookingDraft } from '@/lib/booking';
 import { BookingState, ServiceType, VehicleTier } from '@/types/booking';
 import { BookingHeader } from '@/components/booking/BookingHeader';
 import { BookingSidebar } from '@/components/booking/BookingSidebar';
-import { BookingFooter } from '@/components/booking/BookingFooter';
+import Footer from '@/components/layout/Footer';
 import { BookingReviewModal } from '@/components/booking/BookingReviewModal';
 import { AirportTransferPage } from '@/components/booking/pages/AirportTransferPage';
 import { DayBookingPage } from '@/components/booking/pages/DayBookingPage';
@@ -173,7 +173,7 @@ export default function BookingApp() {
         </div>
       </main>
 
-      <BookingFooter onSelectService={handleServiceChange} />
+      <Footer />
 
       <BookingReviewModal isOpen={reviewModalOpen} onClose={() => setReviewModalOpen(false)}
         state={bookingState} vehicle={selectedVehicle} />
