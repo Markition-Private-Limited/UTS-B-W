@@ -25,7 +25,7 @@ export const AirportTransferPage: React.FC<AirportTransferPageProps> = ({
         <div className="inline-flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">
           <span>UTS Executive Service</span><span>·</span><span>London Airport Transfer</span>
         </div>
-        <h1 className="font-sans text-3xl sm:text-4xl lg:text-[42px] font-medium tracking-tight text-zinc-950 leading-tight mb-3">
+        <h1 className="font-sans text-3xl sm:text-4xl lg:text-[42px] font-bold uppercase tracking-tight text-zinc-950 leading-tight mb-3">
           Your Airport Transfer, Elevated.
         </h1>
         <p className="text-sm sm:text-base text-zinc-600 max-w-2xl font-normal leading-relaxed">

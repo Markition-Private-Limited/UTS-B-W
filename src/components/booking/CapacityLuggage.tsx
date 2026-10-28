@@ -94,7 +94,7 @@ export const CapacityLuggage: React.FC<CapacityLuggageProps> = ({
               alt={`${selectedVehicle.name} luggage capacity — ${luggageOptions.find((o) => o.id === currentLuggageType)?.label}`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-4 left-4 right-4 bg-zinc-950/80 backdrop-blur-md text-white px-4 py-2.5 rounded-xl text-xs flex items-center justify-between">
+            <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-[3px] text-white px-4 py-2.5 rounded-xl text-xs flex items-center justify-between">
               <div>
                 <span className="font-semibold">{selectedVehicle.name} Luggage Volume</span>
                 <p className="text-[11px] text-zinc-300">
