@@ -1,10 +1,16 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { User, Briefcase, ChevronLeft, ChevronRight, ChevronsUpDown } from 'lucide-react';
 import { Vehicle, VehicleTier, ServiceType } from '@/types/booking';
 import { calculatePrice } from '@/data/fleet';
-import PillButtonContent from '@/components/ui/PillButtonContent';
+function CardArrow({ className }: { className?: string }) {
+  return (
+    <svg width="9" height="9" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 ${className ?? ''}`}>
+      <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 const SETTLE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 const RUBBER_BAND = 0.35;
@@ -33,8 +39,12 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
   // Which card the slider is currently showing (drives the dots below it).
   const [activeIndex, setActiveIndex] = useState(0);
   // Measured so exactly 3 cards fit the viewport width — the drag track needs
-  // a fixed px width per card rather than a CSS percentage (percentages don't
-  // resolve against a width:max-content track).
+  // a fixed px width per card rather than a CSS percentage (percentages can't
+  // resolve against a width:max-content track). Seeded with a real measurement
+  // up front via useLayoutEffect, not left null, so the very first paint
+  // already uses the correct width instead of falling back to a fixed 220px
+  // that could leave the third card's right edge past the clipped viewport
+  // boundary at in-between screen widths.
   const [cardWidth, setCardWidth] = useState<number | null>(null);
   const CARD_GAP = 16;
 
@@ -211,21 +221,35 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
     }
   };
 
+  // Measure before the first paint so the opening frame already has the
+  // right width (no flash of the 220px fallback).
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const w = viewport.clientWidth;
+    if (w > 0) setCardWidth(Math.max(220, Math.floor((w - CARD_GAP * 2) / 3) - 1));
+  }, []);
+
   // Keep exactly 3 cards' worth of width visible, and the track inside its
   // bounds, as the viewport resizes.
   useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const ro = new ResizeObserver(() => {
+    const measure = () => {
       const w = viewport.clientWidth;
-      if (w > 0) setCardWidth(Math.max(220, (w - CARD_GAP * 2) / 3));
+      if (w > 0) setCardWidth(Math.max(220, Math.floor((w - CARD_GAP * 2) / 3) - 1));
       const { max } = metrics();
       const x = Math.max(-max, Math.min(0, offsetRef.current));
       apply(x, false);
       setActiveIndex(indexForOffset(x));
-    });
+    };
+    const ro = new ResizeObserver(measure);
+    window.addEventListener('resize', measure);
     ro.observe(viewport);
-    return () => ro.disconnect();
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, [metrics, indexForOffset]);
 
   return (
@@ -258,10 +282,10 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
               key={vehicle.id}
               onClick={() => onSelectVehicle(vehicle.id)}
               style={{ width: cardWidth ? `${cardWidth}px` : undefined }}
-              className={`group shrink-0 w-[220px] rounded-xl overflow-hidden cursor-pointer border bg-white transition-all duration-500 ease-in-out hover:-translate-y-2 hover:shadow-xl ${
+              className={`group shrink-0 w-[220px] rounded-xl overflow-hidden cursor-pointer bg-white transition-all duration-500 ease-in-out hover:-translate-y-2 hover:shadow-xl ${
                 isSelected
-                  ? 'border-zinc-950'
-                  : 'border-zinc-200/90 hover:border-zinc-400'
+                  ? 'border-[1.5px] border-zinc-950'
+                  : 'border border-zinc-200/90 hover:border-zinc-400'
               }`}
             >
               <div className="relative aspect-[9/10] bg-zinc-100 overflow-hidden">
@@ -311,13 +335,22 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); onSelectVehicle(vehicle.id); }}
-                  className={`group relative overflow-hidden w-full mt-3.5 py-2.5 px-3 rounded-full text-xs font-semibold border-[1.5px] transition-all duration-500 justify-center inline-flex items-center ${
+                  className={`group/btn relative overflow-hidden w-full mt-3.5 py-2.5 px-4 rounded-full text-xs font-semibold border-[1.5px] transition-all duration-500 inline-flex items-center ${
                     isSelected
                       ? 'bg-zinc-950 text-white border-transparent hover:border-white/30'
                       : 'bg-white text-zinc-950 border-zinc-300 hover:border-zinc-950'
                   }`}
                 >
-                  <PillButtonContent fill={isSelected ? 'white' : 'black'}>{isSelected ? 'Selected' : 'Select'}</PillButtonContent>
+                  {/* Growing fill circle */}
+                  <span aria-hidden="true" className={`absolute z-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full opacity-0 group-hover/btn:w-[480px] group-hover/btn:h-[480px] group-hover/btn:opacity-100 transition-all duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] pointer-events-none ${isSelected ? 'bg-white' : 'bg-zinc-950'}`} />
+                  {/* Entering arrow — absolute left, slides in on hover */}
+                  <CardArrow className={`absolute z-[1] left-4 opacity-0 -translate-x-2 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/btn:opacity-100 group-hover/btn:translate-x-0 ${isSelected ? 'text-zinc-950' : 'text-white'}`} />
+                  {/* Label — centered, shifts right slightly on hover */}
+                  <span className={`relative z-[1] flex-1 text-center transition-all duration-500 ease-out group-hover/btn:translate-x-[0.5em] ${isSelected ? 'group-hover/btn:text-zinc-950' : 'group-hover/btn:text-white'}`}>
+                    {isSelected ? 'Selected' : 'Select'}
+                  </span>
+                  {/* Exiting arrow — absolute right, exits right on hover */}
+                  <CardArrow className={`absolute z-[1] right-4 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover/btn:opacity-0 group-hover/btn:translate-x-3 ${isSelected ? 'group-hover/btn:text-zinc-950' : 'group-hover/btn:text-white'}`} />
                 </button>
               </div>
             </div>

@@ -143,11 +143,15 @@ export default function HeroSection() {
       {/* Hero text content */}
       <div
         className="relative z-10 flex-1 flex flex-col items-center justify-center text-center text-white px-6"
-        style={{ paddingTop: "14vh" }}
+        style={{ paddingTop: "21vh" }}
       >
-        <p className="text-[11px] font-medium tracking-[0.3em] uppercase text-white/70 mb-8">
-          Executive Chauffeur Services
-        </p>
+        <div className="flex items-center gap-4 mb-8">
+          <span className="h-px w-8 sm:w-12 bg-white/50" aria-hidden="true" />
+          <p className="text-[11px] font-medium tracking-[0.3em] uppercase text-white/70 whitespace-nowrap">
+            Executive Chauffeur Services
+          </p>
+          <span className="h-px w-8 sm:w-12 bg-white/50" aria-hidden="true" />
+        </div>
 
         <h1
           className="font-bold uppercase text-white mb-7"
@@ -164,10 +168,12 @@ export default function HeroSection() {
         </h1>
 
         <p
-          className="text-white/90 font-medium mb-10 whitespace-nowrap"
-          style={{ fontSize: "clamp(0.75rem, 1.1vw, 17px)", lineHeight: "1.5" }}
+          className="text-white/90 font-medium mb-10 max-w-3xl"
+          style={{ fontSize: "clamp(0.75rem, 1.1vw, 17px)", lineHeight: "1.6" }}
         >
-          Premium Chauffeur Services for Business, Airport Transfers &amp; Luxury Travel.
+          Travel across London in comfort and style with our professional chauffeur service. From
+          airport transfers to special occasions, we deliver a seamless, reliable and luxurious
+          travel experience tailored to your needs.
         </p>
 
         <a
@@ -190,13 +196,6 @@ export default function HeroSection() {
 
       {/* Booking area */}
       <div className="relative z-10 w-full px-4 md:px-10 pb-8 mt-auto flex-shrink-0">
-        {/* "PLAN YOUR NEXT JOURNEY" label */}
-        <div className="mx-auto mb-3" style={{ maxWidth: "91.6667vw", paddingLeft: "1.4583vw" }}>
-          <span className="text-[10px] font-semibold tracking-[0.28em] uppercase text-white/60">
-            Plan Your Next Journey
-          </span>
-        </div>
-
         {/* Small service-type tabs card */}
         <div className="mx-auto mb-3 flex justify-center" style={{ maxWidth: "91.6667vw" }}>
           <BookingTabs
